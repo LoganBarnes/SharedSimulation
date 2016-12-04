@@ -50,7 +50,7 @@ if ( USE_GLFW )
       ${SRC_DIR}/graphics/glfw/CallbackSingleton.cpp
       ${SRC_DIR}/graphics/glfw/GlfwWrapper.cpp
       ${SRC_DIR}/io/OpenGLIOHandler.cpp
-#      ${SRC_DIR}/io/SharedCallback.cpp
+      ${SRC_DIR}/io/SharedCallback.cpp
       ${THIRDPARTY}/glad/src/glad.c
       )
 
@@ -74,7 +74,13 @@ if ( USE_VULKAN )
   set( LINK_LIBS ${LINK_LIBS} ${VULKAN_LIBRARY} )
 
   # common wrapper functions
-  set( ADDITIONAL_SOURCE ${ADDITIONAL_SOURCE} ${SRC_DIR}/graphics/vulkan/VulkanGlfwWrapper.cpp )
+  set(
+      ADDITIONAL_SOURCE
+      ${ADDITIONAL_SOURCE}
+
+      ${SRC_DIR}/graphics/vulkan/VulkanGlfwWrapper.cpp
+      ${SRC_DIR}/io/VulkanIOHandler.cpp
+      )
 
   message( "USING VULKAN" )
 

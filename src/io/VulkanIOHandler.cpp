@@ -1,9 +1,9 @@
-#include "OpenGLIOHandler.hpp"
+#include "VulkanIOHandler.hpp"
 
 #include <iostream>
 
-#include "glad/glad.h"
-#include "graphics/glfw/GlfwWrapper.hpp"
+#include "graphics/vulkan/VulkanGlfwWrapper.hpp"
+#include "io/SharedCallback.hpp"
 
 
 namespace shared
@@ -16,13 +16,14 @@ namespace shared
 ///
 /// \author Logan Barnes
 /////////////////////////////////////////////
-OpenGLIOHandler::OpenGLIOHandler(
+VulkanIOHandler::VulkanIOHandler(
                      World &world,
                      bool   printInfo
                      )
   :
     IOHandler( world, false )
-  , upGlfwWrapper_( new graphics::GlfwWrapper( ) )
+  , upVulkanWrapper_( new graphics::VulkanGlfwWrapper( ) )
+  , upCallback_     ( new shared::SharedCallback( ) )
 {
 
   if ( printInfo )
@@ -32,7 +33,10 @@ OpenGLIOHandler::OpenGLIOHandler(
 
   }
 
-  upGlfwWrapper_->createNewWindow( "OpenGL Window", 1280, 720 );
+  upVulkanWrapper_->setCallback( upCallback_.get( ) );
+
+  upVulkanWrapper_->createNewWindow( "VulkanWindow", 1024, 720 );
+
 
 }
 
@@ -43,7 +47,7 @@ OpenGLIOHandler::OpenGLIOHandler(
 ///
 /// \author Logan Barnes
 /////////////////////////////////////////////
-OpenGLIOHandler::~OpenGLIOHandler( )
+VulkanIOHandler::~VulkanIOHandler( )
 {}
 
 
@@ -55,29 +59,30 @@ OpenGLIOHandler::~OpenGLIOHandler( )
 /// \author Logan Barnes
 /////////////////////////////////////////////
 void
-OpenGLIOHandler::showWorld( const double alpha )
+VulkanIOHandler::showWorld( const double alpha )
 {
 
   onRender( alpha );
 
-  upGlfwWrapper_->swapBuffers();
-
-} // OpenGLIOHandler::showWorld
+} // VulkanIOHandler::showWorld
 
 
 
 /////////////////////////////////////////////
-/// \brief OpenGLIOHandler::updateIO
+/// \brief VulkanIOHandler::updateIO
 ///
 /// \author Logan Barnes
 /////////////////////////////////////////////
 void
-OpenGLIOHandler::updateIO( )
+VulkanIOHandler::updateIO( )
 {
 
-  upGlfwWrapper_->pollEvents();
+  upVulkanWrapper_->checkInputEvents( );
 
-  exitRequested_ |= upGlfwWrapper_->windowShouldClose();
+  //
+  // check windows for exit requests
+  //
+  exitRequested_ |= upVulkanWrapper_->checkWindowShouldClose( );
 
 }
 

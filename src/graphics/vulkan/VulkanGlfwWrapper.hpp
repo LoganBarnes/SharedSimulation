@@ -47,7 +47,8 @@ public:
   void createNewWindow (
                         const std::string &title,
                         const int          width,
-                        const int          height
+                        const int          height,
+                        const bool         resizable = false
                         );
 
 

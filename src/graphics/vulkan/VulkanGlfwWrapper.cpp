@@ -594,7 +594,7 @@ createShaderModule(
 
 
 VulkanGlfwWrapper::VulkanGlfwWrapper(  )
-  : upGlfw_                 ( new graphics::GlfwWrapper( ) )
+  : upGlfw_( new graphics::GlfwWrapper( false ) ) // no openGL
 {}
 
 
@@ -625,11 +625,12 @@ void
 VulkanGlfwWrapper::createNewWindow(
                                    const std::string &title,
                                    const int          width,
-                                   const int          height
+                                   const int          height,
+                                   const bool         resizable
                                    )
 {
 
-  upGlfw_->createNewWindow( title, width, height );
+  upGlfw_->createNewWindow( title, width, height, resizable, false ); // no openGL
   _initVulkan( title, width, height );
 
 }
