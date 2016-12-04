@@ -18,11 +18,11 @@ namespace shared
 /// \author Logan Barnes
 /////////////////////////////////////////////
 OpenGLIOHandler::OpenGLIOHandler(
-                     World &world,
-                     bool   printInfo
-                     )
+                                 World &world,
+                                 bool   printInfo
+                                 )
   :
-    IOHandler( world, false )
+  IOHandler( world, false )
   , upGlfwWrapper_( new graphics::GlfwWrapper( ) )
   , upCallback_   ( new shared::SharedCallback( ) )
 {
@@ -64,7 +64,7 @@ OpenGLIOHandler::showWorld( const double alpha )
 
   onRender( alpha );
 
-  upGlfwWrapper_->swapBuffers();
+  upGlfwWrapper_->swapBuffers( );
 
 } // OpenGLIOHandler::showWorld
 
@@ -79,9 +79,9 @@ void
 OpenGLIOHandler::updateIO( )
 {
 
-  upGlfwWrapper_->pollEvents();
+  upGlfwWrapper_->pollEvents( );
 
-  exitRequested_ |= upGlfwWrapper_->windowShouldClose();
+  exitRequested_ |= ( upGlfwWrapper_->windowShouldClose( ) != 0 );
 
 }
 

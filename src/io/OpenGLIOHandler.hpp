@@ -77,7 +77,7 @@ protected:
 private:
 
   virtual
-  void onRender( const double alpha ) = 0;
+  void onRender ( const double alpha ) = 0;
 
 };
 

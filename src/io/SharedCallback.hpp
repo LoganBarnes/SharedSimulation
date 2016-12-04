@@ -14,7 +14,6 @@ class SharedCallback : public graphics::Callback
 
 public:
 
-
   SharedCallback( );
 
   ~SharedCallback( );
@@ -29,13 +28,13 @@ public:
   /// \param mods
   ////////////////////////////////////////////////////////
   virtual
-  void  handleKey(
-                  GLFWwindow *pWindow,
-                  int         key,
-                  int         scancode,
-                  int         action,
-                  int         mods
-                  );
+  void  handleKey (
+                   GLFWwindow *pWindow,
+                   int         key,
+                   int         scancode,
+                   int         action,
+                   int         mods
+                   );
 
 
 };

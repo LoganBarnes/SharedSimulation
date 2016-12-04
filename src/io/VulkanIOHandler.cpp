@@ -17,11 +17,11 @@ namespace shared
 /// \author Logan Barnes
 /////////////////////////////////////////////
 VulkanIOHandler::VulkanIOHandler(
-                     World &world,
-                     bool   printInfo
-                     )
+                                 World &world,
+                                 bool   printInfo
+                                 )
   :
-    IOHandler( world, false )
+  IOHandler( world, false )
   , upVulkanWrapper_( new graphics::VulkanGlfwWrapper( ) )
   , upCallback_     ( new shared::SharedCallback( ) )
 {
