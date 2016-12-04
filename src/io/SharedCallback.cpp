@@ -30,9 +30,9 @@ void
 SharedCallback::handleKey(
                           GLFWwindow *pWindow,
                           int         key,
-                          int         scancode,
-                          int         action,
-                          int         mods
+                          int,
+                          int,
+                          int
                           )
 {
 
