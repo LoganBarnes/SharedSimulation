@@ -6,7 +6,7 @@
 
 
 
-namespace srt
+namespace shared
 {
 
 
@@ -53,7 +53,7 @@ IOHandler::IOHandler(
   if ( printInfo )
   {
 
-    std::cout << "Press 'CTRL + C' or 'ESC' to exit" << std::endl;
+    std::cout << "Press 'CTRL + C' to exit" << std::endl;
 
   }
 
@@ -109,4 +109,4 @@ IOHandler::onLoopExit( )
 
 
 
-} // namespace srt
+} // namespace shared

@@ -6,7 +6,7 @@
 #include <chrono>
 
 
-namespace srt
+namespace shared
 {
 
 
@@ -124,7 +124,7 @@ private:
 };
 
 
-} // namespace srt
+} // namespace shared
 
 
 #endif // Driver_hpp

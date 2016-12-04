@@ -3,7 +3,14 @@
 
 
 #include <string>
+#include "SharedSimulationConfig.hpp"
+
+
+#ifdef USE_VULKAN
+
 #include <vulkan/vulkan.h>
+
+#endif
 
 
 struct GLFWwindow;
@@ -31,7 +38,7 @@ public:
   //
   ///////////////////////////////////////////////////////////////////////////////////
 
-  GlfwWrapper( );
+  GlfwWrapper( bool opengl = true );
 
   ~GlfwWrapper( );
 
@@ -45,7 +52,9 @@ public:
   void createNewWindow (
                         const std::string &title,
                         const int          width,
-                        const int          height
+                        const int          height,
+                        const bool         resizable  = true,
+                        const bool         initOpengl = true
                         );
 
 
@@ -65,11 +74,19 @@ public:
   const char **getRequiredInstanceExtensions ( unsigned int *pCount );
 
 
+#ifdef USE_VULKAN
+
   VkResult createWindowSurface (
                                 VkInstance                   instance,
                                 const VkAllocationCallbacks *pAllocator,
                                 VkSurfaceKHR                *pSurface
                                 );
+
+#endif
+
+#ifdef USE_GLAD
+
+#endif
 
 
   ///////////////////////////////////////////////////////////////////////////////////
@@ -111,7 +128,7 @@ private:
   //////////////////////////////////////////////////
   /// \brief _initGlfw
   //////////////////////////////////////////////////
-  bool _initGlfw ( );
+  bool _initGlfw ( bool opengl = true );
 
 
   //////////////////////////////////////////////////

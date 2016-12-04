@@ -1,23 +1,23 @@
-#ifndef TerrainCallback_hpp
-#define TerrainCallback_hpp
+#ifndef SharedCallback_hpp
+#define SharedCallback_hpp
 
 
-#include "Callback.hpp"
+#include "graphics/glfw/Callback.hpp"
 
 
-namespace srt
+namespace shared
 {
 
 
-class TerrainCallback : public graphics::Callback
+class SharedCallback : public graphics::Callback
 {
 
 public:
 
 
-  TerrainCallback( );
+  SharedCallback( );
 
-  ~TerrainCallback( );
+  ~SharedCallback( );
 
 
   ////////////////////////////////////////////////////////
@@ -41,7 +41,7 @@ public:
 };
 
 
-} // namespace srt
+} // namespace shared
 
 
-#endif // TerrainCallback_hpp
+#endif // SharedCallback_hpp

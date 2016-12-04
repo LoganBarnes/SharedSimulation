@@ -2,7 +2,7 @@
 #define World_hpp
 
 
-namespace srt
+namespace shared
 {
 
 /////////////////////////////////////////////
@@ -59,7 +59,7 @@ private:
 };
 
 
-} // end namespace srt
+} // end namespace shared
 
 
 #endif // World_hpp

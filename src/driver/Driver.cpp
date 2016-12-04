@@ -7,7 +7,7 @@
 #include <sstream>
 
 
-namespace srt
+namespace shared
 {
 
 
@@ -275,4 +275,4 @@ Driver::printProjectInfo(
 
 
 
-} // namespace srt
+} // namespace shared

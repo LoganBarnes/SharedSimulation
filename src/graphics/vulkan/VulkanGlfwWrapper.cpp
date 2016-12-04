@@ -6,7 +6,7 @@
 #include <fstream>
 #include <cstring>
 
-#include "GlfwWrapper.hpp"
+#include "graphics/glfw/GlfwWrapper.hpp"
 
 
 namespace graphics

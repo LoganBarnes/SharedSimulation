@@ -1,5 +1,17 @@
-#ifndef IoHandler_hpp
-#define IoHandler_hpp
+#ifndef OpenGLIOHandler_hpp
+#define OpenGLIOHandler_hpp
+
+
+#include <memory>
+#include "io/IOHandler.hpp"
+
+
+namespace graphics
+{
+
+class GlfwWrapper;
+
+}
 
 
 namespace shared
@@ -10,11 +22,11 @@ class World;
 
 
 /////////////////////////////////////////////
-/// \brief The IOHandler class
+/// \brief The OpenGLIOHandler class
 ///
 /// \author Logan Barnes
 /////////////////////////////////////////////
-class IOHandler
+class OpenGLIOHandler : public IOHandler
 {
 
 public:
@@ -22,17 +34,17 @@ public:
   ///////////////////////////////////////////////////////////////
   /// \brief Renderer
   ///////////////////////////////////////////////////////////////
-  IOHandler(
-            World &world,
-            bool   printInfo = true
-            );
+  OpenGLIOHandler(
+                  World &world,
+                  bool   printInfo = true
+                  );
 
 
   ///////////////////////////////////////////////////////////////
   /// \brief ~Renderer
   ///////////////////////////////////////////////////////////////
   virtual
-  ~IOHandler( );
+  ~OpenGLIOHandler( );
 
 
   ///////////////////////////////////////////////////////////////
@@ -55,29 +67,14 @@ public:
   void updateIO ( );
 
 
-  ///////////////////////////////////////////////////////////////
-  /// \brief onLoopExit
-  ///
-  ///        Allows for any synchronization or clean up that
-  ///        needs to be completed before destruction
-  ///
-  ///////////////////////////////////////////////////////////////
-  virtual
-  void onLoopExit ( );
-
-
-  ///////////////////////////////////////////////////////////////
-  /// \brief isExitRequested
-  /// \return true if the user requested to exit the program
-  ///////////////////////////////////////////////////////////////
-  bool
-  isExitRequested( ) { return exitRequested_; }
-
-
 protected:
 
-  World &world_;
-  bool exitRequested_;
+  std::unique_ptr< graphics::GlfwWrapper > upGlfwWrapper_;
+
+private:
+
+  virtual
+  void onRender( const double alpha ) = 0;
 
 };
 
@@ -85,4 +82,4 @@ protected:
 } // namespace shared
 
 
-#endif // IoHandler_hpp
+#endif // OpenGLIOHandler_hpp

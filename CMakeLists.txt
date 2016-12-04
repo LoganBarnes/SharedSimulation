@@ -1,21 +1,25 @@
 
 
-set( SHARED_USE_GLFW   OFF CACHE BOOL "" FORCE )
-set( SHARED_USE_VULKAN OFF CACHE BOOL "" FORCE )
-set( SHARED_USE_GLAD   OFF CACHE BOOL "" FORCE )
-set( SHARED_USE_GLM    OFF CACHE BOOL "" FORCE )
+option( USE_GLFW   "Use GLFW library"   OFF )
+option( USE_VULKAN "Use Vulkan library" OFF )
+option( USE_GLAD   "Use glad library"   OFF )
+option( USE_GLM    "Use glm library"    OFF )
 
 
 set( SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src )
 
 # other paths
-set( THIRDPARTY  ${PROJECT_SOURCE_DIR}/thirdparty )
+set( THIRDPARTY  ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty )
 
-# set( PROJECT_CONFIG_FILE ${SRC_DIR}/common/ProjectConfig.hpp.in )
+
+configure_file (
+                ${SRC_DIR}/common/SharedSimulationConfig.hpp.in
+                ${PROJECT_BINARY_DIR}/SharedSimulationConfig.hpp
+                )
 
 
 # add glfw3 functionality
-if ( SHARED_USE_GLFW )
+if ( USE_GLFW )
 
   set( GLFW_BUILD_DOCS     OFF CACHE BOOL "" FORCE )
   set( GLFW_BUILD_TESTS    OFF CACHE BOOL "" FORCE )
@@ -23,8 +27,14 @@ if ( SHARED_USE_GLFW )
 
   add_subdirectory( ${THIRDPARTY}/glfw )
 
-  # glfw header dir
-  set( SYSTEM_INCLUDE_DIRS ${SYSTEM_INCLUDE_DIRS} ${THIRDPARTY}/glfw/include )
+  # glfw and glad header dir
+  set(
+      SYSTEM_INCLUDE_DIRS
+      ${SYSTEM_INCLUDE_DIRS}
+
+      ${THIRDPARTY}/glfw/include
+      ${THIRDPARTY}/include
+      )
 
   # glfw lib
   set( LINK_LIBS ${LINK_LIBS} glfw )
@@ -32,15 +42,28 @@ if ( SHARED_USE_GLFW )
   # must be built before project lib
   set( DEP_TARGETS glfw )
 
-endif( SHARED_USE_GLFW )
+  # common wrapper functions
+  set(
+      ADDITIONAL_SOURCE
+      ${ADDITIONAL_SOURCE}
 
+      ${SRC_DIR}/graphics/glfw/CallbackSingleton.cpp
+      ${SRC_DIR}/graphics/glfw/GlfwWrapper.cpp
+      ${SRC_DIR}/io/OpenGLIOHandler.cpp
+#      ${SRC_DIR}/io/SharedCallback.cpp
+      ${THIRDPARTY}/glad/src/glad.c
+      )
 
-# set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
-     # ${THIRDPARTY}/glfw/CMake/modules )
+  message( "USING GLFW" )
+
+endif( USE_GLFW )
+
 
 
 # add vulkan functionality
-if ( SHARED_USE_VULKAN )
+if ( USE_VULKAN )
+
+  set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${THIRDPARTY}/glfw/CMake/modules )
 
   find_package( Vulkan REQUIRED )
 
@@ -50,23 +73,24 @@ if ( SHARED_USE_VULKAN )
   # vulkan lib
   set( LINK_LIBS ${LINK_LIBS} ${VULKAN_LIBRARY} )
 
-endif ( SHARED_USE_VULKAN )
+  # common wrapper functions
+  set( ADDITIONAL_SOURCE ${ADDITIONAL_SOURCE} ${SRC_DIR}/graphics/vulkan/VulkanGlfwWrapper.cpp )
+
+  message( "USING VULKAN" )
+
+endif ( USE_VULKAN )
 
 
 
-# add glad functionality
-if ( SHARED_USE_GLAD )
 
-  set( THIRDPARTY_SOURCE ${THIRDPARTY_SOURCE} ${THIRDPARTY}/glad/glad.c )
-
-endif()
-
-
-if ( SHARED_USE_GLAD OR SHARED_USE_GLM )
+if ( USE_GLM )
 
   set( SYSTEM_INCLUDE_DIRS ${SYSTEM_INCLUDE_DIRS} ${THIRDPARTY}/include )
 
+  message( "USING GLM" )
+
 endif( )
+
 
 
 
@@ -89,7 +113,7 @@ set(
 set(
     SHARED_SOURCE
 
-    ${THIRDPARTY_SOURCE}
+    ${ADDITIONAL_SOURCE}
 
     # driver
     ${SRC_DIR}/driver/Driver.cpp

@@ -2,6 +2,9 @@
 
 #include <iostream>
 
+#include "glad/glad.h"
+
+#define GLFW_INCLUDE_GL_3
 #include "GLFW/glfw3.h"
 
 #include "CallbackSingleton.hpp"
@@ -19,13 +22,14 @@ namespace graphics
 ///////////////////////////////////////////////////////////////////////////////////
 
 
-GlfwWrapper::GlfwWrapper(  )
-  : glfwInitialized_        ( false )
-  , pWindow_                ( nullptr )
+GlfwWrapper::GlfwWrapper( bool opengl )
+  : glfwInitialized_ ( false )
+  , pWindow_         ( nullptr )
 {
 
-  if ( !_initGlfw( ) )
+  if ( !_initGlfw( opengl ) )
   {
+
     throw std::runtime_error( "Failed to initialize GLFW" );
 
   }
@@ -83,6 +87,7 @@ GlfwWrapper::getRequiredInstanceExtensions( unsigned int *pCount )
 }
 
 
+#ifdef USE_VULKAN
 
 ///
 /// \brief GlfwWrapper::createWindowSurface
@@ -103,6 +108,8 @@ GlfwWrapper::createWindowSurface(
 
 }
 
+#endif
+
 
 
 ///
@@ -115,7 +122,9 @@ void
 GlfwWrapper::createNewWindow(
                              const std::string &title,
                              const int          width,
-                             const int          height
+                             const int          height,
+                             const bool         resizable,
+                             const bool         initOpengl
                              )
 {
 
@@ -135,6 +144,19 @@ GlfwWrapper::createNewWindow(
 
   }
 
+  if ( resizable )
+  {
+
+    glfwWindowHint( GLFW_RESIZABLE, GLFW_TRUE );
+
+  }
+  else
+  {
+
+    glfwWindowHint( GLFW_RESIZABLE, GLFW_FALSE );
+
+  }
+
   pWindow_ = glfwCreateWindow(
                               width,
                               height,
@@ -147,6 +169,23 @@ GlfwWrapper::createNewWindow(
   {
 
     throw std::runtime_error( "GLFW window creation failed" );
+
+  }
+
+
+  if ( initOpengl )
+  {
+
+    glfwMakeContextCurrent( pWindow_ );
+    glfwSwapInterval( 0 );
+
+
+    if ( !gladLoadGLLoader( reinterpret_cast< GLADloadproc >( glfwGetProcAddress ) ) )
+    {
+
+      throw std::runtime_error( "Failed to initialize OpenGL context" );
+
+    }
 
   }
 
@@ -237,7 +276,7 @@ GlfwWrapper::setCallback( Callback *pCallback )
 /// \return
 ///
 bool
-GlfwWrapper::_initGlfw( )
+GlfwWrapper::_initGlfw( bool opengl )
 {
 
   //
@@ -266,15 +305,27 @@ GlfwWrapper::_initGlfw( )
 
   glfwInitialized_ = true;
 
-  //
-  // using vulkan so we don't need OpenGL
-  //
-  glfwWindowHint( GLFW_CLIENT_API, GLFW_NO_API );
+  if ( opengl )
+  {
 
-  //
-  // temporary until we handle resizing
-  //
-  glfwWindowHint( GLFW_RESIZABLE, GLFW_FALSE );
+    glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR,                 3 );
+    glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR,                 2 );
+    glfwWindowHint( GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE );
+#ifdef __APPLE__
+    glfwWindowHint( GLFW_OPENGL_FORWARD_COMPAT,           GL_TRUE );
+#endif
+
+  }
+  else
+  {
+
+    //
+    // not using openGL so tell glfw
+    //
+    glfwWindowHint( GLFW_CLIENT_API, GLFW_NO_API );
+
+  }
+
 
   return true;
 

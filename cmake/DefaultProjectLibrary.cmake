@@ -14,7 +14,39 @@ set ( PROJECT_INCLUDE_DIRS ${PROJECT_INCLUDE_DIRS} ${PROJECT_BINARY_DIR})
 
 # Create named folders for the sources within the .vcproj
 # Empty name lists them directly under the .vcproj
-source_group( "" FILES ${PROJECT_SOURCE} )
+source_group( "" FILES ${PROJECT_SOURCE}      )
+
+
+# create a cude lib if necessary
+if ( PROJECT_CUDA_SOURCE )
+
+  source_group( "" FILES ${PROJECT_CUDA_SOURCE} )
+
+  # create the cuda library
+  find_package( CUDA REQUIRED )
+
+  # set nvcc options
+  set( CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -O3 ${CUDA_COMPUTE_FLAGS}" )
+  set( CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} --compiler-options -fno-strict-aliasing -use_fast_math" )
+
+
+  include_directories( ${PROJECT_CUDA_INCLUDE_DIRS} )
+
+
+  set( CUDA_LIB cuda${PROJECT_NAME} )
+
+  # build CUDA library
+  cuda_add_library     ( ${CUDA_LIB} ${PROJECT_CUDA_SOURCE} )
+  target_link_libraries( ${CUDA_LIB} ${CUDA_curand_LIBRARY} )
+
+  set( PROJECT_LINK_LIBS           ${PROJECT_LINK_LIBS}           ${CUDA_LIB} )
+  set( PROJECT_INSTALL_TARGETS     ${PROJECT_INSTALL_TARGETS}     ${CUDA_LIB} )
+  set( PROJECT_SYSTEM_INCLUDE_DIRS ${PROJECT_SYSTEM_INCLUDE_DIRS} ${CUDA_INCLUDE_DIRS} )
+
+  message( "USING CUDA" )
+
+endif( PROJECT_CUDA_SOURCE )
+
 
 
 # compile flags
@@ -31,7 +63,6 @@ endif( )
 # make project into library that can be used by multiple executables ( such as test classes )
 add_library            ( ${PROJECT_NAME} ${PROJECT_SOURCE}                   )
 target_link_libraries  ( ${PROJECT_NAME} ${PROJECT_LINK_LIBS} ${DEP_TARGETS} )
-# set_property          ( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 11     ) # c++11
 target_compile_features( ${PROJECT_NAME} PRIVATE cxx_range_for )
 
 
@@ -46,7 +77,7 @@ target_include_directories( ${PROJECT_NAME}        PUBLIC ${PROJECT_INCLUDE_DIRS
 # make executable to run
 if ( PROJECT_MAIN )
 
-  set( PROJECT_EXEC ${PROJECT_EXEC} run${PROJECT_NAME} )
+  set( PROJECT_EXEC run${PROJECT_NAME} )
 
   add_executable        ( ${PROJECT_EXEC} ${PROJECT_MAIN} )
   target_link_libraries ( ${PROJECT_EXEC} ${PROJECT_NAME} )

@@ -1,0 +1,12 @@
+#ifndef SharedSimulationConfig_hpp
+#define SharedSimulationConfig_hpp
+
+// the configured options and settings for Project
+
+#cmakedefine USE_GLFW
+#cmakedefine USE_VULKAN
+#cmakedefine USE_GLM
+#cmakedefine USE_CUDA
+
+
+#endif // SharedSimulationConfig_hpp
