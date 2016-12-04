@@ -19,6 +19,7 @@ namespace shared
 
 
 class World;
+class SharedCallback;
 
 
 /////////////////////////////////////////////
@@ -69,7 +70,9 @@ public:
 
 protected:
 
-  std::unique_ptr< graphics::GlfwWrapper > upGlfwWrapper_;
+  std::unique_ptr< graphics::GlfwWrapper >  upGlfwWrapper_;
+  std::unique_ptr< shared::SharedCallback > upCallback_;
+
 
 private:
 

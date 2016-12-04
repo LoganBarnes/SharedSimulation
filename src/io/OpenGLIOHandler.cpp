@@ -4,6 +4,7 @@
 
 #include "glad/glad.h"
 #include "graphics/glfw/GlfwWrapper.hpp"
+#include "io/SharedCallback.hpp"
 
 
 namespace shared
@@ -23,6 +24,7 @@ OpenGLIOHandler::OpenGLIOHandler(
   :
     IOHandler( world, false )
   , upGlfwWrapper_( new graphics::GlfwWrapper( ) )
+  , upCallback_   ( new shared::SharedCallback( ) )
 {
 
   if ( printInfo )
@@ -32,7 +34,9 @@ OpenGLIOHandler::OpenGLIOHandler(
 
   }
 
-  upGlfwWrapper_->createNewWindow( "OpenGL Window", 1280, 720 );
+  upGlfwWrapper_->createNewWindow( "OpenGL Window", 1080, 720 );
+
+  upGlfwWrapper_->setCallback( upCallback_.get( ) );
 
 }
 
