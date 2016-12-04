@@ -1,0 +1,26 @@
+#ifndef @PROJECT_NAME@Config_hpp
+#define @PROJECT_NAME@Config_hpp
+
+// the configured options and settings for Project
+
+namespace @PROJECT_NAMESPACE@
+{
+
+namespace // unique namespace
+{
+
+const std::string PROJECT_NAME  = "@PROJECT_NAME@";
+
+const std::string VERSION_MAJOR = "@PROJECT_VERSION_MAJOR@";
+const std::string VERSION_MINOR = "@PROJECT_VERSION_MINOR@";
+const std::string VERSION_PATCH = "@PROJECT_VERSION_PATCH@";
+
+const std::string RES_PATH      = "@RES_PATH@/";
+const std::string SHADER_PATH   = "@SHADER_PATH@/";
+
+}
+
+} // namespace @PROJECT_NAMESPACE@
+
+
+#endif // @PROJECT_NAME@Config_hpp
