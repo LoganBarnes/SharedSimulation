@@ -31,6 +31,7 @@ if ( PROJECT_CUDA_SOURCE )
 
 
   include_directories( ${PROJECT_CUDA_INCLUDE_DIRS} )
+  include_directories( SYSTEM ${PROJECT_CUDA_SYSTEM_INCLUDE_DIRS} )
 
 
   set( CUDA_LIB cuda${PROJECT_NAME} )

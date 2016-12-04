@@ -23,7 +23,7 @@
 #ifndef HELPER_MATH_H
 #define HELPER_MATH_H
 
-#include "cuda_runtime.h"
+#include <cuda_runtime.h>
 
 typedef unsigned int uint;
 typedef unsigned short ushort;
@@ -39,15 +39,17 @@ typedef unsigned short ushort;
 // host implementations of CUDA functions
 ////////////////////////////////////////////////////////////////////////////////
 
-inline float fminf(float a, float b)
-{
-    return a < b ? a : b;
-}
+// conflict with glm
 
-inline float fmaxf(float a, float b)
-{
-    return a > b ? a : b;
-}
+//inline float fminf(float a, float b)
+//{
+//    return a < b ? a : b;
+//}
+
+//inline float fmaxf(float a, float b)
+//{
+//    return a > b ? a : b;
+//}
 
 inline int max(int a, int b)
 {

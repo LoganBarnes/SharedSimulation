@@ -49,6 +49,7 @@ if ( USE_GLFW )
 
       ${SRC_DIR}/graphics/glfw/CallbackSingleton.cpp
       ${SRC_DIR}/graphics/glfw/GlfwWrapper.cpp
+      ${SRC_DIR}/graphics/opengl/OpenGLWrapper.cpp
       ${SRC_DIR}/io/OpenGLIOHandler.cpp
       ${SRC_DIR}/io/SharedCallback.cpp
       ${THIRDPARTY}/glad/src/glad.c
@@ -105,6 +106,8 @@ set( SHARED_SYSTEM_INCLUDE_DIRS ${SYSTEM_INCLUDE_DIRS} PARENT_SCOPE )
 set( SHARED_LINK_LIBS           ${LINK_LIBS}           PARENT_SCOPE )
 set( SHARED_DEP_TARGETS         ${DEP_TARGETS}         PARENT_SCOPE )
 
+set( SHARED_UNCRUSTIFY_FILE ${CMAKE_CURRENT_SOURCE_DIR}/formatting/uncrustify.cfg  PARENT_SCOPE )
+
 
 # header dirs
 set(
@@ -127,9 +130,8 @@ set(
     # rendering
     ${SRC_DIR}/io/IOHandler.cpp
 
-    # graphics/glfw
-    # ${SRC_DIR}/graphics/glfw/GlfwWrapper.cpp
-    # ${SRC_DIR}/graphics/glfw/CallbackSingleton.cpp
+    # graphics
+    ${SRC_DIR}/graphics/Camera.cpp
 
     # world
     ${SRC_DIR}/world/World.cpp

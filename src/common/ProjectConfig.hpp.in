@@ -18,6 +18,9 @@ const std::string VERSION_PATCH = "@PROJECT_VERSION_PATCH@";
 const std::string RES_PATH      = "@RES_PATH@/";
 const std::string SHADER_PATH   = "@SHADER_PATH@/";
 
+
+#cmakedefine USE_CUDA
+
 }
 
 } // namespace @PROJECT_NAMESPACE@
