@@ -2,6 +2,9 @@
 #define CallbackSingleton_hpp
 
 
+#include <memory>
+
+
 struct GLFWwindow;
 typedef GLFWwindow GLFWwindow;
 
@@ -132,7 +135,7 @@ public:
                               );
 
 
-  void setDefaultCallback ( Callback *callback );
+  void setDefaultCallback (std::unique_ptr<Callback> upCallback );
 
 
 private:
@@ -146,7 +149,7 @@ private:
   ~CallbackSingleton( ) noexcept;
 
 
-  Callback *defaultCallbacks_;
+  std::unique_ptr< Callback > upDefaultCallbacks_;
 
   //
   // Delete copy and move functions

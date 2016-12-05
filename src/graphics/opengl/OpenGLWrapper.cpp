@@ -83,16 +83,16 @@ OpenGLWrapper::init( )
   glEnable( GL_POLYGON_OFFSET_LINE );
   glPolygonOffset( -1, -1 );
 
-  // Enable back-face culling, meaning only the front side of every face is rendered.
-  glEnable( GL_CULL_FACE );
-  glCullFace( GL_BACK );
+//  // Enable back-face culling, meaning only the front side of every face is rendered.
+//  glEnable( GL_CULL_FACE );
+//  glCullFace( GL_BACK );
 
-  // Specify that the front face is represented by vertices in counterclockwise order (this is
-  // the default).
-  glFrontFace( GL_CCW );
+//  // Specify that the front face is represented by vertices in counterclockwise order (this is
+//  // the default).
+//  glFrontFace( GL_CCW );
 
   // Specify the color used when glClear is called
-  glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
+  glClearColor( 0.0f, 0.0f, 1.0f, 1.0f );
 
 } // init
 
@@ -106,9 +106,9 @@ OpenGLWrapper::init( )
 ///
 void
 OpenGLWrapper::addProgram(
-                          const char *name,
-                          const char *vertFilePath,
-                          const char *fragFilePath
+                          const std::string name,
+                          const std::string vertFilePath,
+                          const std::string fragFilePath
                           )
 
 {
@@ -121,7 +121,7 @@ OpenGLWrapper::addProgram(
 
 void
 OpenGLWrapper::addTextureArray(
-                               const char *name,
+                               const std::string name,
                                GLsizei     width,
                                GLsizei     height,
                                float      *pArray,
@@ -153,7 +153,7 @@ OpenGLWrapper::addTextureArray(
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
   }
 
-  glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_FLOAT, pArray );
+  glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, pArray );
 
   m_textures[ name ] = texture;
 
@@ -163,10 +163,10 @@ OpenGLWrapper::addTextureArray(
 
 void
 OpenGLWrapper::addTextureImage(
-                               const char *name,
+                               const std::string name,
                                GLsizei     width,
                                GLsizei     height,
-                               const       char*
+                               const std::string
                                )
 {
   if ( m_textures.count( name ) )
@@ -192,8 +192,8 @@ OpenGLWrapper::addTextureImage(
 
 void
 OpenGLWrapper::addUVBuffer(
-                           const char *name,
-                           const char *program,
+                           const std::string name,
+                           const std::string program,
                            GLfloat    *data,
                            GLuint      size,
                            bool        dynamic
@@ -223,17 +223,20 @@ OpenGLWrapper::addUVBuffer(
   }
   else
   {
-    glBufferData( GL_ARRAY_BUFFER,
+    glBufferData(
+                 GL_ARRAY_BUFFER,
                  static_cast< GLsizeiptr >( size * sizeof( GLfloat ) ),
                  data,
-                 GL_STATIC_DRAW );
+                 GL_STATIC_DRAW
+                 );
   }
+
 
   // Initialize the vertex array object.
   glGenVertexArrays( 1, &( buffer.vao ) );
   glBindVertexArray( ( buffer.vao ) );
 
-  int pos = glGetAttribLocation( m_programs[ program ], "aUV" );
+  int pos = glGetAttribLocation( m_programs[ program ], "inScreenPos" );
 
   if ( pos < 0 )
   {
@@ -249,11 +252,11 @@ OpenGLWrapper::addUVBuffer(
   glEnableVertexAttribArray( position );
   glVertexAttribPointer(
                         position,
-                        2,   // Num coordinates per position
+                        3,        // Num coordinates per position
                         GL_FLOAT, // Type
                         GL_FALSE, // Normalized
-                        sizeof( GLfloat ) * 2, // Stride
-                        NULL // Array buffer offset
+                        0,        // Stride, 0 = tightly packed
+                        nullptr   // Array buffer offset
                         );
 
   // Unbind buffers.
@@ -265,13 +268,20 @@ OpenGLWrapper::addUVBuffer(
 
 
 
-void OpenGLWrapper::addFramebuffer(const char *buffer, GLsizei width, GLsizei height, const char *texture)
+void
+OpenGLWrapper::addFramebuffer(
+                              const std::string buffer,
+                              GLsizei     width,
+                              GLsizei     height,
+                              const std::string texture
+                              )
+
 {
-    if (m_framebuffers.count(buffer))
+    if ( m_framebuffers.find( buffer ) != m_framebuffers.end( ) )
     {
         Buffer buf = m_framebuffers[buffer];
-        glDeleteFramebuffers(1, &(buf.vbo));
-        glDeleteRenderbuffers(1, &(buf.vao));
+        glDeleteFramebuffers(1, &buf.vbo);
+        glDeleteRenderbuffers(1, &buf.vao);
     }
 
     GLuint fbo;
@@ -298,17 +308,21 @@ void OpenGLWrapper::addFramebuffer(const char *buffer, GLsizei width, GLsizei he
     m_framebuffers[buffer] = buf;
 }
 
-
-void OpenGLWrapper::bindFramebuffer(const char *name)
+void
+OpenGLWrapper::bindFramebuffer( const std::string name )
 {
-    if (name && m_framebuffers.count(name))
-        glBindFramebuffer(GL_FRAMEBUFFER, m_framebuffers[name].vbo);
-    else
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  if ( m_framebuffers.find( name ) != m_framebuffers.end( ) )
+  {
+    glBindFramebuffer( GL_FRAMEBUFFER, m_framebuffers[ name ].vbo );
+  }
+  else
+  {
+    glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+  }
 }
 
 
-void OpenGLWrapper::swapFramebuffers(const char *fbo1, const char *fbo2)
+void OpenGLWrapper::swapFramebuffers(const std::string fbo1, const std::string fbo2)
 {
     Buffer temp = m_framebuffers[fbo1];
     m_framebuffers[fbo1] = m_framebuffers[fbo2];
@@ -316,26 +330,43 @@ void OpenGLWrapper::swapFramebuffers(const char *fbo1, const char *fbo2)
 }
 
 
-void OpenGLWrapper::clearWindow(GLsizei width, GLsizei height)
+void
+OpenGLWrapper::clearWindow(
+                           GLsizei width,
+                           GLsizei height
+                           )
 {
-    GLsizei w = m_viewportWidth;
-    GLsizei h = m_viewportHeight;
-    if (width > 0)
-        w = width;
-    if (height > 0)
-        h = height;
-    glViewport(0, 0, w, h);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-}
+  GLsizei w = m_viewportWidth;
+  GLsizei h = m_viewportHeight;
+
+  if ( width > 0 )
+  {
+
+    w = width;
+
+  }
+
+  if ( height > 0 )
+  {
+
+    h = height;
+
+  }
+
+  glViewport( 0, 0, w, h );
+
+  glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+
+} // clearWindow
 
 
-void OpenGLWrapper::useProgram(const char *program)
+void OpenGLWrapper::useProgram(const std::string program)
 {
     glUseProgram(m_programs[program]);
 }
 
 
-void OpenGLWrapper::setTextureUniform(const char *program, const char *uniform, const char *texture, int activeTex)
+void OpenGLWrapper::setTextureUniform(const std::string program, const std::string uniform, const std::string texture, int activeTex)
 {
     switch(activeTex)
     {
@@ -352,12 +383,12 @@ void OpenGLWrapper::setTextureUniform(const char *program, const char *uniform, 
         glActiveTexture(GL_TEXTURE3);
         break;
     }
-    glUniform1i(glGetUniformLocation(m_programs[program], uniform), activeTex);
+    glUniform1i(glGetUniformLocation( m_programs[program], uniform.c_str() ), activeTex);
     glBindTexture(GL_TEXTURE_2D, m_textures[texture]);
 }
 
 
-void OpenGLWrapper::renderBuffer(const char* buffer, int verts, GLenum mode)
+void OpenGLWrapper::renderBuffer(const std::string buffer, int verts, GLenum mode)
 {
     glBindVertexArray(m_buffers[buffer].vao);
     glDrawArrays(mode, 0, verts);
@@ -366,7 +397,7 @@ void OpenGLWrapper::renderBuffer(const char* buffer, int verts, GLenum mode)
 
 
 
-void OpenGLWrapper::setBuffer(const char *bufferName, float *data, GLuint size)
+void OpenGLWrapper::setBuffer(const std::string bufferName, float *data, GLuint size)
 {
     Buffer buffer = m_buffers[bufferName];
     glBindBuffer(GL_ARRAY_BUFFER, buffer.vbo);
@@ -378,19 +409,59 @@ void OpenGLWrapper::setBuffer(const char *bufferName, float *data, GLuint size)
 }
 
 
-void OpenGLWrapper::setBoolUniform(const char *program, const char *uniform, bool var)
+void OpenGLWrapper::setBoolUniform(const std::string program, const std::string uniform, bool var)
 {
-    glUniform1i(glGetUniformLocation(m_programs[program], uniform), var);
+    glUniform1i(glGetUniformLocation(m_programs[program], uniform.c_str()), var);
 }
 
 
-void OpenGLWrapper::setIntUniform(const char *program, const char *uniform, int value)
+void OpenGLWrapper::setIntUniform(const std::string program, const std::string uniform, int value)
 {
-    glUniform1i(glGetUniformLocation(m_programs[program], uniform), value);
+    glUniform1i(glGetUniformLocation(m_programs[program], uniform.c_str()), value);
 }
 
 
-void OpenGLWrapper::swapTextures(const char *tex1, const char *tex2)
+
+
+void
+OpenGLWrapper::setFloatUniform(
+                               const std::string program,
+                               const std::string uniform,
+                               const float      *pValue,
+                               const int         size,
+                               const int         count
+                               )
+{
+
+  switch ( size )
+  {
+
+  case 1:
+    glUniform1f( glGetUniformLocation( m_programs[ program ], uniform.c_str( ) ), *pValue );
+    break;
+
+  case 2:
+    glUniform2fv( glGetUniformLocation( m_programs[ program ], uniform.c_str( ) ), count, pValue );
+    break;
+
+  case 3:
+    glUniform3fv( glGetUniformLocation( m_programs[ program ], uniform.c_str( ) ), count, pValue );
+    break;
+
+  case 4:
+    glUniform4fv( glGetUniformLocation( m_programs[ program ], uniform.c_str( ) ), count, pValue );
+    break;
+
+  default:
+    break;
+
+  } // switch
+
+} // setFloatUniform
+
+
+
+void OpenGLWrapper::swapTextures(const std::string tex1, const std::string tex2)
 {
     GLuint temp = m_textures[tex1];
     m_textures[tex1] = m_textures[tex2];
@@ -418,7 +489,7 @@ void OpenGLWrapper::setViewportSize(GLsizei width, GLsizei height)
 }
 
 
-std::string OpenGLWrapper::_readFile(const char *filePath) {
+std::string OpenGLWrapper::_readFile(const std::string filePath) {
     std::string content;
     std::ifstream fileStream(filePath, std::ios::in);
 
@@ -438,7 +509,7 @@ std::string OpenGLWrapper::_readFile(const char *filePath) {
 }
 
 
-GLuint OpenGLWrapper::_loadShader(const char *vertex_path, const char *fragment_path) {
+GLuint OpenGLWrapper::_loadShader(const std::string vertex_path, const std::string fragment_path) {
     GLuint vertShader = glCreateShader(GL_VERTEX_SHADER);
     GLuint fragShader = glCreateShader(GL_FRAGMENT_SHADER);
 

@@ -2,6 +2,7 @@
 #define GlfwWrapper_hpp
 
 
+#include <memory>
 #include <string>
 #include "SharedSimulationConfig.hpp"
 
@@ -120,7 +121,7 @@ public:
   /// \brief setCallback
   /// \param pCallback
   //////////////////////////////////////////////////
-  void setCallback( Callback *pCallback );
+  void setCallback( std::unique_ptr< Callback > upCallback );
 
 
 private:

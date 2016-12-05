@@ -37,7 +37,10 @@ public:
   ///////////////////////////////////////////////////////////////
   OpenGLIOHandler(
                   World &world,
-                  bool   printInfo = true
+                  bool  printInfo = true,
+                  int   width     = 1080,
+                  int   height    = 720,
+                  bool  resizable = true
                   );
 
 
@@ -71,7 +74,6 @@ public:
 protected:
 
   std::unique_ptr< graphics::GlfwWrapper >  upGlfwWrapper_;
-  std::unique_ptr< shared::SharedCallback > upCallback_;
 
 
 private:

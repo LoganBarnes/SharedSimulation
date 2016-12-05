@@ -5,6 +5,10 @@
 #include "glm/glm.hpp"
 
 
+namespace graphics
+{
+
+
 class Camera
 {
 public:
@@ -70,5 +74,9 @@ protected:
   float m_thirdDist;
 
 };
+
+
+} // namespace graphics
+
 
 #endif // Camera_hpp

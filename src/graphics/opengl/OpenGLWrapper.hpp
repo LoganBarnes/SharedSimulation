@@ -44,7 +44,7 @@ public:
 
   // getters
   GLuint
-  getTexture( const char *name ) { return m_textures[ name ]; }
+  getTexture( const std::string name ) { return m_textures[ name ]; }
 
   GLsizei
   getViewportWidth( ) { return m_viewportWidth; }
@@ -54,43 +54,44 @@ public:
 
 
   void addProgram (
-                   const char *name,
-                   const char *vertFilePath,
-                   const char *fragFilePath
+                   const std::string name,
+                   const std::string vertFilePath,
+                   const std::string fragFilePath
                    );
 
   void addTextureArray (
-                        const char *name,
+                        const std::string name,
                         GLsizei     width,
                         GLsizei     height,
                         float      *pArray = NULL,
                         bool        linear = false
                         );
   void addTextureImage (
-                        const char *name,
+                        const std::string name,
                         GLsizei     width,
                         GLsizei     height,
-                        const char *filename
+                        const std::string filename
                         );
 
   void addUVBuffer (
-                    const char *buffer,
-                    const char *program,
+                    const std::string buffer,
+                    const std::string program,
                     GLfloat    *data,
                     GLuint      size,
                     bool        dynamic = false
                     );
 
+
   void addFramebuffer (
-                       const char *buffer,
+                       const std::string buffer,
                        GLsizei     width,
                        GLsizei     height,
-                       const char *texture
+                       const std::string texture
                        );
-  void bindFramebuffer ( const char *name );
+  void bindFramebuffer ( const std::string name );
   void swapFramebuffers (
-                         const char *fbo1,
-                         const char *fbo2
+                         const std::string fbo1,
+                         const std::string fbo2
                          );
 
   void clearWindow (
@@ -98,39 +99,47 @@ public:
                     GLsizei height = 0
                     );
 
-  void useProgram ( const char *program );
+  void useProgram ( const std::string program );
 
   void renderBuffer (
-                     const char *buffer,
+                     const std::string buffer,
                      int         verts,
                      GLenum      mode
                      );
 
   void setTextureUniform (
-                          const char *program,
-                          const char *uniform,
-                          const char *texture,
+                          const std::string program,
+                          const std::string uniform,
+                          const std::string texture,
                           int         activeTex
                           );
   void setBoolUniform (
-                       const char *program,
-                       const char *uniform,
+                       const std::string program,
+                       const std::string uniform,
                        bool        var
                        );
   void setIntUniform (
-                      const char *program,
-                      const char *uniform,
+                      const std::string program,
+                      const std::string uniform,
                       int         value
                       );
+
+  void setFloatUniform (const std::__cxx11::string program,
+                        const std::__cxx11::string uniform,
+                        const float *pValue,
+                        const int    size  = 1,
+                        const int    count = 1
+                        );
+
   void setBuffer (
-                  const char *bufferName,
+                  const std::string bufferName,
                   float      *data,
                   GLuint      size
                   );
 
   void swapTextures (
-                     const char *tex1,
-                     const char *tex2
+                     const std::string tex1,
+                     const std::string tex2
                      );
 
   void setBlending ( bool blend );
@@ -150,19 +159,19 @@ public:
 private:
 
   static
-  std::string _readFile ( const char *filePath );
+  std::string _readFile ( const std::string filePath );
 
   static
   GLuint _loadShader (
-                      const char *vertex_path,
-                      const char *fragment_path
+                      const std::string vertex_path,
+                      const std::string fragment_path
                       );
 
 
-  std::unordered_map< const char*, GLuint > m_programs;
-  std::unordered_map< const char*, GLuint > m_textures;
-  std::unordered_map< const char*, Buffer > m_buffers;
-  std::unordered_map< const char*, Buffer > m_framebuffers;
+  std::unordered_map< std::string, GLuint > m_programs;
+  std::unordered_map< std::string, GLuint > m_textures;
+  std::unordered_map< std::string, Buffer > m_buffers;
+  std::unordered_map< std::string, Buffer > m_framebuffers;
 
   GLsizei m_viewportWidth, m_viewportHeight;
 

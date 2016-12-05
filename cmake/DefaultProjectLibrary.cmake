@@ -10,7 +10,7 @@ endif( ) # PROJECT_CONFIG_FILE
 
 
 
-set ( PROJECT_INCLUDE_DIRS ${PROJECT_INCLUDE_DIRS} ${PROJECT_BINARY_DIR})
+set ( PROJECT_INCLUDE_DIRS ${PROJECT_INCLUDE_DIRS} ${PROJECT_BINARY_DIR} )
 
 # Create named folders for the sources within the .vcproj
 # Empty name lists them directly under the .vcproj
@@ -30,7 +30,7 @@ if ( PROJECT_CUDA_SOURCE )
   set( CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} --compiler-options -fno-strict-aliasing -use_fast_math" )
 
 
-  include_directories( ${PROJECT_CUDA_INCLUDE_DIRS} )
+  include_directories( ${PROJECT_CUDA_INCLUDE_DIRS} ${PROJECT_BINARY_DIR} )
   include_directories( SYSTEM ${PROJECT_CUDA_SYSTEM_INCLUDE_DIRS} )
 
 

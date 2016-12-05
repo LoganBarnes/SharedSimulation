@@ -15,7 +15,7 @@ namespace graphics
 /// \brief CallbackSingleton::CallbackSingleton
 ///
 CallbackSingleton::CallbackSingleton( )
-  : defaultCallbacks_( new Callback( ) )
+  : upDefaultCallbacks_( new Callback( ) )
 {}
 
 
@@ -211,7 +211,7 @@ CallbackSingleton::defaultErrorCallback(
                                         )
 {
 
-  defaultCallbacks_->handleError( error, description );
+  upDefaultCallbacks_->handleError( error, description );
 
 }
 
@@ -242,7 +242,7 @@ CallbackSingleton::defaultWindowSizeCallback(
   else
   {
 
-    defaultCallbacks_->handleWindowSize( pWindow, width, height );
+    upDefaultCallbacks_->handleWindowSize( pWindow, width, height );
 
   }
 
@@ -273,7 +273,7 @@ CallbackSingleton::defaultWindowFocusCallback(
   else
   {
 
-    defaultCallbacks_->handleWindowFocus( pWindow, focus );
+    upDefaultCallbacks_->handleWindowFocus( pWindow, focus );
 
   }
 
@@ -310,7 +310,7 @@ CallbackSingleton::defaultKeyCallback(
   else
   {
 
-    defaultCallbacks_->handleKey( pWindow, key, scancode, action, mods );
+    upDefaultCallbacks_->handleKey( pWindow, key, scancode, action, mods );
 
   }
 
@@ -343,7 +343,7 @@ CallbackSingleton::defaultCursorPositionCallback(
   else
   {
 
-    defaultCallbacks_->handleCursorPosition( pWindow, xpos, ypos );
+    upDefaultCallbacks_->handleCursorPosition( pWindow, xpos, ypos );
 
   }
 
@@ -378,7 +378,7 @@ CallbackSingleton::defaultMouseButtonCallback(
   else
   {
 
-    defaultCallbacks_->handleMouseButton( pWindow, button, action, mods );
+    upDefaultCallbacks_->handleMouseButton( pWindow, button, action, mods );
 
   }
 
@@ -411,7 +411,7 @@ CallbackSingleton::defaultScrollCallback(
   else
   {
 
-    defaultCallbacks_->handleScroll( pWindow, xoffset, yoffset );
+    upDefaultCallbacks_->handleScroll( pWindow, xoffset, yoffset );
 
   }
 
@@ -424,16 +424,11 @@ CallbackSingleton::defaultScrollCallback(
 /// \param callback
 ///
 void
-CallbackSingleton::setDefaultCallback( Callback *pCallback )
+CallbackSingleton::setDefaultCallback( std::unique_ptr< Callback > upCallback )
 {
 
-  if ( pCallback )
-  {
-
-    delete defaultCallbacks_;
-    defaultCallbacks_ = pCallback;
-
-  }
+  upDefaultCallbacks_.release();
+  upDefaultCallbacks_ = std::move( upCallback );
 
 }
 

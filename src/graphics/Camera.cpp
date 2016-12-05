@@ -6,6 +6,11 @@
 #include <cmath>
 
 
+
+namespace graphics
+{
+
+
 Camera::Camera( )
   : m_orbitX( 0.f )
   , m_orbitY( 0.f )
@@ -276,11 +281,10 @@ Camera::setCameraSpace( )
   m_look = glm::normalize( m_look );
   m_w    = -m_look;
   m_v    = glm::normalize( m_up - ( glm::dot( m_up, m_w ) * m_w ) );
-  m_u    = glm::vec4(
-                     glm::normalize(
-                                    glm::cross( glm::vec3( m_v.x, m_v.y, m_v.z ),
-                                               glm::vec3( m_w.x, m_w.y, m_w.z ) ) ),
-                     0 );
+  m_u    = glm::vec4( glm::normalize( glm::cross(
+                                                 glm::vec3( m_v ),
+                                                 glm::vec3( m_w )
+                                                 ) ), 0 );
   m_up = m_v;
 }
 
@@ -296,11 +300,17 @@ Camera::setViewMatrix( )
   trans[ 3 ][ 1 ] = -m_eye[ 1 ];
   trans[ 3 ][ 2 ] = -m_eye[ 2 ];
 
-  glm::mat4 rot = glm::mat4( m_u.x, m_u.y, m_u.z, 0.0,
+  // row-major order
+  glm::mat4 rot = glm::mat4(
+                            m_u.x, m_u.y, m_u.z, 0.0,
                             m_v.x, m_v.y, m_v.z, 0.0,
                             m_w.x, m_w.y, m_w.z, 0.0,
-                            0.0,   0.0,   0.0,  1.0 );
-  rot    = glm::transpose( rot );
+                            0.0,   0.0,   0.0,  1.0
+                            );
+
+  // column-major order for glm and glsl
+  rot = glm::transpose( rot );
+
   m_view = rot * trans;
 
   m_scaleViewInv = glm::inverse( m_scale * m_view );
@@ -315,19 +325,31 @@ Camera::setProjectionMatrix( )
   float h = m_far * glm::tan( glm::radians( m_heightDegrees / 2.0 ) );
   float w = m_aspectRatio * h;
 
-  m_scale = glm::mat4(    1.0 / w,          0.0,          0.0,        0.0,
+  // row-major order
+  m_scale = glm::mat4(
+                      1.0 / w,       0.0,          0.0,        0.0,
                       0.0,        1.0 / h,         0.0,        0.0,
                       0.0,           0.0,       1.0 / m_far,   0.0,
-                      0.0,           0.0,          0.0,        1.0 );
+                      0.0,           0.0,          0.0,        1.0
+                      );
+
+  // column-major order for glm and glsl
   m_scale = glm::transpose( m_scale );
 
-  float c               = -m_near / m_far;
-  glm::mat4 perspective = glm::mat4( 1.0,   0.0,      0.0,         0.0,
-                                    0.0,   1.0,      0.0,         0.0,
+  float c = -m_near / m_far;
+
+  // row-major order
+  glm::mat4 perspective = glm::mat4(
+                                    1.0,   0.0,      0.0,               0.0,
+                                    0.0,   1.0,      0.0,               0.0,
                                     0.0,   0.0, -1.0 / ( 1.0 + c ),  c / ( 1.0 + c ),
-                                    0.0,   0.0,     -1.0,         0.0 );
+                                    0.0,   0.0,     -1.0,               0.0
+                                    );
+
+  // column-major order for glm and glsl
   perspective = glm::transpose( perspective );
-  m_proj      = perspective * m_scale;
+
+  m_proj = perspective * m_scale;
 
   m_scaleViewInv = glm::inverse( m_scale * m_view );
 } // setProjectionMatrix
@@ -339,3 +361,7 @@ Camera::setFrustumMatrix( )
 {
   m_frustum = glm::transpose( m_proj * m_view );
 }
+
+
+
+} // namespace graphics

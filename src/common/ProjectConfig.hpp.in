@@ -3,6 +3,10 @@
 
 // the configured options and settings for Project
 
+
+#include <string>
+
+
 namespace @PROJECT_NAMESPACE@
 {
 

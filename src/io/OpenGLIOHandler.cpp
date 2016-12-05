@@ -19,12 +19,13 @@ namespace shared
 /////////////////////////////////////////////
 OpenGLIOHandler::OpenGLIOHandler(
                                  World &world,
-                                 bool   printInfo
+                                 bool  printInfo,
+                                 int   width,
+                                 int   height,
+                                 bool  resizable
                                  )
-  :
-  IOHandler( world, false )
+  : IOHandler( world, false )
   , upGlfwWrapper_( new graphics::GlfwWrapper( ) )
-  , upCallback_   ( new shared::SharedCallback( ) )
 {
 
   if ( printInfo )
@@ -34,9 +35,10 @@ OpenGLIOHandler::OpenGLIOHandler(
 
   }
 
-  upGlfwWrapper_->createNewWindow( "OpenGL Window", 1080, 720 );
+  upGlfwWrapper_->createNewWindow( "OpenGL Window", width, height, resizable );
 
-  upGlfwWrapper_->setCallback( upCallback_.get( ) );
+  std::unique_ptr< graphics::Callback > upCallback( new shared::SharedCallback() );
+  upGlfwWrapper_->setCallback( std::move( upCallback ) );
 
 }
 

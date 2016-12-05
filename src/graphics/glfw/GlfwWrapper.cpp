@@ -8,6 +8,7 @@
 #include "GLFW/glfw3.h"
 
 #include "CallbackSingleton.hpp"
+#include "Callback.hpp"
 
 
 namespace graphics
@@ -252,10 +253,10 @@ GlfwWrapper::windowShouldClose( )
 /// \param pCallback
 ///
 void
-GlfwWrapper::setCallback( Callback *pCallback )
+GlfwWrapper::setCallback( std::unique_ptr< Callback > upCallback )
 {
 
-  CallbackSingleton::getInstance( ).setDefaultCallback( pCallback );
+  CallbackSingleton::getInstance( ).setDefaultCallback( std::move( upCallback ) );
 
 }
 

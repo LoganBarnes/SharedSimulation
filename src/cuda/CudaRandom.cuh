@@ -5,7 +5,12 @@
 
 extern "C"
 {
-    void cuda_initCuRand(curandState *state, uint64_t offset, uint64_t seed, dim3 texDim);
+  void cuda_initCuRand (
+                        curandState *state,
+                        uint64_t     offset,
+                        uint64_t     seed,
+                        dim3         texDim
+                        );
 }
 
 #endif // CUDA_RANDOM_CUH
