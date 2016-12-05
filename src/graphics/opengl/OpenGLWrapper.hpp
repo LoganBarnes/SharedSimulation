@@ -2,6 +2,7 @@
 #define OpenGLWrapper_hpp
 
 
+#include <string>
 #include <unordered_map>
 
 
@@ -61,31 +62,31 @@ public:
 
   void addTextureArray (
                         const std::string name,
-                        GLsizei     width,
-                        GLsizei     height,
-                        float      *pArray = NULL,
-                        bool        linear = false
+                        GLsizei           width,
+                        GLsizei           height,
+                        float            *pArray = NULL,
+                        bool              linear = false
                         );
   void addTextureImage (
                         const std::string name,
-                        GLsizei     width,
-                        GLsizei     height,
+                        GLsizei           width,
+                        GLsizei           height,
                         const std::string filename
                         );
 
   void addUVBuffer (
                     const std::string buffer,
                     const std::string program,
-                    GLfloat    *data,
-                    GLuint      size,
-                    bool        dynamic = false
+                    GLfloat          *data,
+                    GLuint            size,
+                    bool              dynamic = false
                     );
 
 
   void addFramebuffer (
                        const std::string buffer,
-                       GLsizei     width,
-                       GLsizei     height,
+                       GLsizei           width,
+                       GLsizei           height,
                        const std::string texture
                        );
   void bindFramebuffer ( const std::string name );
@@ -103,38 +104,39 @@ public:
 
   void renderBuffer (
                      const std::string buffer,
-                     int         verts,
-                     GLenum      mode
+                     int               verts,
+                     GLenum            mode
                      );
 
   void setTextureUniform (
                           const std::string program,
                           const std::string uniform,
                           const std::string texture,
-                          int         activeTex
+                          int               activeTex
                           );
   void setBoolUniform (
                        const std::string program,
                        const std::string uniform,
-                       bool        var
+                       bool              var
                        );
   void setIntUniform (
                       const std::string program,
                       const std::string uniform,
-                      int         value
+                      int               value
                       );
 
-  void setFloatUniform (const std::__cxx11::string program,
-                        const std::__cxx11::string uniform,
-                        const float *pValue,
-                        const int    size  = 1,
-                        const int    count = 1
+  void setFloatUniform (
+                        const std::string program,
+                        const std::string uniform,
+                        const float      *pValue,
+                        const int         size  = 1,
+                        const int         count = 1
                         );
 
   void setBuffer (
                   const std::string bufferName,
-                  float      *data,
-                  GLuint      size
+                  float            *data,
+                  GLuint            size
                   );
 
   void swapTextures (

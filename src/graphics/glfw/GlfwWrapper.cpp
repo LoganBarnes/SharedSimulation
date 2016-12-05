@@ -135,13 +135,13 @@ GlfwWrapper::createNewWindow(
   if ( title.length( ) )
   {
 
-    glfwWindowHint( GLFW_VISIBLE, GL_TRUE );
+    glfwWindowHint( GLFW_VISIBLE, GLFW_TRUE );
 
   }
   else
   {
 
-    glfwWindowHint( GLFW_VISIBLE, GL_FALSE );
+    glfwWindowHint( GLFW_VISIBLE, GLFW_FALSE );
 
   }
 
@@ -178,7 +178,7 @@ GlfwWrapper::createNewWindow(
   {
 
     glfwMakeContextCurrent( pWindow_ );
-    glfwSwapInterval( 0 );
+    glfwSwapInterval( 1 );
 
 
     if ( !gladLoadGLLoader( reinterpret_cast< GLADloadproc >( glfwGetProcAddress ) ) )
@@ -313,7 +313,7 @@ GlfwWrapper::_initGlfw( bool opengl )
     glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR,                 2 );
     glfwWindowHint( GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE );
 #ifdef __APPLE__
-    glfwWindowHint( GLFW_OPENGL_FORWARD_COMPAT,           GL_TRUE );
+    glfwWindowHint( GLFW_OPENGL_FORWARD_COMPAT,         GLFW_TRUE );
 #endif
 
   }
