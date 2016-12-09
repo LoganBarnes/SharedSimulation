@@ -4,6 +4,7 @@ option( USE_GLFW   "Use GLFW library"   OFF )
 option( USE_VULKAN "Use Vulkan library" OFF )
 option( USE_GLAD   "Use glad library"   OFF )
 option( USE_GLM    "Use glm library"    OFF )
+option( USE_OPTIX  "Use optix library"  OFF )
 
 
 set( SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src )
@@ -100,11 +101,29 @@ endif( )
 
 
 
+if ( USE_OPTIX )
+
+  find_library( OPTIX_LIBRARY optix ${THIRDPARTY}/lib64 )
+
+  set( CUDA_SYSTEM_INCLUDE_DIRS ${CUDA_SYSTEM_INCLUDE_DIRS} ${THIRDPARTY}/include )
+  set( CUDA_LINK_LIBS           ${CUDA_LINK_LIBS}           ${OPTIX_LIBRARY}      )
+
+
+  message( "USING OPTIX" )
+
+endif( )
+
 
 
 set( SHARED_SYSTEM_INCLUDE_DIRS ${SYSTEM_INCLUDE_DIRS} PARENT_SCOPE )
 set( SHARED_LINK_LIBS           ${LINK_LIBS}           PARENT_SCOPE )
 set( SHARED_DEP_TARGETS         ${DEP_TARGETS}         PARENT_SCOPE )
+
+
+set( SHARED_CUDA_SYSTEM_INCLUDE_DIRS ${CUDA_SYSTEM_INCLUDE_DIRS} PARENT_SCOPE )
+set( SHARED_CUDA_LINK_LIBS           ${CUDA_LINK_LIBS}           PARENT_SCOPE )
+set( SHARED_CUDA_DEP_TARGETS         ${CUDA_DEP_TARGETS}         PARENT_SCOPE )
+
 
 set( SHARED_UNCRUSTIFY_FILE ${CMAKE_CURRENT_SOURCE_DIR}/formatting/uncrustify.cfg  PARENT_SCOPE )
 
