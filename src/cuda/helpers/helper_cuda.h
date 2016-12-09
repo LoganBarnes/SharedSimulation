@@ -280,6 +280,11 @@ static const char *_cudaGetErrorEnum(cudaError_t error)
 
         case cudaErrorApiFailureBase:
             return "cudaErrorApiFailureBase";
+
+        /* Since CUDA 8.0*/
+        case cudaErrorNvlinkUncorrectable :
+            return "cudaErrorNvlinkUncorrectable";
+
     }
 
     return "<unknown>";
@@ -378,6 +383,9 @@ static const char *_cudaGetErrorEnum(CUresult error)
 
         case CUDA_ERROR_INVALID_GRAPHICS_CONTEXT:
             return "CUDA_ERROR_INVALID_GRAPHICS_CONTEXT";
+
+        case CUDA_ERROR_NVLINK_UNCORRECTABLE:
+            return "CUDA_ERROR_NVLINK_UNCORRECTABLE";
 
         case CUDA_ERROR_INVALID_SOURCE:
             return "CUDA_ERROR_INVALID_SOURCE";
@@ -1103,11 +1111,11 @@ inline int gpuGetMaxGflopsDeviceId()
     int max_perf_device    = 0;
     int device_count       = 0, best_SM_arch      = 0;
     int devices_prohibited = 0;
-    
+
     unsigned long long max_compute_perf = 0;
     cudaDeviceProp deviceProp;
     cudaGetDeviceCount(&device_count);
-    
+
     checkCudaErrors(cudaGetDeviceCount(&device_count));
 
     if (device_count == 0)
