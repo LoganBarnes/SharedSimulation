@@ -45,13 +45,13 @@ public:
 
   // getters
   GLuint
-  getTexture( const std::string name ) { return m_textures[ name ]; }
+  getTexture( const std::string name ) { return textures_[ name ]; }
 
   GLsizei
-  getViewportWidth( ) { return m_viewportWidth; }
+  getViewportWidth( ) { return viewportWidth_; }
 
   GLsizei
-  getViewportHeight( ) { return m_viewportHeight; }
+  getViewportHeight( ) { return viewportHeight_; }
 
 
   void addProgram (
@@ -170,16 +170,16 @@ private:
                       );
 
 
-  std::unordered_map< std::string, GLuint > m_programs;
-  std::unordered_map< std::string, GLuint > m_textures;
-  std::unordered_map< std::string, Buffer > m_buffers;
-  std::unordered_map< std::string, Buffer > m_framebuffers;
+  std::unordered_map< std::string, GLuint > programs_;
+  std::unordered_map< std::string, GLuint > textures_;
+  std::unordered_map< std::string, Buffer > buffers_;
+  std::unordered_map< std::string, Buffer > framebuffers_;
 
-  GLsizei m_viewportWidth, m_viewportHeight;
+  GLsizei viewportWidth_, viewportHeight_;
 
-  CallbackSingleton *m_input;
+  CallbackSingleton *input_;
 
-  bool m_initialized;
+  bool initialized_;
 
 };
 

@@ -18,21 +18,18 @@ OpenGLWrapper::OpenGLWrapper(
                              GLsizei width,
                              GLsizei height
                              )
-  : m_viewportWidth( width )
-  , m_viewportHeight( height )
-  , m_input( NULL )
-  , m_initialized( false )
-{
+  : viewportWidth_( width )
+  , viewportHeight_( height )
+  , input_( &CallbackSingleton::getInstance( ) )
+  , initialized_( false )
+{}
 
-  m_input = &CallbackSingleton::getInstance( );
-
-}
 
 
 OpenGLWrapper::~OpenGLWrapper( )
 {
 
-  for ( auto it = m_programs.begin( ); it != m_programs.end( ); ++it )
+  for ( auto it = programs_.begin( ); it != programs_.end( ); ++it )
   {
 
     glDeleteProgram( it->second );
@@ -40,14 +37,14 @@ OpenGLWrapper::~OpenGLWrapper( )
   }
 
 
-  for ( auto it = m_textures.begin( ); it != m_textures.end( ); ++it )
+  for ( auto it = textures_.begin( ); it != textures_.end( ); ++it )
   {
 
     glDeleteTextures( 1, &( it->second ) );
 
   }
 
-  for ( auto it = m_buffers.begin( ); it != m_buffers.end( ); ++it )
+  for ( auto it = buffers_.begin( ); it != buffers_.end( ); ++it )
   {
 
     const Buffer &buffer = it->second;
@@ -56,7 +53,7 @@ OpenGLWrapper::~OpenGLWrapper( )
 
   }
 
-  for ( auto it = m_framebuffers.begin( ); it != m_framebuffers.end( ); ++it )
+  for ( auto it = framebuffers_.begin( ); it != framebuffers_.end( ); ++it )
   {
 
     const Buffer &buffer = it->second;
@@ -113,7 +110,7 @@ OpenGLWrapper::addProgram(
 
 {
 
-  m_programs[ name ] = OpenGLWrapper::_loadShader( vertFilePath, fragFilePath );
+  programs_[ name ] = OpenGLWrapper::_loadShader( vertFilePath, fragFilePath );
 
 }
 
@@ -130,9 +127,9 @@ OpenGLWrapper::addTextureArray(
 
 {
 
-  if ( m_textures.count( name ) )
+  if ( textures_.count( name ) )
   {
-    glDeleteTextures( 1, &( m_textures[ name ] ) );
+    glDeleteTextures( 1, &( textures_[ name ] ) );
   }
 
   GLuint texture;
@@ -155,7 +152,7 @@ OpenGLWrapper::addTextureArray(
 
   glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, pArray );
 
-  m_textures[ name ] = texture;
+  textures_[ name ] = texture;
 
 } // addTextureArray
 
@@ -169,9 +166,9 @@ OpenGLWrapper::addTextureImage(
                                const std::string
                                )
 {
-  if ( m_textures.count( name ) )
+  if ( textures_.count( name ) )
   {
-    glDeleteTextures( 1, &( m_textures[ name ] ) );
+    glDeleteTextures( 1, &( textures_[ name ] ) );
   }
 
   GLuint texture;
@@ -185,7 +182,7 @@ OpenGLWrapper::addTextureImage(
 
   glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_FLOAT, NULL );
 
-  m_textures[ name ] = texture;
+  textures_[ name ] = texture;
 } // addTextureImage
 
 
@@ -201,9 +198,9 @@ OpenGLWrapper::addUVBuffer(
 {
   Buffer buffer;
 
-  if ( m_buffers.count( name ) )
+  if ( buffers_.count( name ) )
   {
-    buffer = m_buffers[ name ];
+    buffer = buffers_[ name ];
     glDeleteBuffers( 1, &( buffer.vbo ) );
     glDeleteVertexArrays( 1, &( buffer.vao ) );
   }
@@ -236,7 +233,7 @@ OpenGLWrapper::addUVBuffer(
   glGenVertexArrays( 1, &( buffer.vao ) );
   glBindVertexArray( ( buffer.vao ) );
 
-  int pos = glGetAttribLocation( m_programs[ program ], "inScreenPos" );
+  int pos = glGetAttribLocation( programs_[ program ], "inScreenPos" );
 
   if ( pos < 0 )
   {
@@ -263,7 +260,7 @@ OpenGLWrapper::addUVBuffer(
   glBindBuffer( GL_ARRAY_BUFFER, 0 );
   glBindVertexArray( 0 );
 
-  m_buffers[ name ] = buffer;
+  buffers_[ name ] = buffer;
 }
 
 
@@ -277,9 +274,9 @@ OpenGLWrapper::addFramebuffer(
                               )
 
 {
-    if ( m_framebuffers.find( buffer ) != m_framebuffers.end( ) )
+    if ( framebuffers_.find( buffer ) != framebuffers_.end( ) )
     {
-        Buffer buf = m_framebuffers[buffer];
+        Buffer buf = framebuffers_[buffer];
         glDeleteFramebuffers(1, &buf.vbo);
         glDeleteRenderbuffers(1, &buf.vao);
     }
@@ -295,7 +292,7 @@ OpenGLWrapper::addFramebuffer(
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
     // attach a texture to FBO color attachment point
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_textures[texture], 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textures_[texture], 0);
 
     // attach a renderbuffer to depth attachment point
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo);
@@ -305,15 +302,15 @@ OpenGLWrapper::addFramebuffer(
     Buffer buf;
     buf.vbo = fbo;
     buf.vao = rbo;
-    m_framebuffers[buffer] = buf;
+    framebuffers_[buffer] = buf;
 }
 
 void
 OpenGLWrapper::bindFramebuffer( const std::string name )
 {
-  if ( m_framebuffers.find( name ) != m_framebuffers.end( ) )
+  if ( framebuffers_.find( name ) != framebuffers_.end( ) )
   {
-    glBindFramebuffer( GL_FRAMEBUFFER, m_framebuffers[ name ].vbo );
+    glBindFramebuffer( GL_FRAMEBUFFER, framebuffers_[ name ].vbo );
   }
   else
   {
@@ -324,9 +321,9 @@ OpenGLWrapper::bindFramebuffer( const std::string name )
 
 void OpenGLWrapper::swapFramebuffers(const std::string fbo1, const std::string fbo2)
 {
-    Buffer temp = m_framebuffers[fbo1];
-    m_framebuffers[fbo1] = m_framebuffers[fbo2];
-    m_framebuffers[fbo2] = temp;
+    Buffer temp = framebuffers_[fbo1];
+    framebuffers_[fbo1] = framebuffers_[fbo2];
+    framebuffers_[fbo2] = temp;
 }
 
 
@@ -336,8 +333,8 @@ OpenGLWrapper::clearWindow(
                            GLsizei height
                            )
 {
-  GLsizei w = m_viewportWidth;
-  GLsizei h = m_viewportHeight;
+  GLsizei w = viewportWidth_;
+  GLsizei h = viewportHeight_;
 
   if ( width > 0 )
   {
@@ -362,7 +359,7 @@ OpenGLWrapper::clearWindow(
 
 void OpenGLWrapper::useProgram(const std::string program)
 {
-    glUseProgram(m_programs[program]);
+    glUseProgram(programs_[program]);
 }
 
 
@@ -383,14 +380,14 @@ void OpenGLWrapper::setTextureUniform(const std::string program, const std::stri
         glActiveTexture(GL_TEXTURE3);
         break;
     }
-    glUniform1i(glGetUniformLocation( m_programs[program], uniform.c_str() ), activeTex);
-    glBindTexture(GL_TEXTURE_2D, m_textures[texture]);
+    glUniform1i(glGetUniformLocation( programs_[program], uniform.c_str() ), activeTex);
+    glBindTexture(GL_TEXTURE_2D, textures_[texture]);
 }
 
 
 void OpenGLWrapper::renderBuffer(const std::string buffer, int verts, GLenum mode)
 {
-    glBindVertexArray(m_buffers[buffer].vao);
+    glBindVertexArray(buffers_[buffer].vao);
     glDrawArrays(mode, 0, verts);
     glBindVertexArray(0);
 }
@@ -399,7 +396,7 @@ void OpenGLWrapper::renderBuffer(const std::string buffer, int verts, GLenum mod
 
 void OpenGLWrapper::setBuffer(const std::string bufferName, float *data, GLuint size)
 {
-    Buffer buffer = m_buffers[bufferName];
+    Buffer buffer = buffers_[bufferName];
     glBindBuffer(GL_ARRAY_BUFFER, buffer.vbo);
     glBindVertexArray(buffer.vao);
     glBufferSubData(GL_ARRAY_BUFFER,
@@ -411,13 +408,13 @@ void OpenGLWrapper::setBuffer(const std::string bufferName, float *data, GLuint 
 
 void OpenGLWrapper::setBoolUniform(const std::string program, const std::string uniform, bool var)
 {
-    glUniform1i(glGetUniformLocation(m_programs[program], uniform.c_str()), var);
+    glUniform1i(glGetUniformLocation(programs_[program], uniform.c_str()), var);
 }
 
 
 void OpenGLWrapper::setIntUniform(const std::string program, const std::string uniform, int value)
 {
-    glUniform1i(glGetUniformLocation(m_programs[program], uniform.c_str()), value);
+    glUniform1i(glGetUniformLocation(programs_[program], uniform.c_str()), value);
 }
 
 
@@ -437,19 +434,19 @@ OpenGLWrapper::setFloatUniform(
   {
 
   case 1:
-    glUniform1f( glGetUniformLocation( m_programs[ program ], uniform.c_str( ) ), *pValue );
+    glUniform1f( glGetUniformLocation( programs_[ program ], uniform.c_str( ) ), *pValue );
     break;
 
   case 2:
-    glUniform2fv( glGetUniformLocation( m_programs[ program ], uniform.c_str( ) ), count, pValue );
+    glUniform2fv( glGetUniformLocation( programs_[ program ], uniform.c_str( ) ), count, pValue );
     break;
 
   case 3:
-    glUniform3fv( glGetUniformLocation( m_programs[ program ], uniform.c_str( ) ), count, pValue );
+    glUniform3fv( glGetUniformLocation( programs_[ program ], uniform.c_str( ) ), count, pValue );
     break;
 
   case 4:
-    glUniform4fv( glGetUniformLocation( m_programs[ program ], uniform.c_str( ) ), count, pValue );
+    glUniform4fv( glGetUniformLocation( programs_[ program ], uniform.c_str( ) ), count, pValue );
     break;
 
   default:
@@ -463,9 +460,9 @@ OpenGLWrapper::setFloatUniform(
 
 void OpenGLWrapper::swapTextures(const std::string tex1, const std::string tex2)
 {
-    GLuint temp = m_textures[tex1];
-    m_textures[tex1] = m_textures[tex2];
-    m_textures[tex2] = temp;
+    GLuint temp = textures_[tex1];
+    textures_[tex1] = textures_[tex2];
+    textures_[tex2] = temp;
 }
 
 
@@ -484,8 +481,8 @@ void OpenGLWrapper::setBlending(bool blend)
 
 void OpenGLWrapper::setViewportSize(GLsizei width, GLsizei height)
 {
-    m_viewportWidth = width;
-    m_viewportHeight = height;
+    viewportWidth_ = width;
+    viewportHeight_ = height;
 }
 
 

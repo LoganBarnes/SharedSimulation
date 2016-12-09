@@ -10,6 +10,8 @@ namespace graphics
 {
 
 class GlfwWrapper;
+class OpenGLWrapper;
+class Camera;
 
 }
 
@@ -33,7 +35,7 @@ class OpenGLIOHandler : public IOHandler
 public:
 
   ///////////////////////////////////////////////////////////////
-  /// \brief Renderer
+  /// \brief OpenGLIOHandler
   ///////////////////////////////////////////////////////////////
   OpenGLIOHandler(
                   World &world,
@@ -45,7 +47,7 @@ public:
 
 
   ///////////////////////////////////////////////////////////////
-  /// \brief ~Renderer
+  /// \brief ~OpenGLIOHandler
   ///////////////////////////////////////////////////////////////
   virtual
   ~OpenGLIOHandler( );
@@ -73,7 +75,9 @@ public:
 
 protected:
 
-  std::unique_ptr< graphics::GlfwWrapper >  upGlfwWrapper_;
+  std::unique_ptr< graphics::GlfwWrapper >   upGlfwWrapper_;
+  std::unique_ptr< graphics::OpenGLWrapper > upGLWrapper_;
+  std::unique_ptr< graphics::Camera >        upCamera_;
 
 
 private:

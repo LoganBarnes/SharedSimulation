@@ -4,6 +4,8 @@
 
 #include "glad/glad.h"
 #include "graphics/glfw/GlfwWrapper.hpp"
+#include "graphics/opengl/OpenGLWrapper.hpp"
+#include "graphics/Camera.hpp"
 #include "io/SharedCallback.hpp"
 
 
@@ -13,7 +15,7 @@ namespace shared
 
 
 /////////////////////////////////////////////
-/// \brief Renderer::Renderer
+/// \brief OpenGLIOHandler::OpenGLIOHandler
 ///
 /// \author Logan Barnes
 /////////////////////////////////////////////
@@ -26,6 +28,8 @@ OpenGLIOHandler::OpenGLIOHandler(
                                  )
   : IOHandler( world, false )
   , upGlfwWrapper_( new graphics::GlfwWrapper( ) )
+  , upGLWrapper_  ( new graphics::OpenGLWrapper( width, height ) )
+  , upCamera_     ( new graphics::Camera( ) )
 {
 
   if ( printInfo )
@@ -45,7 +49,7 @@ OpenGLIOHandler::OpenGLIOHandler(
 
 
 /////////////////////////////////////////////
-/// \brief Renderer::~Renderer
+/// \brief OpenGLIOHandler::~OpenGLIOHandler
 ///
 /// \author Logan Barnes
 /////////////////////////////////////////////
@@ -55,7 +59,7 @@ OpenGLIOHandler::~OpenGLIOHandler( )
 
 
 /////////////////////////////////////////////
-/// \brief Renderer::render
+/// \brief OpenGLIOHandler::showWorld
 /// \param alpha
 ///
 /// \author Logan Barnes
