@@ -101,6 +101,7 @@ endif( )
 
 
 
+
 if ( USE_OPTIX )
 
   find_library( OPTIX_LIBRARY optix ${THIRDPARTY}/lib64 )
@@ -112,6 +113,32 @@ if ( USE_OPTIX )
   message( "USING OPTIX" )
 
 endif( )
+
+
+
+# add gmock functionality
+if ( USE_GMOCK )
+
+  add_subdirectory( ${THIRDPARTY}/googletest/googlemock )
+
+  # gmock and glad header dir
+  set(
+      GMOCK_INCLUDE_DIRS
+      ${THIRDPARTY}/googletest/googletest/include
+      ${THIRDPARTY}/googletest/googlemock/include
+      PARENT_SCOPE
+      )
+
+  # gmock lib
+  set( GMOCK_LIB       gmock            PARENT_SCOPE )
+  set( GMOCK_MAIN_LIB  gmock_main       PARENT_SCOPE )
+  set( GMOCK_BOTH_LIBS gmock gmock_main PARENT_SCOPE )
+
+  message( "USING GMOCK" )
+
+endif( USE_GMOCK )
+
+
 
 
 

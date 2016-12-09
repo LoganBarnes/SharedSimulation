@@ -112,3 +112,24 @@ if ( PROJECT_INSTALL_HEADERS )
           )
 
 endif()
+
+
+
+
+# testing
+if ( BUILD_TESTS )
+
+  include_directories(${GTEST_INCLUDE_DIRS})
+
+  add_executable( test${PROJECT_NAME} ${TESTING_SOURCE} )
+
+  target_include_directories( test${PROJECT_NAME} SYSTEM PUBLIC ${TESTING_SYSTEM_INCLUDE_DIRS} )
+  target_include_directories( test${PROJECT_NAME}        PUBLIC ${TESTING_INCLUDE_DIRS}        )
+
+  target_link_libraries     ( test${PROJECT_NAME} ${TESTING_LINK_LIBS}   )
+
+  if ( ${DEP_TARGETS} )
+    add_dependencies ( test${PROJECT_NAME} ${TESTING_DEP_TARGETS} )
+  endif( )
+
+endif ( BUILD_TESTS )
