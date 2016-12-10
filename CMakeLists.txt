@@ -5,6 +5,7 @@ option( USE_VULKAN "Use Vulkan library" OFF )
 option( USE_GLAD   "Use glad library"   OFF )
 option( USE_GLM    "Use glm library"    OFF )
 option( USE_OPTIX  "Use optix library"  OFF )
+option( USE_GUI    "Use imgui library"  OFF )
 
 
 set( SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src )
@@ -19,7 +20,10 @@ configure_file (
                 )
 
 
+
+################################################
 # add glfw3 functionality
+################################################
 if ( USE_GLFW )
 
   set( GLFW_BUILD_DOCS     OFF CACHE BOOL "" FORCE )
@@ -62,7 +66,9 @@ endif( USE_GLFW )
 
 
 
+################################################
 # add vulkan functionality
+################################################
 if ( USE_VULKAN )
 
   set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${THIRDPARTY}/glfw/CMake/modules )
@@ -91,6 +97,9 @@ endif ( USE_VULKAN )
 
 
 
+################################################
+# add glm functionality
+################################################
 if ( USE_GLM )
 
   set( SYSTEM_INCLUDE_DIRS ${SYSTEM_INCLUDE_DIRS} ${THIRDPARTY}/include )
@@ -102,6 +111,9 @@ endif( )
 
 
 
+################################################
+# add optix functionality
+################################################
 if ( USE_OPTIX )
 
   find_library( OPTIX_LIBRARY optix ${THIRDPARTY}/lib64 )
@@ -116,7 +128,9 @@ endif( )
 
 
 
+################################################
 # add gmock functionality
+################################################
 if ( USE_GMOCK )
 
   add_subdirectory( ${THIRDPARTY}/googletest/googlemock )
@@ -137,6 +151,62 @@ if ( USE_GMOCK )
   message( "USING GMOCK" )
 
 endif( USE_GMOCK )
+
+
+
+
+
+################################################
+# add imgui functionality
+################################################
+if ( USE_GUI )
+
+  # create lib here before any
+  # strict compile flags are set
+  add_library(
+              imgui
+
+              ${THIRDPARTY}/imgui/imgui.cpp
+              ${THIRDPARTY}/imgui/imgui.h
+              ${THIRDPARTY}/imgui/imgui_demo.cpp
+              ${THIRDPARTY}/imgui/imgui_draw.cpp
+              ${THIRDPARTY}/imgui/imgui_internal.h
+              ${THIRDPARTY}/imgui/imconfig.h
+              ${THIRDPARTY}/imgui/stb_rect_pack.h
+              ${THIRDPARTY}/imgui/stb_textedit.h
+              ${THIRDPARTY}/imgui/stb_truetype.h
+
+              ${SRC_DIR}/gui/imgui_impl_glfw_gl3.h
+              ${SRC_DIR}/gui/imgui_impl_glfw_gl3.cpp
+              )
+
+  target_include_directories(
+                             imgui SYSTEM PUBLIC
+                             ${THIRDPARTY}/glfw/include
+                             ${THIRDPARTY}/include
+                             ${THIRDPARTY}/imgui
+                             ${SRC_DIR}/gui
+                             )
+
+   # imgui header dirs
+  set(
+      SYSTEM_INCLUDE_DIRS
+      ${SYSTEM_INCLUDE_DIRS}
+
+      ${THIRDPARTY}/imgui
+      ${SRC_DIR}/gui
+      )
+
+
+  # imgui lib
+  set( LINK_LIBS ${LINK_LIBS} imgui )
+
+  # must be built before project lib
+  set( DEP_TARGETS imgui )
+
+  message( "USING GUI" )
+
+endif( USE_GUI )
 
 
 
