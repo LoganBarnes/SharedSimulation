@@ -37,14 +37,19 @@ if ( PROJECT_CUDA_SOURCE )
   set( CUDA_LIB cuda${PROJECT_NAME} )
 
   # build CUDA library
-  cuda_add_library     ( ${CUDA_LIB} ${PROJECT_CUDA_SOURCE} )
-  target_link_libraries( ${CUDA_LIB} ${CUDA_curand_LIBRARY} )
+  cuda_add_library     ( ${CUDA_LIB} ${PROJECT_CUDA_SOURCE}    )
+  target_link_libraries( ${CUDA_LIB} ${CUDA_curand_LIBRARY}    )
+  target_link_libraries( ${CUDA_LIB} ${PROJECT_CUDA_LINK_LIBS} )
 
   set( PROJECT_LINK_LIBS           ${PROJECT_LINK_LIBS}           ${CUDA_LIB} )
   set( PROJECT_INSTALL_TARGETS     ${PROJECT_INSTALL_TARGETS}     ${CUDA_LIB} )
   set( PROJECT_SYSTEM_INCLUDE_DIRS ${PROJECT_SYSTEM_INCLUDE_DIRS} ${CUDA_INCLUDE_DIRS} )
 
   message( "USING CUDA" )
+
+  CUDA_WRAP_SRCS( run${PROJECT_NAME} PTX GENERATED_PTX ${PTX_SOURCE} )
+
+  set( PROJECT_SOURCE ${PROJECT_SOURCE} ${GENERATED_PTX} )
 
 endif( PROJECT_CUDA_SOURCE )
 

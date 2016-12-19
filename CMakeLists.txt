@@ -116,11 +116,26 @@ endif( )
 ################################################
 if ( USE_OPTIX )
 
-  find_library( OPTIX_LIBRARY optix ${THIRDPARTY}/lib64 )
+  find_library( OPTIX_LIBRARY  optix  ${THIRDPARTY}/lib64 REQUIRED )
+  find_library( OPTIXU_LIBRARY optixu ${THIRDPARTY}/lib64 REQUIRED )
 
   set( CUDA_SYSTEM_INCLUDE_DIRS ${CUDA_SYSTEM_INCLUDE_DIRS} ${THIRDPARTY}/include )
-  set( CUDA_LINK_LIBS           ${CUDA_LINK_LIBS}           ${OPTIX_LIBRARY}      )
+  set(
+      CUDA_LINK_LIBS
+      ${CUDA_LINK_LIBS}
 
+      ${OPTIX_LIBRARY}
+      ${OPTIXU_LIBRARY}
+      )
+
+  set( SYSTEM_INCLUDE_DIRS ${SYSTEM_INCLUDE_DIRS} ${THIRDPARTY}/include )
+  set(
+      LINK_LIBS
+      ${LINK_LIBS}
+
+      ${OPTIX_LIBRARY}
+      ${OPTIXU_LIBRARY}
+      )
 
   message( "USING OPTIX" )
 
@@ -203,6 +218,14 @@ if ( USE_GUI )
 
   # must be built before project lib
   set( DEP_TARGETS imgui )
+
+  # imgui IOhandler class
+  set(
+      ADDITIONAL_SOURCE
+      ${ADDITIONAL_SOURCE}
+
+      ${SRC_DIR}/io/ImguiOpenGLIOHandler.cpp
+      )
 
   message( "USING GUI" )
 
