@@ -21,7 +21,9 @@ namespace shared
 
 
 class World;
-class SharedCallback;
+class ImguiCallback;
+
+typedef ImguiCallback* ImguiCallback_t;
 
 
 /////////////////////////////////////////////
@@ -62,6 +64,8 @@ public:
 
 
 protected:
+
+  ImguiCallback_t imguiCallback_;
 
 private:
 

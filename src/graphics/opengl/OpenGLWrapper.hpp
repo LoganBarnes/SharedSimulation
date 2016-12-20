@@ -47,6 +47,9 @@ public:
   GLuint
   getTexture( const std::string name ) { return textures_[ name ]; }
 
+  GLuint
+  getVBO( const std::string name ) { return buffers_[ name ].vbo; }
+
   GLsizei
   getViewportWidth( ) { return viewportWidth_; }
 

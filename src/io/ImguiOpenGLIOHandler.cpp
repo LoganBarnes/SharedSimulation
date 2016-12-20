@@ -4,7 +4,7 @@
 
 #include "glad/glad.h"
 #include "graphics/glfw/GlfwWrapper.hpp"
-#include "io/SharedCallback.hpp"
+#include "io/ImguiCallback.hpp"
 #include "imgui.h"
 #include "imgui_impl_glfw_gl3.h"
 
@@ -29,8 +29,11 @@ ImguiOpenGLIOHandler::ImguiOpenGLIOHandler(
   : OpenGLIOHandler( world, printInfo, width, height, resizable )
 {
 
-  // std::unique_ptr< graphics::Callback > upCallback( new shared::SharedCallback() );
-  // upGlfwWrapper_->setCallback( std::move( upCallback ) );
+  imguiCallback_ = new shared::ImguiCallback();
+
+  // imguiCallback no longer has ownership of memory
+  std::unique_ptr< graphics::Callback > upCallback( imguiCallback_ );
+  upGlfwWrapper_->setCallback( std::move( upCallback ) );
 
   ImGui_ImplGlfwGL3_Init( upGlfwWrapper_->getWindow( ), false ); // false for no callbacks
 

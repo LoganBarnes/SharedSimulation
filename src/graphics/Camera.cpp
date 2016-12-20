@@ -41,7 +41,7 @@ Camera::~Camera( )
 
 
 const glm::mat4&
-Camera::getProjectionMatrix( )
+Camera::getProjectionMatrix( ) const
 {
   return m_proj;
 }
@@ -49,7 +49,7 @@ Camera::getProjectionMatrix( )
 
 
 const glm::mat4&
-Camera::getViewMatrix( )
+Camera::getViewMatrix( ) const
 {
   return m_view;
 }
@@ -57,7 +57,7 @@ Camera::getViewMatrix( )
 
 
 const glm::mat4&
-Camera::getScaleMatrix( )
+Camera::getScaleMatrix( ) const
 {
   return m_scale;
 }
@@ -65,7 +65,7 @@ Camera::getScaleMatrix( )
 
 
 const glm::mat4&
-Camera::getScaleViewInvMatrix( )
+Camera::getScaleViewInvMatrix( ) const
 {
   return m_scaleViewInv;
 }
@@ -73,7 +73,7 @@ Camera::getScaleViewInvMatrix( )
 
 
 const glm::mat4&
-Camera::getFrustumMatrix( )
+Camera::getFrustumMatrix( ) const
 {
   return m_frustum;
 }
@@ -81,7 +81,7 @@ Camera::getFrustumMatrix( )
 
 
 const glm::vec4&
-Camera::getLook( )
+Camera::getLook( ) const
 {
   return m_look;
 }
@@ -89,7 +89,7 @@ Camera::getLook( )
 
 
 const glm::vec4&
-Camera::getUp( )
+Camera::getUp( ) const
 {
   return m_up;
 }
@@ -97,18 +97,15 @@ Camera::getUp( )
 
 
 const glm::vec4&
-Camera::getRight( )
+Camera::getRight( ) const
 {
-
-  m_right = glm::vec4( glm::cross( glm::vec3( m_look ), glm::vec3( m_up ) ), 0.0f );
-
   return m_right;
 }
 
 
 
 const glm::vec4&
-Camera::getEye( )
+Camera::getEye( ) const
 {
   return m_eye;
 }
@@ -116,7 +113,7 @@ Camera::getEye( )
 
 
 float
-Camera::getAspectRatio( )
+Camera::getAspectRatio( ) const
 {
   return m_aspectRatio;
 }
@@ -199,8 +196,9 @@ Camera::pitch( float degrees )
   glm::vec4 oldLook = m_look;
 
   m_look =
-    glm::rotate( m_look, glm::radians( degrees ), glm::cross( glm::vec3( m_up ), glm::vec3( m_look ) ) );
-    setCameraSpace( );
+    glm::rotate( m_look, glm::radians( degrees ), glm::cross( glm::vec3( m_up ), glm::vec3(
+                                                                                           m_look ) ) );
+  setCameraSpace( );
 
   if ( m_up.y < 0 )
   {
@@ -218,6 +216,7 @@ void
 Camera::yaw( float degrees )
 {
   float radians = glm::radians( degrees );
+
   glm::vec3 vec = glm::vec3( 0.f, -1.f, 0.f );
 
   m_look = glm::rotate( m_look, radians, vec );
@@ -269,8 +268,41 @@ Camera::updateOrbit(
   glm::vec4 up   = trans * glm::vec4( 0, 1, 0, 0 );
   this->orientLook( eye, look, up );
 
-  // TODO: Calculate look, and up then call orientLook()
 } // updateOrbit
+
+
+
+///
+/// \brief Camera::buildRayBasisVectors
+/// \param pU
+/// \param pV
+/// \param pW
+///
+void
+Camera::buildRayBasisVectors(
+                             glm::vec3 *pU,
+                             glm::vec3 *pV,
+                             glm::vec3 *pW
+                             ) const
+{
+
+  glm::vec3 &U = *pU;
+  glm::vec3 &V = *pV;
+  glm::vec3 &W = *pW;
+
+  float ulen, vlen, wlen;
+  W = -glm::vec3( m_eye );
+
+  wlen = glm::length( W );
+  U = glm::normalize( glm::cross( W, glm::vec3( m_up ) ) );
+  V = glm::normalize( glm::cross( U, V ) );
+
+  ulen = wlen * glm::tan( glm::radians( 0.5f * m_heightDegrees ) );
+  U *= ulen;
+  vlen = ulen / m_aspectRatio;
+  V *= vlen;
+
+}
 
 
 
@@ -285,7 +317,9 @@ Camera::setCameraSpace( )
                                                  glm::vec3( m_v ),
                                                  glm::vec3( m_w )
                                                  ) ), 0 );
-  m_up = m_v;
+  m_up    = m_v;
+  m_right = m_u;
+
 }
 
 

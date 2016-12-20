@@ -225,6 +225,7 @@ if ( USE_GUI )
       ${ADDITIONAL_SOURCE}
 
       ${SRC_DIR}/io/ImguiOpenGLIOHandler.cpp
+      ${SRC_DIR}/io/ImguiCallback.cpp
       )
 
   message( "USING GUI" )

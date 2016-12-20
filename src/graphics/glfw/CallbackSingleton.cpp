@@ -33,10 +33,10 @@ CallbackSingleton::~CallbackSingleton( ) noexcept
 /// \return
 ///
 CallbackSingleton&
-CallbackSingleton::getInstance( )      // Singleton is accessed via getInstance()
+CallbackSingleton::getInstance( ) // Singleton is accessed via getInstance()
 {
 
-  static CallbackSingleton instance;   // lazy singleton, instantiated on first use
+  static CallbackSingleton instance; // lazy singleton, instantiated on first use
 
   return instance;
 
@@ -187,6 +187,24 @@ CallbackSingleton::scrollCallback(
 {
 
   CallbackSingleton::getInstance( ).defaultScrollCallback( pWindow, xoffset, yoffset );
+
+}
+
+
+
+///
+/// \brief CallbackSingleton::charCallback
+/// \param pWindow
+/// \param codepoint
+///
+void
+CallbackSingleton::charCallback(
+                                GLFWwindow *pWindow,
+                                unsigned    codepoint
+                                )
+{
+
+  CallbackSingleton::getInstance( ).defaultCharCallback( pWindow, codepoint );
 
 }
 
@@ -419,6 +437,32 @@ CallbackSingleton::defaultScrollCallback(
 
 
 
+void
+CallbackSingleton::defaultCharCallback(
+                                       GLFWwindow *pWindow,
+                                       unsigned    codepoint
+                                       )
+{
+
+  Callback *pCallback = reinterpret_cast< Callback* >( glfwGetWindowUserPointer( pWindow ) );
+
+  if ( pCallback )
+  {
+
+    pCallback->handleChar( pWindow, codepoint );
+
+  }
+  else
+  {
+
+    upDefaultCallbacks_->handleChar( pWindow, codepoint );
+
+  }
+
+} // CallbackSingleton::defaultCharCallback
+
+
+
 ///
 /// \brief CallbackSingleton::setDefaultCallback
 /// \param callback
@@ -427,7 +471,7 @@ void
 CallbackSingleton::setDefaultCallback( std::unique_ptr< Callback > upCallback )
 {
 
-  upDefaultCallbacks_.release();
+  upDefaultCallbacks_.release( );
   upDefaultCallbacks_ = std::move( upCallback );
 
 }

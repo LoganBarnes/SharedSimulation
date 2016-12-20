@@ -21,7 +21,6 @@ namespace shared
 
 
 class World;
-class SharedCallback;
 
 
 /////////////////////////////////////////////
