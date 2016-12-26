@@ -75,7 +75,7 @@ public:
   template< typename T >
   void addBufferNoVAO (
                        const std::string name,
-                       size_t            sizeBytes,
+                       GLsizeiptr        sizeBytes,
                        T                *pData,
                        GLenum            type
                        );
@@ -203,7 +203,7 @@ template< typename T >
 void
 OpenGLWrapper::addBufferNoVAO(
                               const std::string name,
-                              size_t            sizeBytes,
+                              GLsizeiptr        sizeBytes,
                               T                *pData,
                               GLenum            type
                               )

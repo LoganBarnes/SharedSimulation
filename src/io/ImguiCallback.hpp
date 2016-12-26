@@ -2,6 +2,7 @@
 #define ImguiCallback_hpp
 
 
+#include <memory>
 #include "graphics/glfw/Callback.hpp"
 
 
