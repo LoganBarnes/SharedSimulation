@@ -20,6 +20,7 @@ configure_file (
                 )
 
 
+set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
 
 ################################################
 # add glfw3 functionality
@@ -116,25 +117,24 @@ endif( )
 ################################################
 if ( USE_OPTIX )
 
-  find_library( OPTIX_LIBRARY  optix  ${THIRDPARTY}/lib64 REQUIRED )
-  find_library( OPTIXU_LIBRARY optixu ${THIRDPARTY}/lib64 REQUIRED )
+  find_package( OptiX REQUIRED )
 
-  set( CUDA_SYSTEM_INCLUDE_DIRS ${CUDA_SYSTEM_INCLUDE_DIRS} ${THIRDPARTY}/include )
+  set( CUDA_SYSTEM_INCLUDE_DIRS ${CUDA_SYSTEM_INCLUDE_DIRS} ${OptiX_INCLUDE} )
   set(
       CUDA_LINK_LIBS
       ${CUDA_LINK_LIBS}
 
-      ${OPTIX_LIBRARY}
-      ${OPTIXU_LIBRARY}
+      ${optix_LIBRARY}
+      ${optixu_LIBRARY}
       )
 
-  set( SYSTEM_INCLUDE_DIRS ${SYSTEM_INCLUDE_DIRS} ${THIRDPARTY}/include )
+  set( SYSTEM_INCLUDE_DIRS ${SYSTEM_INCLUDE_DIRS} ${OptiX_INCLUDE} )
   set(
       LINK_LIBS
       ${LINK_LIBS}
 
-      ${OPTIX_LIBRARY}
-      ${OPTIXU_LIBRARY}
+      ${optix_LIBRARY}
+      ${optixu_LIBRARY}
       )
 
   message( "USING OPTIX" )
