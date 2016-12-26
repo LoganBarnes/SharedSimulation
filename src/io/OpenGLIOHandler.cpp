@@ -68,7 +68,7 @@ void
 OpenGLIOHandler::showWorld( const double alpha )
 {
 
-  onRender( alpha );
+  _onRender( alpha );
 
   upGlfwWrapper_->swapBuffers( );
 

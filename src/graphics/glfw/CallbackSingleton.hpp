@@ -88,6 +88,13 @@ public:
                        double      yoffset
                        );
 
+  static
+  void charCallback (
+                     GLFWwindow *pWindow,
+                     unsigned    codepoint
+                     );
+
+
   //
   // the actual implementations of the callback methods
   //
@@ -133,6 +140,11 @@ public:
                               double      xoffset,
                               double      yoffset
                               );
+
+  void defaultCharCallback (
+                            GLFWwindow *pWindow,
+                            unsigned    codepoint
+                            );
 
 
   void setDefaultCallback (std::unique_ptr<Callback> upCallback );

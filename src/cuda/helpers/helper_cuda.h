@@ -282,8 +282,8 @@ static const char *_cudaGetErrorEnum(cudaError_t error)
             return "cudaErrorApiFailureBase";
 
         /* Since CUDA 8.0*/
-        case cudaErrorNvlinkUncorrectable :
-            return "cudaErrorNvlinkUncorrectable";
+//        case cudaErrorNvlinkUncorrectable :
+//            return "cudaErrorNvlinkUncorrectable";
 
     }
 
@@ -384,8 +384,8 @@ static const char *_cudaGetErrorEnum(CUresult error)
         case CUDA_ERROR_INVALID_GRAPHICS_CONTEXT:
             return "CUDA_ERROR_INVALID_GRAPHICS_CONTEXT";
 
-        case CUDA_ERROR_NVLINK_UNCORRECTABLE:
-            return "CUDA_ERROR_NVLINK_UNCORRECTABLE";
+//        case CUDA_ERROR_NVLINK_UNCORRECTABLE:
+//            return "CUDA_ERROR_NVLINK_UNCORRECTABLE";
 
         case CUDA_ERROR_INVALID_SOURCE:
             return "CUDA_ERROR_INVALID_SOURCE";

@@ -17,17 +17,17 @@ public:
 
   ~Camera( );
 
-  const glm::mat4 &getProjectionMatrix ( );
-  const glm::mat4 &getViewMatrix ( );
-  const glm::mat4 &getScaleMatrix ( );
-  const glm::mat4 &getScaleViewInvMatrix ( );
-  const glm::mat4 &getFrustumMatrix ( );
-  const glm::vec4 &getLook ( );
-  const glm::vec4 &getUp ( );
-  const glm::vec4 &getRight ( );
-  const glm::vec4 &getEye ( );
+  const glm::mat4 &getProjectionMatrix ( ) const;
+  const glm::mat4 &getViewMatrix ( ) const;
+  const glm::mat4 &getScaleMatrix ( ) const;
+  const glm::mat4 &getScaleViewInvMatrix ( ) const;
+  const glm::mat4 &getFrustumMatrix ( ) const;
+  const glm::vec4 &getLook ( ) const;
+  const glm::vec4 &getUp ( ) const;
+  const glm::vec4 &getRight ( ) const;
+  const glm::vec4 &getEye ( ) const;
 
-  float getAspectRatio ( );
+  float getAspectRatio ( ) const;
   void setAspectRatio ( float a );
 
 
@@ -51,6 +51,12 @@ public:
                     float deltaX,
                     float deltaY
                     );
+
+  void buildRayBasisVectors (
+                             glm::vec3 *pU,
+                             glm::vec3 *pV,
+                             glm::vec3 *pW
+                             ) const;
 
 
 protected:

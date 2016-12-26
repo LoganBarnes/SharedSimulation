@@ -4,12 +4,7 @@
 
 #include <string>
 #include <unordered_map>
-
-
-typedef int GLsizei;
-typedef unsigned int GLuint;
-typedef float GLfloat;
-typedef uint32_t GLenum;
+#include "glad/glad.h"
 
 
 struct Buffer
@@ -35,7 +30,7 @@ public:
 
   explicit
   OpenGLWrapper(
-                GLsizei width = 640,
+                GLsizei width  = 640,
                 GLsizei height = 480
                 );
 
@@ -46,6 +41,9 @@ public:
   // getters
   GLuint
   getTexture( const std::string name ) { return textures_[ name ]; }
+
+  GLuint
+  getBuffer( const std::string name ) { return buffers_[ name ].vbo; }
 
   GLsizei
   getViewportWidth( ) { return viewportWidth_; }
@@ -73,6 +71,14 @@ public:
                         GLsizei           height,
                         const std::string filename
                         );
+
+  template< typename T >
+  void addBufferNoVAO (
+                       const std::string name,
+                       size_t            sizeBytes,
+                       T                *pData,
+                       GLenum            type
+                       );
 
   void addUVBuffer (
                     const std::string buffer,
@@ -157,6 +163,14 @@ public:
                         GLsizei height
                         );
 
+  void bindBufferToTexture (
+                            const std::string texture,
+                            GLuint            bufId,
+                            int               alignment,
+                            int               width,
+                            int               height
+                            );
+
 
 private:
 
@@ -182,6 +196,42 @@ private:
   bool initialized_;
 
 };
+
+
+
+template< typename T >
+void
+OpenGLWrapper::addBufferNoVAO(
+                              const std::string name,
+                              size_t            sizeBytes,
+                              T                *pData,
+                              GLenum            type
+                              )
+{
+
+  Buffer buffer;
+
+  if ( buffers_.find( name ) != buffers_.end( ) )
+  {
+    buffer = buffers_[ name ];
+    glDeleteBuffers( 1, &( buffer.vbo ) );
+  }
+
+  glGenBuffers( 1, &buffer.vbo );
+  glBindBuffer( GL_ARRAY_BUFFER, buffer.vbo );
+  glBufferData(
+               GL_ARRAY_BUFFER,
+               sizeBytes,
+               pData,
+               type
+               );
+
+  glBindBuffer( GL_ARRAY_BUFFER, 0 );
+
+  buffers_[ name ] = buffer;
+
+} // OpenGLWrapper::addBufferNoVAO
+
 
 
 } // namespace graphics

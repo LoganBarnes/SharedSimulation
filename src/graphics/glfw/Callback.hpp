@@ -121,6 +121,17 @@ public:
                double
                ) {}
 
+  ////////////////////////////////////////////////////////
+  /// \brief handleChar
+  /// \param pWindow
+  /// \param codepoint
+  ////////////////////////////////////////////////////////
+  virtual void
+  handleChar(
+             GLFWwindow*,
+             unsigned
+             ) {}
+
 };
 
 
