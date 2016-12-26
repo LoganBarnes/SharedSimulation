@@ -30,6 +30,17 @@
 #ifndef __optix_optix_defines_h__
 #define __optix_optix_defines_h__
 
+enum rtSemanticTypes {
+  /** Type uint3  */
+  _OPTIX_SEMANTIC_TYPE_LaunchIndex          = 0x100,
+
+  /** Type Ray    */
+  _OPTIX_SEMANTIC_TYPE_CurrentRay           = 0x200,
+
+  /** Type float  */
+  _OPTIX_SEMANTIC_TYPE_IntersectionDistance = 0x300
+};
+
 /*! Transform type */
 enum RTtransformkind {
   RT_WORLD_TO_OBJECT = 0xf00, /*!< World to Object transformation */

@@ -114,7 +114,7 @@ enum RTPqueryhint
 {
   RTP_QUERY_HINT_NONE        = 0x0000,  /*!< No hints.  Use default settings. */
   RTP_QUERY_HINT_ASYNC       = 0x4001,  /*!< Asynchronous query execution */
-  RTP_QUERY_HINT_WATERTIGHT  = 0x4002   /*!< Use watertight ray-triangle intersection, but only if the RTP_BUILDER_PARAM_USE_CALLER_TRIANGLES builder parameter is also set */
+  RTP_QUERY_HINT_WATERTIGHT  = 0x4002   /*!< Use watertight ray-triangle intersection */
 };
 
 /* Builder parameters */

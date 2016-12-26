@@ -18,7 +18,7 @@
  * INABILITY TO USE THIS SOFTWARE, EVEN IF NVIDIA HAS BEEN ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGES
  */
-
+ 
 /**
  * @file   optixu_matrix_namespace.h
  * @author NVIDIA Corporation
@@ -35,10 +35,10 @@
 
 // __forceinline__ works in CUDA, VS, and with gcc.  Leave it as a macro in case
 // we need to make this per-platform or we want to switch off inlining globally.
-#ifndef OPTIXU_INLINE
+#ifndef OPTIXU_INLINE 
 #  define OPTIXU_INLINE_DEFINED 1
 #  define OPTIXU_INLINE __forceinline__
-#endif // OPTIXU_INLINE
+#endif // OPTIXU_INLINE 
 
 #define RT_MATRIX_ACCESS(m,i,j) m[i*N+j]
 #define RT_MAT_DECL template <unsigned int M, unsigned int N>
@@ -83,19 +83,19 @@ namespace optix {
   * @ingroup CUDACTypes
   *
   * <B>Description</B>
-  *
+  * 
   * @ref Matrix provides a utility class for small-dimension floating-point
   * matrices, such as transformation matrices.  @ref Matrix may also be useful
   * in other computation and can be used in both host and device code.
   * Typedefs are provided for 2x2 through 4x4 matrices.
   *
   * <B>History</B>
-  *
+  * 
   * @ref Matrix was introduced in OptiX 1.0.
-  *
+  * 
   * <B>See also</B>
   * \a rtVariableSetMatrix*
-  *
+  * 
   */
   template <unsigned int M, unsigned int N>
   class Matrix
@@ -158,9 +158,6 @@ namespace optix {
 	/** Returns a scale matrix */
 	RT_HOSTDEVICE static Matrix<4,4>  scale(const float3& vec);
 
-    /** Creates a matrix from an ONB and center point */
-	RT_HOSTDEVICE static Matrix<4,4>  fromBasis( const float3& u, const float3& v, const float3& w, const float3& c );
-
 	/** Returns the identity matrix */
 	RT_HOSTDEVICE static Matrix<N,N>  identity();
 
@@ -168,7 +165,7 @@ namespace optix {
 	RT_HOSTDEVICE bool         operator<( const Matrix<M, N>& rhs ) const;
   private:
 	  /** The data array is stored in row-major order */
-	  float m_data[M*N];
+	  float m_data[M*N]; 
   };
 
 
@@ -651,35 +648,6 @@ namespace optix {
     return Matrix<4,4>( m );
   }
 
-
-  // This is a static member.
-  template<>
-  OPTIXU_INLINE RT_HOSTDEVICE Matrix<4,4>  Matrix<4,4>::fromBasis( const float3& u, const float3& v, const float3& w, const float3& c )
-  {
-    float m[16];                                                                 
-    m[ 0] = u.x;                                                                  
-    m[ 1] = v.x;                                                                  
-    m[ 2] = w.x;                                                                  
-    m[ 3] = c.x;                                                                  
-
-    m[ 4] = u.y;                                                                  
-    m[ 5] = v.y;                                                                  
-    m[ 6] = w.y;                                                                  
-    m[ 7] = c.y;                                                                  
-
-    m[ 8] = u.z;                                                                  
-    m[ 9] = v.z;                                                                  
-    m[10] = w.z;                                                                 
-    m[11] = c.z;                                                                 
-
-    m[12] = 0.0f;                                                                
-    m[13] = 0.0f;                                                                
-    m[14] = 0.0f;                                                                
-    m[15] = 1.0f;                                                                
-
-    return Matrix<4,4>( m );      
-  }
-
   // Returns the identity matrix.
   // This is a static member.
   template<unsigned int M, unsigned int N>
@@ -726,11 +694,11 @@ namespace optix {
     m[0*3+0]=m4x4[0*4+0];
     m[0*3+1]=m4x4[0*4+1];
     m[0*3+2]=m4x4[0*4+2];
-
+             
     m[1*3+0]=m4x4[1*4+0];
     m[1*3+1]=m4x4[1*4+1];
     m[1*3+2]=m4x4[1*4+2];
-
+             
     m[2*3+0]=m4x4[2*4+0];
     m[2*3+1]=m4x4[2*4+1];
     m[2*3+2]=m4x4[2*4+2];

@@ -12,6 +12,5 @@ void main( void )
 {
 
   outColor = texture( tex, gl_FragCoord.xy / screenSize );
-  outColor = vec4( gl_FragCoord.xy / screenSize, 0.0, 1.0 );
 
 }

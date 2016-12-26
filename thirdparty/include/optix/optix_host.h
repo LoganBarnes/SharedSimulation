@@ -138,10 +138,6 @@ extern "C" {
   * @ref rtGetVersion returns in \a version a numerically comparable
   * version number of the current OptiX library.
   *
-  * The encoding for the version number prior to OptiX 4.0.0 is major*1000 + minor*10 + micro.  
-  * For versions 4.0.0 and higher, the encoding is major*10000 + minor*100 + micro.
-  * For example, for version 3.5.1 this function would return 3051, and for version 4.5.1 it would return 40501.
-  *
   * @param[out]  version   OptiX version number
   *
   * <B>Return values</B>
@@ -1312,9 +1308,15 @@ extern "C" {
   * Each attribute can have a different size.  The sizes are given in the following list:
   *
   *   - @ref RT_CONTEXT_ATTRIBUTE_CPU_NUM_THREADS          sizeof(int)
+  *   - @ref RT_CONTEXT_ATTRIBUTE_GPU_PAGING_FORCED_OFF    sizeof(int)
   *
   * @ref RT_CONTEXT_ATTRIBUTE_CPU_NUM_THREADS sets the number of host CPU threads OptiX
   * can use for various tasks.
+  *
+  * @ref RT_CONTEXT_ATTRIBUTE_GPU_PAGING_FORCED_OFF prohibits software paging of device
+  * memory. A value of 0 means that OptiX is allowed to activate paging if necessary, 1
+  * means that paging is always off. Note that currently paging cannot be disabled once it
+  * has been activated.
   *
   * @param[in]   context   The context object to be modified
   * @param[in]   attrib    Attribute to set
@@ -1353,6 +1355,8 @@ extern "C" {
   *   - @ref RT_CONTEXT_ATTRIBUTE_MAX_TEXTURE_COUNT        sizeof(int)
   *   - @ref RT_CONTEXT_ATTRIBUTE_CPU_NUM_THREADS          sizeof(int)
   *   - @ref RT_CONTEXT_ATTRIBUTE_USED_HOST_MEMORY         sizeof(RTsize)
+  *   - @ref RT_CONTEXT_ATTRIBUTE_GPU_PAGING_ACTIVE        sizeof(int)
+  *   - @ref RT_CONTEXT_ATTRIBUTE_GPU_PAGING_FORCED_OFF    sizeof(int)
   *   - @ref RT_CONTEXT_ATTRIBUTE_AVAILABLE_DEVICE_MEMORY  sizeof(RTsize)
   *
   * @ref RT_CONTEXT_ATTRIBUTE_MAX_TEXTURE_COUNT queries the maximum number of textures
@@ -1365,13 +1369,21 @@ extern "C" {
   * @ref RT_CONTEXT_ATTRIBUTE_USED_HOST_MEMORY queries the amount of host memory allocated
   * by OptiX.
   *
+  * @ref RT_CONTEXT_ATTRIBUTE_GPU_PAGING_ACTIVE queries if software paging of device
+  * memory has been turned on by the context. The returned value is a boolean, where 1
+  * means that paging is currently active.
+  *
+  * @ref RT_CONTEXT_ATTRIBUTE_GPU_PAGING_FORCED_OFF queries if software paging has been
+  * prohibited by the user. The returned value is a boolean, where 0 means that OptiX is
+  * allowed to activate paging if necessary, 1 means that paging is always off.
+  *
   * @ref RT_CONTEXT_ATTRIBUTE_AVAILABLE_DEVICE_MEMORY queries the amount of free device
   * memory.
   *
   * Some attributes are used to get per device information.  In contrast to @ref
   * rtDeviceGetAttribute, these attributes are determined by the context and are therefore
-  * queried through the context.  This is done by adding the attribute with the OptiX
-  * device ordinal number when querying the attribute.  The following are per device attributes.
+  * queried through the context.  This is done by summing the attribute with the OptiX
+  * ordinal number when querying the attribute.  The following are per device attributes.
   *
   *   @ref RT_CONTEXT_ATTRIBUTE_AVAILABLE_DEVICE_MEMORY
   *
@@ -1408,10 +1420,7 @@ extern "C" {
   * <B>Description</B>
   *
   * @ref rtContextSetDevices specifies a list of hardware devices to be used during
-  * execution of the subsequent trace kernels. Note that the device numbers are 
-  * OptiX device ordinals, which may not be the same as CUDA device ordinals. 
-  * Use @ref rtDeviceGetAttribute with @ref RT_DEVICE_ATTRIBUTE_CUDA_DEVICE_ORDINAL to query the CUDA device
-  * corresponding to a particular OptiX device.
+  * execution of the subsequent trace kernels.
   *
   * @param[in]   context   The context to which the hardware list is applied
   * @param[in]   count     The number of devices in the list
@@ -1443,10 +1452,8 @@ extern "C" {
   *
   * <B>Description</B>
   *
-  * @ref rtContextGetDevices retrieves a list of hardware devices used by the context. 
-  * Note that the device numbers are  OptiX device ordinals, which may not be the same as CUDA device ordinals. 
-  * Use @ref rtDeviceGetAttribute with @ref RT_DEVICE_ATTRIBUTE_CUDA_DEVICE_ORDINAL to query the CUDA device
-  * corresponding to a particular OptiX device.
+  * @ref rtContextGetDevices retrieves a list of hardware devices used during execution
+  * of the subsequent trace kernels.
   *
   * @param[in]   context   The context to which the hardware list is applied
   * @param[out]  devices   Return parameter for the list of devices.  The memory must be able to hold entries
@@ -1610,8 +1617,8 @@ extern "C" {
   *
   * @ref rtContextSetTimeoutCallback sets an application-side callback function
   * \a callback and a time interval \a min_polling_seconds in
-  * seconds. Potentially long-running OptiX API calls such as 
-  * @ref rtContextLaunch call the callback function about every
+  * seconds. Long-running OptiX API calls such as @ref rtContextCompile
+  * and @ref rtContextLaunch call the callback function about every
   * \a min_polling_seconds seconds. The core purpose of a timeout callback
   * function is to give the application a chance to do whatever it might need
   * to do frequently, such as handling GUI events.
@@ -1659,6 +1666,7 @@ extern "C" {
   * @ref rtContextSetTimeoutCallback was introduced in OptiX 2.5.
   *
   * <B>See also</B>
+  * @ref rtContextCompile,
   * @ref rtContextLaunch
   *
   */
@@ -2148,7 +2156,41 @@ extern "C" {
   RTresult RTAPI rtContextGetTextureSamplerFromId(RTcontext context, int sampler_id, RTtexturesampler* sampler);
 
   /**
-  * Deprecated in OptiX 4.0. Calling this function has no effect. The kernel is automatically compiled at launch if needed.
+  * @brief Compiles a context object
+  *
+  * @ingroup Context
+  *
+  * <B>Description</B>
+  *
+  * @ref rtContextCompile creates a final computation kernel from the given context's
+  * programs and scene hierarchy. This kernel will be executed upon subsequent invocations
+  * of @ref rtContextLaunch "rtContextLaunch".
+  *
+  * Calling @ref rtContextCompile is not strictly necessary since any changes to the scene
+  * specification or programs will cause an internal compilation upon the next @ref
+  * rtContextLaunch call. @ref rtContextCompile allows the application to control when the
+  * compilation work occurs.
+  *
+  * Conversely, if no changes to the scene specification or programs have occurred since
+  * the last compilation, @ref rtContextCompile and @ref rtContextLaunch "rtContextLaunch" will not perform
+  * a recompilation.
+  *
+  * @param[in]   context   The context to be compiled
+  *
+  * <B>Return values</B>
+  *
+  * Relevant return values:
+  * - @ref RT_SUCCESS
+  * - @ref RT_ERROR_INVALID_VALUE
+  * - @ref RT_ERROR_MEMORY_ALLOCATION_FAILED
+  * - @ref RT_ERROR_INVALID_SOURCE
+  *
+  * <B>History</B>
+  *
+  * @ref rtContextCompile was introduced in OptiX 1.0.
+  *
+  * <B>See also</B>
+  * @ref rtContextLaunch
   *
   */
   RTresult RTAPI rtContextCompile(RTcontext context);
@@ -2185,6 +2227,7 @@ extern "C" {
   *
   * <B>See also</B>
   * @ref rtContextGetRunningState,
+  * @ref rtContextCompile,
   * @ref rtContextValidate
   *
   */
@@ -2415,9 +2458,7 @@ extern "C" {
   * <B>Description</B>
   *
   * @ref rtContextSetPrintBufferSize is used to set the buffer size available to hold
-  * data generated by @ref rtPrintf.
-  * Returns @ref RT_ERROR_INVALID_VALUE if it is called after the first invocation of rtContextLaunch.
-  *
+  * data generated by @ref rtPrintf. The default size is 65536 bytes.
   *
   * @param[in]   context             The context for which to set the print buffer size
   * @param[in]   buffer_size_bytes   The print buffer size in bytes
@@ -5056,22 +5097,26 @@ extern "C" {
   * computed for the acceleration structure is invalidated and the acceleration will be marked
   * dirty.
   *
+  * An acceleration structure is only valid with a correct pair of builder and traverser. The traverser type
+  * is specified using @ref rtAccelerationSetTraverser. For a list of valid combinations of builders and traversers, see below. For a description of the individual traversers, see @ref rtAccelerationSetTraverser.
+  *
   * \a builder can take one of the following values:
   *
   * - "NoAccel": Specifies that no acceleration structure is explicitly built. Traversal linearly loops through the
-  * list of primitives to intersect. This can be useful e.g. for higher level groups with only few children, where managing a more complex structure introduces unnecessary overhead.
+  * list of primitives to intersect. This can be useful e.g. for higher level groups with only few children, where managing a more complex structure introduces unnecessary overhead. Valid traverser types: "NoAccel".
   *
-  * - "Bvh": A standard bounding volume hierarchy, useful for most types of graph levels and geometry. Medium build speed, good ray tracing performance.
+  * - "Bvh": A standard bounding volume hierarchy, useful for most types of graph levels and geometry. Medium build speed, good ray tracing performance. Valid traverser types: "Bvh", "BvhCompact".
   *
-  * - "Sbvh": A high quality BVH variant for maximum ray tracing performance. Slower build speed and slightly higher memory footprint than "Bvh".
+  * - "Sbvh": A high quality BVH variant for maximum ray tracing performance. Slower build speed and slightly higher memory footprint than "Bvh". Valid traverser types: "Bvh", "BvhCompact".
   *
-  * - "Trbvh": High quality similar to Sbvh but with fast build performance. The Trbvh builder uses about 2.5 times the size of the final BVH for scratch space. A CPU-based Trbvh builder that does not have the memory constraints is available. OptiX includes an optional automatic fallback to the CPU version when out of GPU memory. Please refer to the Programming Guide for more details.
+  * - "MedianBvh": A medium quality bounding volume hierarchy with quick build performance. Useful for dynamic and semi-dynamic
+  * content. Valid traverser types: "Bvh", "BvhCompact".
   *
-  * - "MedianBvh": Deprecated in OptiX 4.0. This builder is now internally remapped to Trbvh.
+  * - "Lbvh": A simple bounding volume hierarchy with very fast build performance. Useful for dynamic content. Valid traverser types: "Bvh", "BvhCompact".
   *
-  * - "Lbvh": Deprecated in OptiX 4.0. This builder is now internally remapped to Trbvh.
+  * - "Trbvh": High quality similar to Sbvh but with fast build performance similar to Lbvh. Valid traverser types: "Bvh". The Trbvh builder uses about 2.5 times the size of the final BVH for scratch space. A CPU-based Trbvh builder that does not have the memory constraints is available. OptiX Commercial includes an optional automatic fallback to the CPU version when out of GPU memory. See details in section 3.5 of the Programming Guide.
   *
-  * - "TriangleKdTree": Deprecated in OptiX 4.0. This builder is now internally remapped to Trbvh.
+  * - "TriangleKdTree": A high quality kd-tree builder, for triangle geometry only. This may provide better ray tracing performance than the BVH builders for some scenarios. Valid traverser types: "KdTree".
   *
   * @param[in]   acceleration   The acceleration structure handle
   * @param[in]   builder        String value specifying the builder type
@@ -5088,6 +5133,7 @@ extern "C" {
   *
   * <B>See also</B>
   * @ref rtAccelerationGetBuilder,
+  * @ref rtAccelerationSetTraverser,
   * @ref rtAccelerationSetProperty
   *
   */
@@ -5127,13 +5173,90 @@ extern "C" {
   RTresult RTAPI rtAccelerationGetBuilder(RTacceleration acceleration, const char** return_string);
 
   /**
-  * Deprecated in OptiX 4.0. Setting a traverser is no longer necessary and will be ignored.
+  * @brief Specifies the traverser to be used for an acceleration structure
+  *
+  * @ingroup AccelerationStructure
+  *
+  * <B>Description</B>
+  *
+  * @ref rtAccelerationSetTraverser specifies the method used to traverse the ray tracing acceleration structure
+  * represented by \a acceleration. A traverser must be set for the acceleration structure to pass validation.
+  * The current active traverser can be changed at any time.
+  *
+  * An acceleration structure is only valid with a correct pair of builder and traverser. The
+  * builder type is specified using @ref rtAccelerationSetBuilder. For a list of valid combinations
+  * of builders and traversers, see below. For a description of the individual builders, see @ref
+  * rtAccelerationSetBuilder.
+  *
+  * \a traverser can take one of the following values:
+  *
+  * - "NoAccel": Linearly loops through the list of primitives to intersect. This is highly inefficient in all but
+  * the most trivial scenarios (but there it can provide good performance due to very little overhead).
+  * Valid builder types: "NoAccel".
+  *
+  * - "Bvh": Optimized traversal of generic bounding volume hierarchies.
+  * Valid builder types: "Trbvh", "Sbvh", "Bvh", "MedianBvh", "Lbvh".
+  *
+  * - "BvhCompact": Optimized traversal of bounding volume hierarchies
+  * for large datasets when virtual memory is turned on.
+  * It compresses the BVH data in 4 times before uploading to
+  * the device. And decompress the BVH data in real-time during traversal of
+  * a bounding volume hierarchy.
+  * Valid builder types: "Sbvh", "Bvh", "MedianBvh", "Lbvh".
+  *
+  * - "KdTree": Standard traversal for kd-trees.
+  * Valid builder types: "TriangleKdTree".
+  *
+  * @param[in]   acceleration   The acceleration structure handle
+  * @param[in]   traverser      String value specifying the traverser type
+  *
+  * <B>Return values</B>
+  *
+  * Relevant return values:
+  * - @ref RT_SUCCESS
+  * - @ref RT_ERROR_INVALID_VALUE
+  *
+  * <B>History</B>
+  *
+  * @ref rtAccelerationSetTraverser was introduced in OptiX 1.0.
+  *
+  * <B>See also</B>
+  * @ref rtAccelerationGetTraverser,
+  * @ref rtAccelerationSetBuilder,
+  * @ref rtAccelerationSetProperty
   *
   */
   RTresult RTAPI rtAccelerationSetTraverser(RTacceleration acceleration, const char* traverser);
 
   /**
-  * Deprecated in OptiX 4.0.
+  * @brief Query the current traverser from an acceleration structure
+  *
+  * @ingroup AccelerationStructure
+  *
+  * <B>Description</B>
+  *
+  * @ref rtAccelerationGetTraverser returns the name of the traverser
+  * currently used in the acceleration structure \a acceleration.  If no
+  * traverser has been set for \a acceleration, an empty string is
+  * returned. \a return_string will be set to point to the returned
+  * string. The memory \a return_string points to will be valid until the
+  * next API call that returns a string.
+  *
+  * @param[in]   acceleration    The acceleration structure handle
+  * @param[out]  return_string   Return string buffer
+  *
+  * <B>Return values</B>
+  *
+  * Relevant return values:
+  * - @ref RT_SUCCESS
+  * - @ref RT_ERROR_INVALID_VALUE
+  *
+  * <B>History</B>
+  *
+  * @ref rtAccelerationGetTraverser was introduced in OptiX 1.0.
+  *
+  * <B>See also</B>
+  * @ref rtAccelerationSetTraverser
   *
   */
   RTresult RTAPI rtAccelerationGetTraverser(RTacceleration acceleration, const char** return_string);
@@ -5157,46 +5280,63 @@ extern "C" {
   *
   * The following is a list of the properties used by the individual builders:
   *
-  * - "refit":
-  * Available in: Trbvh, Bvh
-  * If set to "1", the builder will only readjust the node bounds of the bounding
-  * volume hierarchy instead of constructing it from scratch. Refit is only
-  * effective if there is an initial BVH already in place, and the underlying
-  * geometry has undergone relatively modest deformation.  In this case, the
-  * builder delivers a very fast BVH update without sacrificing too much ray
-  * tracing performance.  The default is "0".
+  * - "NoAccel": No properties are available for this builder.
   *
-  * - "vertex_buffer_name":
-  * Available in: Trbvh, Sbvh
-  * The name of the buffer variable holding triangle vertex data.  Each vertex
-  * consists of 3 floats.  The default is "vertex_buffer".
+  * - "Bvh": \b refit is an integer value specifying whether the BVH should be refitted
+  * or rebuilt from scratch when a valid BVH over
+  * similar geometry is already existent. The value indicates how many frames are to pass
+  * before forcing a rebuild, the exception being a value of 1, which will always refit
+  * (never rebuild if possible). A value of 0 will never refit (always rebuild).
+  * Regardless of the refit value, if the number of primitives changes from the last
+  * frame, a rebuild is forced. Refitting is much faster than a full
+  * rebuild, and usually yields good ray tracing performance if deformations
+  * to the underlying geometry are not too large. The default is 0. refit is only
+  * supported on SM_20 (Fermi) class GPUs and later. Older devices will simply ignore the
+  * refit property, effectively rebuilding any time the structure is marked dirty.
+  * \b refine can be used in combination with refit, and will apply tree rotations
+  * to the existing BVH to attempt to improve the quality for faster traversal. Like refit,
+  * tree rotations are much faster than a full rebuild. The value indicates
+  * how many rotation passes over the tree to perform per frame. With \b refine on,
+  * the quality of the tree degrades much less rapidly than with just refit, and can
+  * increase the number of frames between rebuilds before traversal performance suffers.
+  * In some cases, it can eliminate the need for rebuilds entirely. The default is 0.
+  * refine is only supported on SM_20 (Fermi) class GPUs and later.
   *
-  * - "vertex_buffer_stride":
-  * Available in: Trbvh, Sbvh
-  * The offset between two vertices in the vertex buffer, given in bytes.  The
-  * default value is "0", which assumes the vertices are tightly packed.
+  * - "Sbvh": The SBVH can be used for any type of geometry, but especially efficient structures
+  * can be built for triangles. For this case, the following properties are used
+  * in order to provide the necessary geometry information to the acceleration object:
+  * \b vertex_buffer_name specifies the name of the vertex buffer variable for underlying geometry,
+  * containing float3 vertices, and defaults to "vertex_buffer".
+  * \b vertex_buffer_stride is used to define the offset between two vertices in the buffer, given in
+  * bytes. The default stride is zero, which assumes that the vertices are
+  * tightly packed.
+  * \b index_buffer_name specifies the name of the index buffer variable for underlying geometry,
+  * if any, and defaults to "index_buffer". The entries in this buffer are indices of type int,
+  * where each index refers to one entry in the vertex buffer. A sequence of three indices
+  * represent one triangle.
+  * \b index_buffer_stride can be used analog to \b vertex_buffer_stride to
+  * describe interleaved arrays.
   *
-  * - "index_buffer_name":
-  * Available in: Trbvh, Sbvh
-  * The name of the buffer variable holding vertex index data. The entries in
-  * this buffer are indices of type int, where each index refers to one entry in
-  * the vertex buffer. A sequence of three indices represents one triangle. If no
-  * index buffer is given, the vertices in the vertex buffer are assumed to be a
-  * list of triangles, i.e. every 3 vertices in a row form a triangle.  The
-  * default is "index_buffer".
+  * - "MedianBvh": \b refit (see \b refit flag for "Bvh" above).
+  * \b refine, (see \b refine flag for "Bvh" above).
   *
-  * - "index_buffer_stride":
-  * Available in: Trbvh, Sbvh
-  * The offset between two indices in the index buffer, given in bytes.  The
-  * default value is "0", which assumes the indices are tightly packed.
+  * - "Lbvh": \b refit (see \b refit flag for "Bvh" above).
+  * \b refine, (see refine flag for "Bvh" above), with one important difference:
+  * for "Lbvh", \b refine can be used alone, and does not require \b refit.
+  * If used without \b refit, tree rotations will be applied after the Lbvh build.
+  * The default is 0.
   *
-  * - "chunk_size":
-  * Available in: Trbvh
-  * Number of bytes to be used for a partitioned acceleration structure build. If
-  * no chunk size is set, or set to "0", the chunk size is chosen automatically.
-  * If set to "-1", the chunk size is unlimited. The minimum chunk size is 64MB.
-  * Please note that specifying a small chunk size reduces the peak-memory
-  * footprint of the Trbvh but can result in slower rendering performance.
+  * - "Trbvh": Similar in quality to Sbvh but builds much faster. Builds on the GPU and is
+  * subject to GPU memory constraints, including requiring scratch space about 2.5
+  * times as large as the final data structure. See section 3.5 of the programming guide for details.
+  * See Sbvh for a description of the relevant properties (\b vertex_buffer_name,
+  * \b index_buffer_name, \b vertex_buffer_stride, and \b index_buffer_stride).
+  *
+  * - "TriangleKdTree": Since the kd-tree can build its acceleration structure over triangles only,
+  * the geometry data and its format must be made available to the acceleration
+  * object. See Sbvh for a description of the relevant properties
+  * (\b vertex_buffer_name, \b index_buffer_name, \b vertex_buffer_stride,
+  * and \b index_buffer_stride).
   *
   * @param[in]   acceleration   The acceleration structure handle
   * @param[in]   name           String value specifying the name of the property
@@ -5215,6 +5355,7 @@ extern "C" {
   * <B>See also</B>
   * @ref rtAccelerationGetProperty,
   * @ref rtAccelerationSetBuilder,
+  * @ref rtAccelerationSetTraverser
   *
   */
   RTresult RTAPI rtAccelerationSetProperty(RTacceleration acceleration, const char* name, const char* value);
@@ -5250,24 +5391,123 @@ extern "C" {
   * <B>See also</B>
   * @ref rtAccelerationSetProperty,
   * @ref rtAccelerationSetBuilder,
+  * @ref rtAccelerationSetTraverser
   *
   */
   RTresult RTAPI rtAccelerationGetProperty(RTacceleration acceleration, const char* name, const char** return_string);
 
   /**
-  * Deprecated in OptiX 4.0. Should not be called.
+  * @brief Returns the size of the data to be retrieved from an acceleration structure
+  *
+  * @ingroup AccelerationStructure
+  *
+  * <B>Description</B>
+  *
+  * @ref rtAccelerationGetDataSize queries the size of the data that will be returned on a
+  * subsequent call to @ref rtAccelerationGetData. The size in bytes will be written to \a *size.
+  * The returned value is guaranteed to be valid only if no other function using the handle \a
+  * acceleration is made before @ref rtAccelerationGetData.
+  *
+  * If \a acceleration is marked dirty, this call is invalid and will return @ref RT_ERROR_INVALID_VALUE.
+  *
+  * @param[in]   acceleration   The acceleration structure handle
+  * @param[out]  size           The returned size of the data in bytes
+  *
+  * <B>Return values</B>
+  *
+  * Relevant return values:
+  * - @ref RT_SUCCESS
+  * - @ref RT_ERROR_INVALID_VALUE
+  *
+  * <B>History</B>
+  *
+  * @ref rtAccelerationGetDataSize was introduced in OptiX 1.0.
+  *
+  * <B>See also</B>
+  * @ref rtAccelerationGetData,
+  * @ref rtAccelerationSetData
   *
   */
   RTresult RTAPI rtAccelerationGetDataSize(RTacceleration acceleration, RTsize* size);
 
   /**
-  * Deprecated in OptiX 4.0. Should not be called.
+  * @brief Retrieves acceleration structure data
+  *
+  * @ingroup AccelerationStructure
+  *
+  * <B>Description</B>
+  *
+  * @ref rtAccelerationGetData retrieves the full state of the \a acceleration object,
+  * and copies it to the memory region pointed to by \a data. Sufficient memory must be available
+  * to hold the entire state. Use @ref rtAccelerationGetDataSize to query the required memory size.
+  *
+  * The returned \a data from this call is valid input data for @ref rtAccelerationSetData.
+  *
+  * If \a acceleration is marked dirty, this call is invalid and will return @ref RT_ERROR_INVALID_VALUE.
+  *
+  * @param[in]   acceleration   The acceleration structure handle
+  * @param[out]  data           Pointer to a memory region to be filled with the state of \a acceleration
+  *
+  * <B>Return values</B>
+  *
+  * Relevant return values:
+  * - @ref RT_SUCCESS
+  * - @ref RT_ERROR_INVALID_VALUE
+  *
+  * <B>History</B>
+  *
+  * @ref rtAccelerationGetData was introduced in OptiX 1.0.
+  *
+  * <B>See also</B>
+  * @ref rtAccelerationSetData,
+  * @ref rtAccelerationGetDataSize
   *
   */
   RTresult RTAPI rtAccelerationGetData(RTacceleration acceleration, void* data);
 
   /**
-  * Deprecated in OptiX 4.0. Should not be called.
+  * @brief Sets the state of an acceleration structure
+  *
+  * @ingroup AccelerationStructure
+  *
+  * <B>Description</B>
+  *
+  * @ref rtAccelerationSetData sets the full state of the \a acceleration
+  * object, including builder and traverser type as well as properties, as
+  * defined by \a data.  The memory pointed to by \a data must be
+  * unaltered values previously retrieved from a (potentially different)
+  * acceleration structure handle. This mechanism is useful for
+  * implementing caching mechanisms, especially when using high quality
+  * structures which are expensive to build.
+  *
+  * Note that no check is performed on whether the contents of \a data match the actual
+  * underlying geometry on which the acceleration structure is used. If the children of
+  * associated groups or geometry groups differ in number of children, layout of bounding boxes,
+  * or geometry, then behavior after this call is undefined.
+  *
+  * This call returns @ref RT_ERROR_VERSION_MISMATCH if the specified data was retrieved from a
+  * different, incompatible version of OptiX. In this case, the state of \a acceleration is not changed.
+  *
+  * If the call is successful, the dirty flag of \a acceleration will be cleared.
+  *
+  * @param[in]   acceleration   The acceleration structure handle
+  * @param[in]   data           Pointer to data containing the serialized state
+  * @param[in]   size           The size in bytes of the buffer pointed to by \a data
+  *
+  * <B>Return values</B>
+  *
+  * Relevant return values:
+  * - @ref RT_SUCCESS
+  * - @ref RT_ERROR_INVALID_VALUE
+  * - @ref RT_ERROR_VERSION_MISMATCH
+  *
+  * <B>History</B>
+  *
+  * @ref rtAccelerationSetData was introduced in OptiX 1.0.
+  *
+  * <B>See also</B>
+  * @ref rtAccelerationGetData,
+  * @ref rtAccelerationGetDataSize
   *
   */
   RTresult RTAPI rtAccelerationSetData(RTacceleration acceleration, const void* data, RTsize size);
@@ -5282,7 +5522,8 @@ extern "C" {
   * @ref rtAccelerationMarkDirty sets the dirty flag for \a acceleration.
   *
   * Any acceleration structure which is marked dirty will be rebuilt on a call to one of the @ref
-  * rtContextLaunch "rtContextLaunch" functions, and its dirty flag will be reset.
+  * rtContextLaunch "rtContextLaunch" functions, and its dirty flag will be reset. The dirty flag
+  * will also be reset on a sucessful call to @ref rtAccelerationSetData.
   *
   * An acceleration structure which is not marked dirty will never be rebuilt, even if associated
   * groups, geometry, properties, or any other values have changed.
@@ -5303,6 +5544,7 @@ extern "C" {
   *
   * <B>See also</B>
   * @ref rtAccelerationIsDirty,
+  * @ref rtAccelerationSetData,
   * @ref rtContextLaunch
   *
   */
@@ -5319,7 +5561,8 @@ extern "C" {
   * If the flag is set, a nonzero value will be returned in \a *dirty. Otherwise, zero is returned.
   *
   * Any acceleration structure which is marked dirty will be rebuilt on a call to one of the @ref
-  * rtContextLaunch "rtContextLaunch" functions, and its dirty flag will be reset.
+  * rtContextLaunch "rtContextLaunch" functions, and its dirty flag will be reset. The dirty flag
+  * will also be reset on a sucessful call to @ref rtAccelerationSetData.
   *
   * An acceleration structure which is not marked dirty will never be rebuilt, even if associated
   * groups, geometry, properties, or any other values have changed.
@@ -5341,6 +5584,7 @@ extern "C" {
   *
   * <B>See also</B>
   * @ref rtAccelerationMarkDirty,
+  * @ref rtAccelerationSetData,
   * @ref rtContextLaunch
   *
   */
@@ -6273,13 +6517,68 @@ extern "C" {
   RTresult RTAPI rtGeometryGetIntersectionProgram(RTgeometry geometry, RTprogram* program);
 
   /**
-  * Deprecated in OptiX 4.0. Calling this function has no effect.
+  * @brief Sets the dirty flag
+  *
+  * @ingroup Geometry
+  *
+  * <B>Description</B>
+  *
+  * @ref rtGeometryMarkDirty sets for \a geometry the dirty flag. By default the dirty flag is set
+  * for a new Geometry node. After a call to @ref rtContextLaunch "rtContextLaunch" the flag is
+  * automatically cleared.  When the dirty flag is set, the geometry data is uploaded automatically
+  * to the device while a @ref rtContextLaunch "rtContextLaunch" call.
+  *
+  * @param[in]   geometry   The geometry node to mark as dirty
+  *
+  * <B>Return values</B>
+  *
+  * Relevant return values:
+  * - @ref RT_SUCCESS
+  * - @ref RT_ERROR_INVALID_CONTEXT
+  * - @ref RT_ERROR_INVALID_VALUE
+  * - @ref RT_ERROR_MEMORY_ALLOCATION_FAILED
+  *
+  * <B>History</B>
+  *
+  * @ref rtGeometryMarkDirty was introduced in OptiX 1.0.
+  *
+  * <B>See also</B>
+  * @ref rtGeometryIsDirty
   *
   */
   RTresult RTAPI rtGeometryMarkDirty(RTgeometry geometry);
 
   /**
-  * Deprecated in OptiX 4.0. Calling this function has no effect.
+  * @brief Returns the dirty flag
+  *
+  * @ingroup Geometry
+  *
+  * <B>Description</B>
+  *
+  * @ref rtGeometryIsDirty returns the dirty flag of \a geometry. The dirty flag for geometry nodes
+  * can be set with @ref rtGeometryMarkDirty. By default the flag is \a 1 for a new geometry node,
+  * indicating dirty.  After a call to @ref rtContextLaunch "rtContextLaunch" the flag is
+  * automatically set to \a 0. When the dirty flag is set, the geometry data is uploaded
+  * automatically to the device while a @ref rtContextLaunch "rtContextLaunch" call.
+  *
+  * @param[in]   geometry   The geometry node to query from the dirty flag
+  * @param[out]  dirty      Dirty flag
+  *
+  * <B>Return values</B>
+  *
+  * Relevant return values:
+  * - @ref RT_SUCCESS
+  * - @ref RT_ERROR_INVALID_CONTEXT
+  * - @ref RT_ERROR_INVALID_VALUE
+  * - @ref RT_ERROR_MEMORY_ALLOCATION_FAILED
+  *
+  * <B>History</B>
+  *
+  * @ref rtGeometryIsDirty was introduced in OptiX 1.0.
+  *
+  * <B>See also</B>
+  * @ref rtContextLaunch,
+  * @ref rtGeometryMarkDirty
   *
   */
   RTresult RTAPI rtGeometryIsDirty(RTgeometry geometry, int* dirty);
@@ -7095,25 +7394,130 @@ extern "C" {
   RTresult RTAPI rtTextureSamplerGetContext(RTtexturesampler texturesampler, RTcontext* context);
 
   /**
-  * Deprecated in OptiX 3.9. Use @ref rtBufferSetMipLevelCount instead.
+  * @brief Sets the number of MIP levels in a texture sampler
+  *
+  * <B>Deprecated in OptiX 3.9</B>
+  *
+  * @ingroup TextureSampler
+  *
+  * <B>Description</B>
+  *
+  * @ref rtTextureSamplerSetMipLevelCount sets the number of MIP levels in \a texturesampler to \a num_mip_levels.
+  *
+  * @param[in]   texturesampler   The texture sampler object to be changed
+  * @param[in]   num_mip_levels   The new number of MIP levels of the texture sampler
+  *
+  * <B>Return values</B>
+  *
+  * Relevant return values:
+  * - @ref RT_SUCCESS
+  * - @ref RT_ERROR_INVALID_CONTEXT
+  * - @ref RT_ERROR_INVALID_VALUE
+  * - @ref RT_ERROR_MEMORY_ALLOCATION_FAILED
+  *
+  * <B>History</B>
+  *
+  * @ref rtTextureSamplerSetMipLevelCount was introduced in OptiX 1.0.
+  *
+  * <B>See also</B>
+  * @ref rtTextureSamplerGetMipLevelCount
   *
   */
   RTresult RTAPI rtTextureSamplerSetMipLevelCount(RTtexturesampler texturesampler, unsigned int num_mip_levels);
 
   /**
-  * Deprecated in OptiX 3.9. Use @ref rtBufferGetMipLevelCount instead.
+  * @brief Gets the number of MIP levels in a texture sampler
+  *
+  * <B>Deprecated in OptiX 3.9</B>
+  *
+  * @ingroup TextureSampler
+  *
+  * <B>Description</B>
+  *
+  * @ref rtTextureSamplerGetMipLevelCount gets the number of MIP levels contained in \a texturesampler and stores it in
+  * \a *num_mip_levels.
+  *
+  * @param[in]   texturesampler   The texture sampler object to be queried
+  * @param[out]  num_mip_levels   The return handle for the number of MIP levels in the texture sampler
+  *
+  * <B>Return values</B>
+  *
+  * Relevant return values:
+  * - @ref RT_SUCCESS
+  * - @ref RT_ERROR_INVALID_CONTEXT
+  * - @ref RT_ERROR_INVALID_VALUE
+  *
+  * <B>History</B>
+  *
+  * @ref rtTextureSamplerGetMipLevelCount was introduced in OptiX 1.0.
+  *
+  * <B>See also</B>
+  * @ref rtTextureSamplerSetMipLevelCount
   *
   */
   RTresult RTAPI rtTextureSamplerGetMipLevelCount(RTtexturesampler texturesampler, unsigned int* num_mip_levels);
 
   /**
-  * Deprecated in OptiX 3.9. Use texture samplers with layered buffers instead. See @ref rtBufferCreate.
+  * @brief Sets the array size of a texture sampler
+  *
+  * <B>Deprecated in OptiX 3.9</B>
+  *
+  * @ingroup TextureSampler
+  *
+  * <B>Description</B>
+  *
+  * @ref rtTextureSamplerSetArraySize specifies the number of texture array slices present in \a texturesampler as
+  * \a num_textures_in_array.  After changing the number of slices in the array, buffers must be reassociated with
+  * \a texturesampler via @ref rtTextureSamplerSetBuffer.
+  *
+  * @param[in]   texturesampler                The texture sampler object to be changed
+  * @param[in]   num_textures_in_array         The new number of array slices of the texture sampler
+  *
+  * <B>Return values</B>
+  *
+  * Relevant return values:
+  * - @ref RT_SUCCESS
+  * - @ref RT_ERROR_INVALID_CONTEXT
+  * - @ref RT_ERROR_INVALID_VALUE
+  *
+  * <B>History</B>
+  *
+  * @ref rtTextureSamplerSetArraySize was introduced in OptiX 1.0.
+  *
+  * <B>See also</B>
+  * @ref rtTextureSamplerGetArraySize
   *
   */
   RTresult RTAPI rtTextureSamplerSetArraySize(RTtexturesampler texturesampler, unsigned int num_textures_in_array);
 
   /**
-  * Deprecated in OptiX 3.9. Use texture samplers with layered buffers instead. See @ref rtBufferCreate.
+  * @brief Gets the number of array slices present in a texture sampler
+  *
+  * <B>Deprecated in OptiX 3.9</B>
+  *
+  * @ingroup TextureSampler
+  *
+  * <B>Description</B>
+  *
+  * @ref rtTextureSamplerGetArraySize gets the number of texture array slices in \a texturesampler and stores it in
+  * \a *num_textures_in_array.
+  *
+  * @param[in]   texturesampler          The texture sampler object to be queried
+  * @param[out]  num_textures_in_array   The return handle for the number of texture slices the texture sampler
+  *
+  * <B>Return values</B>
+  *
+  * Relevant return values:
+  * - @ref RT_SUCCESS
+  * - @ref RT_ERROR_INVALID_CONTEXT
+  * - @ref RT_ERROR_INVALID_VALUE
+  *
+  * <B>History</B>
+  *
+  * @ref rtTextureSamplerGetArraySize was introduced in OptiX 1.0.
+  *
+  * <B>See also</B>
+  * @ref rtTextureSamplerSetArraySize
   *
   */
   RTresult RTAPI rtTextureSamplerGetArraySize(RTtexturesampler texturesampler, unsigned int* num_textures_in_array);
@@ -7599,6 +8003,8 @@ extern "C" {
   /**
   * @brief Attaches a buffer object to a texture sampler
   *
+  * <B>Deprecated in OptiX 3.9</B>
+  *
   * @ingroup TextureSampler
   *
   * <B>Description</B>
@@ -7606,8 +8012,8 @@ extern "C" {
   * @ref rtTextureSamplerSetBuffer attaches \a buffer to \a texturesampler.
   *
   * @param[in]   texturesampler      The texture sampler object that will contain the buffer
-  * @param[in]   deprecated0         Deprecated in OptiX 3.9, must be 0
-  * @param[in]   deprecated1         Deprecated in OptiX 3.9, must be 0
+  * @param[in]   deprecated0         Must be 0
+  * @param[in]   deprecated1         Must be 0
   * @param[in]   buffer              The buffer to be attached to the texture sampler
   *
   * <B>Return values</B>
@@ -7631,6 +8037,8 @@ extern "C" {
   /**
   * @brief Gets a buffer object handle from a texture sampler
   *
+  * <B>Deprecated</B>
+  *
   * @ingroup TextureSampler
   *
   * <B>Description</B>
@@ -7640,8 +8048,8 @@ extern "C" {
   * stores it in \a *buffer.
   *
   * @param[in]   texturesampler      The texture sampler object to be queried for the buffer
-  * @param[in]   deprecated0         Deprecated in OptiX 3.9, must be 0
-  * @param[in]   deprecated1         Deprecated in OptiX 3.9, must be 0
+  * @param[in]   deprecated0         Must be 0
+  * @param[in]   deprecated1         Must be 0
   * @param[out]  buffer              The return handle to the buffer attached to the texture sampler
   *
   * <B>Return values</B>
@@ -7736,12 +8144,12 @@ extern "C" {
   * Flags can be used to optimize data transfers between the host and its devices. The flag @ref RT_BUFFER_GPU_LOCAL can only be
   * used in combination with @ref RT_BUFFER_INPUT_OUTPUT. @ref RT_BUFFER_INPUT_OUTPUT and @ref RT_BUFFER_GPU_LOCAL used together specify a buffer
   * that allows the host to \a only write, and the device to read \a and write data. The written data will never be visible
-  * on the host side and will generally not be visible on other devices.
+  * on the host side and will generally not be visible or other devices.
   *
-  * If @ref rtBufferGetDevicePointer has been called for a single device for a given buffer,
-  * the user can change the buffer's content on that device through the pointer. OptiX must then synchronize the new buffer contents to all devices.
-  * These synchronization copies occur at every @ref rtContextLaunch "rtContextLaunch", unless the buffer is created with @ref RT_BUFFER_COPY_ON_DIRTY.
-  * In this case, @ref rtBufferMarkDirty can be used to notify OptiX that the buffer has been dirtied and must be synchronized.
+  * If @ref rtBufferSetDevicePointer or @ref rtBufferGetDevicePointer have been called for a single device for a given buffer,
+  * the user can change the buffer's content on that device. The new buffer contents must be synchronized to all devices.
+  * These synchronization copies occur at every @ref rtContextLaunch "rtContextLaunch", unless the buffer is declared with @ref RT_BUFFER_COPY_ON_DIRTY.
+  * In this case, use @ref rtBufferMarkDirty to notify OptiX that the buffer has been dirtied and must be synchronized.
   *
   * Returns @ref RT_ERROR_INVALID_VALUE if \a buffer is \a NULL.
   *
@@ -8281,7 +8689,7 @@ extern "C" {
   *
   * <B>Description</B>
   *
-  * @ref rtBufferSetMipLevelCount sets the number of MIP levels to \a levels. The default number of MIP levels is 1.
+  * @ref rtBufferSetMipLevelCount sets the number of MIP levels to \a levels. Default number of MIP levels is 1.
   * Fails with @ref RT_ERROR_ALREADY_MAPPED if called on a buffer that is mapped. 
   *
   * @param[in]   buffer   The buffer to be resized
@@ -8679,7 +9087,6 @@ extern "C" {
   *  rtBufferUnmap(buffer);
   *@endcode
   * If \a buffer has already been mapped, returns @ref RT_ERROR_ALREADY_MAPPED.
-  * If \a buffer has size zero, the returned pointer is undefined
   *
   * Note that this call does not stop a progressive render if called on a stream buffer.
   *
@@ -8749,20 +9156,18 @@ extern "C" {
   *
   * <B>Description</B>
   *
-  * @ref rtBufferMapEx makes the buffer contents available on the host, either by returning a pointer in \a *optix_owned, or by copying the contents
-  * to a memory location pointed to by \a user_owned. Calling @ref rtBufferMapEx with proper map flags can result in better performance than using @ref rtBufferMap, because
-  * fewer synchronization copies are required in certain situations.
-  * @ref rtBufferMapEx with \a map_flags = @ref RT_BUFFER_MAP_READ_WRITE and \a leve = 0 is equivalent to @ref rtBufferMap.
+  * @ref rtBufferMapEx returns a pointer, accessible by the host, in \a *optix_owned if \a user_owned is null overwise \a user_owned is used for the mapping 
+  * the contents of \a level. @ref rtBufferMap is equivalent to @ref rtBufferMapEx with \a level = 0 and @ref RT_BUFFER_MAP_READ_WRITE flag and \a user_owned = NULL.
   *
   * Note that this call does not stop a progressive render if called on a stream buffer.
   *
   * @param[in]   buffer         The buffer to be mapped
-  * @param[in]   map_flags      Map flags, see below
+  * @param[in]   map_flag       Declare access pattern to the mapped buffer memory. <B>Not supported yet and must be @ref RT_BUFFER_MAP_READ_WRITE</B>.
   * @param[in]   level          The mipmap level to be mapped
-  * @param[in]   user_owned     Not yet supported. Must be NULL
+  * @param[in]   user_owned     Preallocated memory for mapping, can be null, then it is allocated internally. <B>Not supported yet and must be NULL</B>.
   * @param[out]  optix_owned    Return handle to a user pointer where the buffer will be mapped to
   *
-  * The following flags are supported for map_flags. They are mutually exclusive:
+  * The supported flags are:
   *
   * -  @ref RT_BUFFER_MAP_READ
   * -  @ref RT_BUFFER_MAP_WRITE
@@ -9094,7 +9499,7 @@ extern "C" {
   * @ref rtContextSetRemoteDevice
   *
   */
-  RTresult RTAPI rtRemoteDeviceCreate(const char* url, const char* username, const char* password, RTremotedevice* remote_dev);
+  RTresult RTAPI rtRemoteDeviceCreate(const char* url, const char* username, const char* password, RTremotedevice *remote_dev);
 
   /**
   * @brief Destroys a remote device
@@ -9232,7 +9637,7 @@ extern "C" {
   * @ref rtContextSetRemoteDevice
   *
   */
-  RTresult RTAPI rtRemoteDeviceGetAttribute(RTremotedevice remote_dev, RTremotedeviceattribute attrib, RTsize size, void* p);
+  RTresult RTAPI rtRemoteDeviceGetAttribute(RTremotedevice remote_dev, RTremotedeviceattribute attrib, RTsize size, void *p);
 
   /**
   * @brief Reserve nodes for rendering on a remote device

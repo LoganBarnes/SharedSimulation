@@ -66,7 +66,7 @@ typedef enum
   RT_FORMAT_FLOAT,                        /*!< Float                */
   RT_FORMAT_FLOAT2,                       /*!< sizeof(float)*2      */
   RT_FORMAT_FLOAT3,                       /*!< sizeof(float)*3      */
-  RT_FORMAT_FLOAT4,                       /*!< sizeof(float)*4      */
+  RT_FORMAT_FLOAT4,                       /*!< sizeof(float)*2      */
   RT_FORMAT_BYTE,                         /*!< BYTE                 */
   RT_FORMAT_BYTE2,                        /*!< sizeof(CHAR)*2       */
   RT_FORMAT_BYTE3,                        /*!< sizeof(CHAR)*3       */
@@ -210,10 +210,10 @@ typedef enum
 /*! Buffer mapping flags */
 typedef enum
 {
-  RT_BUFFER_MAP_READ            = 0x1, /*!< Map buffer memory for reading */  
-  RT_BUFFER_MAP_READ_WRITE      = 0x2, /*!< Map buffer memory for both reading and writing */
-  RT_BUFFER_MAP_WRITE           = 0x4, /*!< Map buffer memory for writing */
-  RT_BUFFER_MAP_WRITE_DISCARD   = 0x8  /*!< Map buffer memory for writing, with the previous contents being undefined*/
+  RT_BUFFER_MAP_READ,          /*!< Map buffer memory only for reading */
+  RT_BUFFER_MAP_WRITE,         /*!< Map buffer memory only for writing */
+  RT_BUFFER_MAP_READ_WRITE,    /*!< Map buffer memory for both reading and writing */
+  RT_BUFFER_MAP_WRITE_DISCARD  /*!< Map buffer memory for overwriting entirely */
 } RTbuffermapflag;
 
 /*! Exceptions */

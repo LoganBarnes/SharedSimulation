@@ -291,11 +291,11 @@ Camera::buildRayBasisVectors(
   glm::vec3 &W = *pW;
 
   float ulen, vlen, wlen;
-  W = -glm::vec3( m_eye );
+  W = -glm::vec3( m_eye ); // always looking at origin for now
 
   wlen = glm::length( W );
   U = glm::normalize( glm::cross( W, glm::vec3( m_up ) ) );
-  V = glm::normalize( glm::cross( U, V ) );
+  V = glm::normalize( glm::cross( U, W ) );
 
   ulen = wlen * glm::tan( glm::radians( 0.5f * m_heightDegrees ) );
   U *= ulen;

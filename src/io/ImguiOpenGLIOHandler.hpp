@@ -70,10 +70,10 @@ protected:
 private:
 
   virtual
-  void onRender ( const double alpha ) = 0;
+  void _onRender ( const double alpha ) = 0;
 
   virtual
-  void onGuiRender( ) = 0;
+  void _onGuiRender( ) = 0;
 
 };
 

@@ -26,8 +26,6 @@
 #include "optix_defines.h"
 #include "../optix_sizet.h"
 
-#include <cstdio>
-
 struct rtObject;
 
 namespace optix {
@@ -314,6 +312,28 @@ namespace optix {
                  );
   }
 
+  static __forceinline__ __device__ unsigned int rt_pickle_pointer(void *p)
+  {
+    unsigned int ret;
+    asm volatile("call (%0), _rt_pickle_pointer" OPTIX_BITNESS_SUFFIX ", (%1);" :
+                "=r"(ret) :
+                OPTIX_ASM_PTR(p):
+                );
+
+    return ret;
+  }
+
+  static __forceinline__ __device__ void * rt_unpickle_pointer(unsigned int p)
+  {
+    void * ret;
+    asm volatile("call (%0), _rt_unpickle_pointer" OPTIX_BITNESS_SUFFIX ", (%1);" :
+                 "=" OPTIX_ASM_PTR(ret) :
+                 "r"(p):
+                 );
+
+    return ret;
+  }
+
   static __forceinline__ __device__ bool rt_potential_intersection(float t)
   {
     int ret;
@@ -436,6 +456,64 @@ namespace optix {
      Printing
   */
 
+  /*
+   Type descriptors for printf arguments:
+   0 = 32 bit integer value
+   1 = 64 bit integer value
+   2 = 32 bit float value
+   3 = 64 bit double value
+  */
+  template<typename T> struct rt_print_t                     { static const int desc = 0; };
+  template<>           struct rt_print_t<long long>          { static const int desc = 1; };
+  template<>           struct rt_print_t<unsigned long long> { static const int desc = 1; };
+  template<>           struct rt_print_t<float>              { static const int desc = 2; };
+  template<>           struct rt_print_t<double>             { static const int desc = 3; };
+
+  static __forceinline__ __device__ int rt_print_strlen( const char* s )
+  {
+    const char* p = s;
+    while( *p ) ++p;
+    return p - s;
+  }
+
+  template<typename T>
+  static __forceinline__ __device__ int rt_print_arg( T arg, int off )
+  {
+    const int sz = max( 4, (int)sizeof( arg ) );
+    const int typedesc = rt_print_t<T>::desc;
+
+    const unsigned int* p;
+
+    /* Get a pointer to a (at least) 32 bit value. */
+    unsigned int iarg;
+    if( sizeof(arg) < 4 )
+    {
+      iarg = (unsigned int)arg;
+      p = &iarg;
+    }
+    else
+    {
+      p = (unsigned int*)&arg;
+    }
+
+    /* Write type descriptor. */
+    asm volatile("call (), _rt_print_write32, (%0, %1);" :
+                   :
+                   "r"(typedesc), "r"(off) :
+                   );
+
+    /* Write argument. */
+    for( int i=0; i<sz/4; ++i )
+    {
+      asm volatile("call (), _rt_print_write32, (%0, %1);" :
+                   :
+                   "r"(p[i]), "r"( off + (i+1)*4 ) :
+                   );
+    }
+
+    return sz;
+  }
+
   static __forceinline__ __device__ int rt_print_active()
   {
     int ret;
@@ -445,11 +523,39 @@ namespace optix {
                  );
     return ret;
   }
-  
-  #define _RT_PRINT_ACTIVE()                                              \
-    if( !optix::rt_print_active() )                                       \
-      return;                                                             \
 
+  static __forceinline__ __device__ int rt_print_start( const char* fmt, int sz )
+  {
+    int ret;
+    asm volatile("call (%0), _rt_print_start" OPTIX_BITNESS_SUFFIX ", (%1, %2);" :
+                 "=r"(ret) :
+                 OPTIX_ASM_PTR(fmt), "r"(sz) :
+                 );
+    return ret;
+  }
+
+#define _RT_PRINTF_1()                                                  \
+  if( !optix::rt_print_active() )                                       \
+    return;                                                             \
+  /* Compute length of header (=batchsize) plus format string. */       \
+  const int fmtlen = optix::rt_print_strlen( fmt );                     \
+  int sz = 4 + fmtlen + 1;                                              \
+  sz = (sz+3) & ~3; /* align */
+
+#define _RT_PRINTF_2()                                                  \
+  int off; /* offset where to start writing args */                     \
+  if( !(off=optix::rt_print_start(fmt,sz)) )                            \
+    return;  /* print buffer is full */
+
+#define _RT_PRINTF_ARG_1( a )                                           \
+  /* Sum up argument sizes. */                                          \
+  sz += 4;  /* type descriptor */                                       \
+  sz += max( 4, static_cast<unsigned int>(sizeof( a )) );
+
+#define _RT_PRINTF_ARG_2( a )                                           \
+  /* Write out argument. */                                             \
+  off += optix::rt_print_arg( a, off );                                 \
+  off += 4; /* space for type desc */
 
 } /* end namespace optix */
 

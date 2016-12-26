@@ -40,9 +40,9 @@
 #ifndef __optix_optix_h__
 #define __optix_optix_h__
 
-#define OPTIX_VERSION 40002  /* major =  OPTIX_VERSION/10000,        *
-                              * minor = (OPTIX_VERSION%10000)/100,   *
-                              * micro =  OPTIX_VERSION%100           */
+#define OPTIX_VERSION 3090 /* 3.9.0 (major =  OPTIX_VERSION/1000,       *
+                            *        minor = (OPTIX_VERSION%1000)/10,   *
+                            *        micro =  OPTIX_VERSION%10          */
 
 
 #ifdef __CUDACC__

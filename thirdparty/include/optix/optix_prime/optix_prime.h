@@ -31,9 +31,9 @@
 #ifndef __optix_optix_prime_h__
 #define __optix_optix_prime_h__
 
-#define OPTIX_PRIME_VERSION 40002  /* major =  OPTIX_PRIME_VERSION/10000,        *
-                                    * minor = (OPTIX_PRIME_VERSION%10000)/100,   *
-                                    * micro =  OPTIX_PRIME_VERSION%100           */
+#define OPTIX_PRIME_VERSION 3090 /* 3.9.0 (major =  OPTIX_PRIME_VERSION/1000,     *
+                                  *        minor = (OPTIX_PRIME_VERSION%1000)/10, *
+                                  *        micro =  OPTIX_PRIME_VERSION%10        */
 
 #ifndef RTPAPI
 #  if defined( _WIN32 )
@@ -743,7 +743,6 @@ extern "C" {
    * @ingroup Prime_Query
    *
    * The rays buffer is not accessed until rtpQueryExecute() is called.
-   * The ray directions must be unit length for correct results.
    *
    * @param[in] query      Query
    * @param[in] rays       Buffer descriptor for rays
@@ -967,9 +966,8 @@ extern "C" {
    *
    * @ingroup Prime_Misc
    *
-   * The encoding for the version number prior to OptiX 4.0.0 is major*1000 + minor*10 + micro.  
-   * For versions 4.0.0 and higher, the encoding is major*10000 + minor*100 + micro.
-   * For example, for version 3.5.1 this function would return 3051, and for version 4.1.2 it would return 40102.
+   * The encoding for the version number is major*1000 + minor*10 + micro. For
+   * example, for version 3.5.1 this function would return 3051.
    *
    * @param[out] version     Returned version
    *

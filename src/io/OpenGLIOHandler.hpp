@@ -82,7 +82,7 @@ protected:
 private:
 
   virtual
-  void onRender ( const double alpha ) = 0;
+  void _onRender ( const double alpha ) = 0;
 
 };
 

@@ -393,6 +393,19 @@ template<> struct rtCallableProgramSizeofWrapper<void> { static const size_t val
 #endif
 #endif
 
+/* Helper functions for converting pointers to/from integers so we can support
+   call by reference on SM1.x */
+namespace optix {
+
+  typedef unsigned int rtPickledLocalPointer;
+  static inline __device__ rtPickledLocalPointer rtPickleLocalPointer( void *p ) {
+    return optix::rt_pickle_pointer( p );
+  }
+
+  static inline __device__ void * rtUnpickleLocalPointer( rtPickledLocalPointer p ) {
+    return optix::rt_unpickle_pointer( p );
+  }
+}
 
 /*
   Buffer
@@ -2196,85 +2209,246 @@ static inline __device__ void rtGetTransform( RTtransformkind kind, float matrix
   * 
   */
   /** @{ */
-
+  
 static inline __device__ void rtPrintf( const char* fmt )
 {
-  _RT_PRINT_ACTIVE()
-  printf(fmt);
+  _RT_PRINTF_1();
+  optix::rt_print_start(fmt,sz);
 }
 template<typename T1>
 static inline __device__ void rtPrintf( const char* fmt, T1 arg1 )
 {
-  _RT_PRINT_ACTIVE()
-  printf(fmt, arg1);
+  _RT_PRINTF_1();
+  _RT_PRINTF_ARG_1( arg1 );
+  _RT_PRINTF_2();
+  _RT_PRINTF_ARG_2( arg1 );
 }
 template<typename T1, typename T2>
 static inline __device__ void rtPrintf( const char* fmt, T1 arg1, T2 arg2 )
 {
-  _RT_PRINT_ACTIVE()
-  printf(fmt, arg1, arg2);
+  _RT_PRINTF_1();
+  _RT_PRINTF_ARG_1( arg1 );
+  _RT_PRINTF_ARG_1( arg2 );
+  _RT_PRINTF_2();
+  _RT_PRINTF_ARG_2( arg1 );
+  _RT_PRINTF_ARG_2( arg2 );
 }
 template<typename T1, typename T2, typename T3>
 static inline __device__ void rtPrintf( const char* fmt, T1 arg1, T2 arg2, T3 arg3 )
 {
-  _RT_PRINT_ACTIVE()
-  printf(fmt, arg1, arg2, arg3);
+  _RT_PRINTF_1();
+  _RT_PRINTF_ARG_1( arg1 );
+  _RT_PRINTF_ARG_1( arg2 );
+  _RT_PRINTF_ARG_1( arg3 );
+  _RT_PRINTF_2();
+  _RT_PRINTF_ARG_2( arg1 );
+  _RT_PRINTF_ARG_2( arg2 );
+  _RT_PRINTF_ARG_2( arg3 );
 }
 template<typename T1, typename T2, typename T3, typename T4>
 static inline __device__ void rtPrintf( const char* fmt, T1 arg1, T2 arg2, T3 arg3, T4 arg4 )
 {
-  _RT_PRINT_ACTIVE()
-  printf(fmt, arg1, arg2, arg3, arg4);
+  _RT_PRINTF_1();
+  _RT_PRINTF_ARG_1( arg1 );
+  _RT_PRINTF_ARG_1( arg2 );
+  _RT_PRINTF_ARG_1( arg3 );
+  _RT_PRINTF_ARG_1( arg4 );
+  _RT_PRINTF_2();
+  _RT_PRINTF_ARG_2( arg1 );
+  _RT_PRINTF_ARG_2( arg2 );
+  _RT_PRINTF_ARG_2( arg3 );
+  _RT_PRINTF_ARG_2( arg4 );
 }
 template<typename T1, typename T2, typename T3, typename T4, typename T5>
 static inline __device__ void rtPrintf( const char* fmt, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5 )
 {
-  _RT_PRINT_ACTIVE()
-  printf(fmt, arg1, arg2, arg3, arg4, arg5);
+  _RT_PRINTF_1();
+  _RT_PRINTF_ARG_1( arg1 );
+  _RT_PRINTF_ARG_1( arg2 );
+  _RT_PRINTF_ARG_1( arg3 );
+  _RT_PRINTF_ARG_1( arg4 );
+  _RT_PRINTF_ARG_1( arg5 );
+  _RT_PRINTF_2();
+  _RT_PRINTF_ARG_2( arg1 );
+  _RT_PRINTF_ARG_2( arg2 );
+  _RT_PRINTF_ARG_2( arg3 );
+  _RT_PRINTF_ARG_2( arg4 );
+  _RT_PRINTF_ARG_2( arg5 );
 }
 template<typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
 static inline __device__ void rtPrintf( const char* fmt, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6 )
 {
-  _RT_PRINT_ACTIVE()
-  printf(fmt, arg1, arg2, arg3, arg4, arg5, arg6);
+  _RT_PRINTF_1();
+  _RT_PRINTF_ARG_1( arg1 );
+  _RT_PRINTF_ARG_1( arg2 );
+  _RT_PRINTF_ARG_1( arg3 );
+  _RT_PRINTF_ARG_1( arg4 );
+  _RT_PRINTF_ARG_1( arg5 );
+  _RT_PRINTF_ARG_1( arg6 );
+  _RT_PRINTF_2();
+  _RT_PRINTF_ARG_2( arg1 );
+  _RT_PRINTF_ARG_2( arg2 );
+  _RT_PRINTF_ARG_2( arg3 );
+  _RT_PRINTF_ARG_2( arg4 );
+  _RT_PRINTF_ARG_2( arg5 );
+  _RT_PRINTF_ARG_2( arg6 );
 }
 template<typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7>
 static inline __device__ void rtPrintf( const char* fmt, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7 )
 {
-  _RT_PRINT_ACTIVE()
-  printf(fmt, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+  _RT_PRINTF_1();
+  _RT_PRINTF_ARG_1( arg1 );
+  _RT_PRINTF_ARG_1( arg2 );
+  _RT_PRINTF_ARG_1( arg3 );
+  _RT_PRINTF_ARG_1( arg4 );
+  _RT_PRINTF_ARG_1( arg5 );
+  _RT_PRINTF_ARG_1( arg6 );
+  _RT_PRINTF_ARG_1( arg7 );
+  _RT_PRINTF_2();
+  _RT_PRINTF_ARG_2( arg1 );
+  _RT_PRINTF_ARG_2( arg2 );
+  _RT_PRINTF_ARG_2( arg3 );
+  _RT_PRINTF_ARG_2( arg4 );
+  _RT_PRINTF_ARG_2( arg5 );
+  _RT_PRINTF_ARG_2( arg6 );
+  _RT_PRINTF_ARG_2( arg7 );
 }
 template<typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7, typename T8>
 static inline __device__ void rtPrintf( const char* fmt, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8 )
 {
-  _RT_PRINT_ACTIVE()
-  printf(fmt, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+  _RT_PRINTF_1();
+  _RT_PRINTF_ARG_1( arg1 );
+  _RT_PRINTF_ARG_1( arg2 );
+  _RT_PRINTF_ARG_1( arg3 );
+  _RT_PRINTF_ARG_1( arg4 );
+  _RT_PRINTF_ARG_1( arg5 );
+  _RT_PRINTF_ARG_1( arg6 );
+  _RT_PRINTF_ARG_1( arg7 );
+  _RT_PRINTF_ARG_1( arg8 );
+  _RT_PRINTF_2();
+  _RT_PRINTF_ARG_2( arg1 );
+  _RT_PRINTF_ARG_2( arg2 );
+  _RT_PRINTF_ARG_2( arg3 );
+  _RT_PRINTF_ARG_2( arg4 );
+  _RT_PRINTF_ARG_2( arg5 );
+  _RT_PRINTF_ARG_2( arg6 );
+  _RT_PRINTF_ARG_2( arg7 );
+  _RT_PRINTF_ARG_2( arg8 );
 }
 template<typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7, typename T8, typename T9>
 static inline __device__ void rtPrintf( const char* fmt, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9 )
 {
-  _RT_PRINT_ACTIVE()
-  printf(fmt, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);
+  _RT_PRINTF_1();
+  _RT_PRINTF_ARG_1( arg1 );
+  _RT_PRINTF_ARG_1( arg2 );
+  _RT_PRINTF_ARG_1( arg3 );
+  _RT_PRINTF_ARG_1( arg4 );
+  _RT_PRINTF_ARG_1( arg5 );
+  _RT_PRINTF_ARG_1( arg6 );
+  _RT_PRINTF_ARG_1( arg7 );
+  _RT_PRINTF_ARG_1( arg8 );
+  _RT_PRINTF_ARG_1( arg9 );
+  _RT_PRINTF_2();
+  _RT_PRINTF_ARG_2( arg1 );
+  _RT_PRINTF_ARG_2( arg2 );
+  _RT_PRINTF_ARG_2( arg3 );
+  _RT_PRINTF_ARG_2( arg4 );
+  _RT_PRINTF_ARG_2( arg5 );
+  _RT_PRINTF_ARG_2( arg6 );
+  _RT_PRINTF_ARG_2( arg7 );
+  _RT_PRINTF_ARG_2( arg8 );
+  _RT_PRINTF_ARG_2( arg9 );
 }
 template<typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7, typename T8, typename T9, typename T10>
 static inline __device__ void rtPrintf( const char* fmt, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10 )
 {
-  _RT_PRINT_ACTIVE()
-  printf(fmt, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
+  _RT_PRINTF_1();
+  _RT_PRINTF_ARG_1( arg1 );
+  _RT_PRINTF_ARG_1( arg2 );
+  _RT_PRINTF_ARG_1( arg3 );
+  _RT_PRINTF_ARG_1( arg4 );
+  _RT_PRINTF_ARG_1( arg5 );
+  _RT_PRINTF_ARG_1( arg6 );
+  _RT_PRINTF_ARG_1( arg7 );
+  _RT_PRINTF_ARG_1( arg8 );
+  _RT_PRINTF_ARG_1( arg9 );
+  _RT_PRINTF_ARG_1( arg10 );
+  _RT_PRINTF_2();
+  _RT_PRINTF_ARG_2( arg1 );
+  _RT_PRINTF_ARG_2( arg2 );
+  _RT_PRINTF_ARG_2( arg3 );
+  _RT_PRINTF_ARG_2( arg4 );
+  _RT_PRINTF_ARG_2( arg5 );
+  _RT_PRINTF_ARG_2( arg6 );
+  _RT_PRINTF_ARG_2( arg7 );
+  _RT_PRINTF_ARG_2( arg8 );
+  _RT_PRINTF_ARG_2( arg9 );
+  _RT_PRINTF_ARG_2( arg10 );
 }
 template<typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7, typename T8, typename T9, typename T10, typename T11>
 static inline __device__ void rtPrintf( const char* fmt, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11 )
 {
-  _RT_PRINT_ACTIVE()
-  printf(fmt, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11);
+  _RT_PRINTF_1();
+  _RT_PRINTF_ARG_1( arg1 );
+  _RT_PRINTF_ARG_1( arg2 );
+  _RT_PRINTF_ARG_1( arg3 );
+  _RT_PRINTF_ARG_1( arg4 );
+  _RT_PRINTF_ARG_1( arg5 );
+  _RT_PRINTF_ARG_1( arg6 );
+  _RT_PRINTF_ARG_1( arg7 );
+  _RT_PRINTF_ARG_1( arg8 );
+  _RT_PRINTF_ARG_1( arg9 );
+  _RT_PRINTF_ARG_1( arg10 );
+  _RT_PRINTF_ARG_1( arg11 );
+  _RT_PRINTF_2();
+  _RT_PRINTF_ARG_2( arg1 );
+  _RT_PRINTF_ARG_2( arg2 );
+  _RT_PRINTF_ARG_2( arg3 );
+  _RT_PRINTF_ARG_2( arg4 );
+  _RT_PRINTF_ARG_2( arg5 );
+  _RT_PRINTF_ARG_2( arg6 );
+  _RT_PRINTF_ARG_2( arg7 );
+  _RT_PRINTF_ARG_2( arg8 );
+  _RT_PRINTF_ARG_2( arg9 );
+  _RT_PRINTF_ARG_2( arg10 );
+  _RT_PRINTF_ARG_2( arg11 );
 }
 template<typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7, typename T8, typename T9, typename T10, typename T11, typename T12>
 static inline __device__ void rtPrintf( const char* fmt, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12 )
 {
-  _RT_PRINT_ACTIVE()
-  printf(fmt, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12);
+  _RT_PRINTF_1();
+  _RT_PRINTF_ARG_1( arg1 );
+  _RT_PRINTF_ARG_1( arg2 );
+  _RT_PRINTF_ARG_1( arg3 );
+  _RT_PRINTF_ARG_1( arg4 );
+  _RT_PRINTF_ARG_1( arg5 );
+  _RT_PRINTF_ARG_1( arg6 );
+  _RT_PRINTF_ARG_1( arg7 );
+  _RT_PRINTF_ARG_1( arg8 );
+  _RT_PRINTF_ARG_1( arg9 );
+  _RT_PRINTF_ARG_1( arg10 );
+  _RT_PRINTF_ARG_1( arg11 );
+  _RT_PRINTF_ARG_1( arg12 );
+  _RT_PRINTF_2();
+  _RT_PRINTF_ARG_2( arg1 );
+  _RT_PRINTF_ARG_2( arg2 );
+  _RT_PRINTF_ARG_2( arg3 );
+  _RT_PRINTF_ARG_2( arg4 );
+  _RT_PRINTF_ARG_2( arg5 );
+  _RT_PRINTF_ARG_2( arg6 );
+  _RT_PRINTF_ARG_2( arg7 );
+  _RT_PRINTF_ARG_2( arg8 );
+  _RT_PRINTF_ARG_2( arg9 );
+  _RT_PRINTF_ARG_2( arg10 );
+  _RT_PRINTF_ARG_2( arg11 );
+  _RT_PRINTF_ARG_2( arg12 );
 }
 /** @} */
+
+#undef _RT_PRINTF_1
+#undef _RT_PRINTF_2
+#undef _RT_PRINTF_ARG_1
+#undef _RT_PRINTF_ARG_2
 
 /** @cond */
 namespace rti_internal_register {

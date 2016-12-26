@@ -210,9 +210,9 @@ extern "C" {
   * 
   * <B>Description</B>
   * 
-  * @ref rtBufferGetGLBOId stores the OpenGL buffer object id in \a gl_id if
-  * \a buffer was created with @ref rtBufferCreateFromGLBO.  If \a buffer was
-  * not created from an OpenGL Buffer Object \a gl_id will be set to 0.
+  * @ref rtBufferGetGLBOId stores the OpenGL buffer object id in *\a gl_id if \a buffer was created with
+  * @ref rtBufferCreateFromGLBO.  If \a buffer was not created from an OpenGL Buffer Object *\a gl_id will be 0 after
+  * the call and @ref RT_ERROR_INVALID_VALUE is returned.
   * 
   * @param[in]   buffer          The buffer to be queried for its OpenGL buffer object id
   * @param[in]   glId            The return handle for the id
@@ -242,10 +242,9 @@ extern "C" {
   * 
   * <B>Description</B>
   * 
-  * @ref rtTextureSamplerGetGLImageId stores the OpenGL image object id in
-  * \a gl_id if \a textureSampler was created with @ref rtTextureSamplerCreateFromGLImage.
-  * If \a textureSampler was not created from an OpenGL image object \a gl_id
-  * will be set to 0.
+  * @ref rtTextureSamplerGetGLImageId stores the OpenGL image object id in *\a gl_id if \a textureSampler was created with
+  * @ref rtTextureSamplerCreateFromGLImage. If \a textureSampler was not created from an OpenGL image object \a gl_id will be 0 after
+  * the call and @ref RT_ERROR_INVALID_VALUE is returned.
   * 
   * @param[in]   textureSampler          The texture sampler to be queried for its OpenGL buffer object id
   * @param[in]   glId                    The return handle for the id

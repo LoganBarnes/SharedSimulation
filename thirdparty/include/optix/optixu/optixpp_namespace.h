@@ -35,6 +35,9 @@
 #    define WIN32_LEAN_AND_MEAN
 #  endif
 #  include <windows.h>
+#  include "../optix_d3d9_interop.h"
+#  include "../optix_d3d10_interop.h"
+#  include "../optix_d3d11_interop.h"
 #endif
 #include "../optix_gl_interop.h"
 #include "../optix_cuda_interop.h"
@@ -370,7 +373,7 @@ namespace optix {
   ///
   /// \brief Variable object wraps OptiX C API RTvariable type and its related function set.
   /// 
-  /// See the OptiX Programming Guide for a complete description of
+  /// See @ref OptiXApiReference for complete description of
   /// the usage and behavior of RTvariable objects.  Creation and querying of
   /// Variables can be performed via the Handle::operator[] function of the scope
   /// object associated with the variable. For example: 
@@ -621,8 +624,8 @@ namespace optix {
     /// @}
 
     /// @{
-    /// <B>traverser parameter unused in OptiX 4.0</B> See @ref rtAccelerationCreate.
-    Acceleration createAcceleration(const std::string& builder, const std::string& ignored = "");
+    /// See @ref rtAccelerationCreate
+    Acceleration createAcceleration(const char* builder, const char* traverser);
 
     /// Create a buffer with given RTbuffertype.  See @ref rtBufferCreate.
     Buffer createBuffer(unsigned int type);
@@ -679,6 +682,22 @@ namespace optix {
 
     /// Create TextureSampler from GL image.  See @ref rtTextureSamplerCreateFromGLImage
     TextureSampler createTextureSamplerFromGLImage(unsigned int id, RTgltarget target);
+
+#ifdef _WIN32
+    /// Create buffer from D3D9 buffer object.  Windows only.  See @ref rtBufferCreateFromD3D9Resource.
+    Buffer createBufferFromD3D9Resource(unsigned int type, IDirect3DResource9 *pResource);
+    /// Create buffer from D3D10 buffer object.  Windows only.  See @ref rtBufferCreateFromD3D10Resource.
+    Buffer createBufferFromD3D10Resource(unsigned int type, ID3D10Resource *pResource);
+    /// Create buffer from D3D11 buffer object.  Windows only.  See @ref rtBufferCreateFromD3D11Resource.
+    Buffer createBufferFromD3D11Resource(unsigned int type, ID3D11Resource *pResource);
+
+    /// Create TextureSampler from D3D9 image.  Windows only.  See @ref rtTextureSamplerCreateFromD3D9Resource.
+    TextureSampler createTextureSamplerFromD3D9Resource(IDirect3DResource9 *pResource);
+    /// Create TextureSampler from D3D10 image.  Windows only.  See @ref rtTextureSamplerCreateFromD3D10Resource.
+    TextureSampler createTextureSamplerFromD3D10Resource(ID3D10Resource *pResource);
+    /// Create TextureSampler from D3D11 image.  Windows only.  See @ref rtTextureSamplerCreateFromD3D11Resource.
+    TextureSampler createTextureSamplerFromD3D11Resource(ID3D11Resource *pResource);
+#endif
 
     /// Queries the Buffer object from a given buffer id obtained from a previous call to
     /// @ref BufferObj::getId.  See @ref BufferObj::getId and @ref rtContextGetBufferFromId.
@@ -738,6 +757,15 @@ namespace optix {
     template<class Iterator>
     void setDevices(Iterator begin, Iterator end);
 
+#ifdef _WIN32
+    /// Set the D3D device assocaiated with this context (Windows only).  See @ref rtContextSetD3D9Device.
+    void setD3D9Device(IDirect3DDevice9* device);
+    /// Set the D3D device assocaiated with this context (Windows only).  See @ref rtContextSetD3D10Device.
+    void setD3D10Device(ID3D10Device* device);
+    /// Set the D3D device assocaiated with this context (Windows only).  See @ref rtContextSetD3D11Device.
+    void setD3D11Device(ID3D11Device* device);
+#endif
+
     /// See @ref rtContextGetDevices.  This returns the list of currently enabled devices.
     std::vector<int> getEnabledDevices() const;
 
@@ -756,10 +784,10 @@ namespace optix {
     /// See @ref rtContextGetAttribute
     RTsize getUsedHostMemory() const;
 
-    /// <B>Deprecated in OptiX 4.0</B> See @ref rtContextGetAttribute
+    /// See @ref rtContextGetAttribute
     int getGPUPagingActive() const;
 
-    /// <B>Deprecated in OptiX 4.0</B> See @ref rtContextGetAttribute
+    /// See @ref rtContextGetAttribute
     int getGPUPagingForcedOff() const;
 
     /// See @ref rtContextGetAttribute
@@ -770,7 +798,7 @@ namespace optix {
     /// See @ref rtContextSetAttribute
     void setCPUNumThreads(int cpu_num_threads);
 
-    /// <B>Deprecated in OptiX 4.0</B> See @ref rtContextSetAttribute
+    /// See @ref rtContextSetAttribute
     void setGPUPagingForcedOff(int gpu_paging_forced_off);
 
     /// See rtContextSetAttribute
@@ -821,7 +849,7 @@ namespace optix {
     Program getMissProgram(unsigned int ray_type_index) const;
     /// @}
 
-    /// <B>Deprecated in OptiX 4.0</B> See @ref rtContextCompile
+    /// See @ref rtContextCompile
     void compile();
 
     /// @{
@@ -1170,10 +1198,10 @@ namespace optix {
     /// @}
 
     /// @{
-    /// Set properties specifying Acceleration builder behavior.
+    /// Set properties specifying Acceleration builder/traverser behavior.
     /// See @ref rtAccelerationSetProperty.
     void        setProperty( const std::string& name, const std::string& value );
-    /// Query properties specifying Acceleration builder behavior.
+    /// Query properties specifying Acceleration builder/traverser behavior.
     /// See @ref rtAccelerationGetProperty.
     std::string getProperty( const std::string& name ) const;
 
@@ -1181,18 +1209,18 @@ namespace optix {
     void        setBuilder(const std::string& builder);
     /// Query the acceleration structure builder.  See @ref rtAccelerationGetBuilder.
     std::string getBuilder() const;
-    /// <B>Deprecated in OptiX 4.0</B> Specify the acceleration structure traverser.  See @ref rtAccelerationSetTraverser.
+    /// Specify the acceleration structure traverser.  See @ref rtAccelerationSetTraverser.
     void        setTraverser(const std::string& traverser);
-    /// <B>Deprecated in OptiX 4.0</B> Query the acceleration structure traverser.  See @ref rtAccelerationGetTraverser.
+    /// Query the acceleration structure traverser.  See @ref rtAccelerationGetTraverser.
     std::string getTraverser() const;
     /// @}
 
     /// @{
-    /// <B>Deprecated in OptiX 4.0</B> Query the size of the marshalled acceleration data.  See @ref rtAccelerationGetDataSize.
+    /// Query the size of the marshalled acceleration data.  See @ref rtAccelerationGetDataSize.
     RTsize getDataSize() const;
-    /// <B>Deprecated in OptiX 4.0</B> Get the marshalled acceleration data.  See @ref rtAccelerationGetData.
+    /// Get the marshalled acceleration data.  See @ref rtAccelerationGetData.
     void   getData( void* data ) const;
-    /// <B>Deprecated in OptiX 4.0</B> Specify the acceleration structure via marshalled acceleration data.  See @ref rtAccelerationSetData.
+    /// Specify the acceleration structure via marshalled acceleration data.  See @ref rtAccelerationSetData.
     void   setData( const void* data, RTsize size );
     /// @}
 
@@ -1276,9 +1304,9 @@ namespace optix {
     Context getContext() const;
 
     /// @{
-    /// <B>Deprecated in OptiX 4.0</B>  See @ref rtGeometryMarkDirty.
+    /// Mark this geometry as dirty, causing rebuild of parent groups acceleration.  See @ref rtGeometryMarkDirty.
     void markDirty();
-    /// <B>Deprecated in OptiX 4.0</B>  See @ref rtGeometryIsDirty.
+    /// Query whether this geometry has been marked dirty.  See @ref rtGeometryIsDirty.
     bool isDirty() const;
     /// @}
 
@@ -1462,6 +1490,26 @@ namespace optix {
     void unregisterGLTexture();
     /// @}
 
+#ifdef _WIN32
+
+    /// @{
+    /// Declare the texture's buffer as immutable and accessible by OptiX.  See @ref rtTextureSamplerD3D9Register.
+    void registerD3D9Texture();
+    /// Declare the texture's buffer as immutable and accessible by OptiX.  See @ref rtTextureSamplerD3D10Register.
+    void registerD3D10Texture();
+    /// Declare the texture's buffer as immutable and accessible by OptiX.  See @ref rtTextureSamplerD3D11Register.
+    void registerD3D11Texture();
+
+    /// Declare the texture's buffer as mutable and inaccessible by OptiX.  See @ref rtTextureSamplerD3D9Unregister.
+    void unregisterD3D9Texture();
+    /// Declare the texture's buffer as mutable and inaccessible by OptiX.  See @ref rtTextureSamplerD3D10Unregister.
+    void unregisterD3D10Texture();
+    /// Declare the texture's buffer as mutable and inaccessible by OptiX.  See @ref rtTextureSamplerD3D10Unregister.
+    void unregisterD3D11Texture();
+    /// @}
+
+#endif
+
   private:
     typedef RTtexturesampler api_t;
     virtual ~TextureSamplerObj() {}
@@ -1496,11 +1544,11 @@ namespace optix {
     RTsize getElementSize() const;
 
     /// Get the pointer to buffer memory on a specific device. See @ref rtBufferGetDevicePointer
-    void getDevicePointer( int optix_device_ordinal, void** device_pointer );
-    void* getDevicePointer( int optix_device_ordinal );
+    void getDevicePointer( unsigned int optix_device_number, CUdeviceptr *device_pointer );
+    CUdeviceptr getDevicePointer( unsigned int optix_device_number );
 
     /// Set the pointer to buffer memory on a specific device. See @ref rtBufferSetDevicePointer
-    void setDevicePointer( int optix_device_ordinal, void* device_pointer );
+    void setDevicePointer( unsigned int optix_device_number, CUdeviceptr device_pointer );
 
     /// Mark the buffer dirty
     void markDirty();
@@ -1561,12 +1609,44 @@ namespace optix {
     void getAttribute( RTbufferattribute attrib, RTsize size, void *p );
     /// @}
 
-    /// @{
-    /// Maps a buffer object for host access.  See @ref rtBufferMap and @ref rtBufferMapEx.
-    void* map( unsigned int level=0, unsigned int map_flags=RT_BUFFER_MAP_READ_WRITE, void* user_owned=0 );
+#ifdef _WIN32
 
-    /// Unmaps a buffer object.  See @ref rtBufferUnmap and @ref rtBufferUnmapEx.
-    void unmap( unsigned int level=0 );
+    /// @{
+    /// Declare the texture's buffer as mutable and inaccessible by OptiX.  See @ref rtBufferD3D9Register.
+    void registerD3D9Buffer();
+    /// Declare the texture's buffer as mutable and inaccessible by OptiX.  See @ref rtBufferD3D10Register.
+    void registerD3D10Buffer();
+    /// Declare the texture's buffer as mutable and inaccessible by OptiX.  See @ref rtBufferD3D11Register.
+    void registerD3D11Buffer();
+
+    /// Unregister the buffer, re-enabling OptiX operations.  See @ref rtTextureSamplerD3D9Unregister.
+    void unregisterD3D9Buffer();
+    /// Unregister the buffer, re-enabling OptiX operations.  See @ref rtTextureSamplerD3D10Unregister.
+    void unregisterD3D10Buffer();
+    /// Unregister the buffer, re-enabling OptiX operations.  See @ref rtTextureSamplerD3D11Unregister.
+    void unregisterD3D11Buffer();
+
+    /// Queries the D3D9 resource associated with this buffer.  See @ref rtBufferGetD3D9Resource.
+    IDirect3DResource9* getD3D9Resource();
+    /// Queries the D3D10 resource associated with this buffer.  See @ref rtBufferGetD3D10Resource.
+    ID3D10Resource* getD3D10Resource();
+    /// Queries the D3D11 resource associated with this buffer.  See @ref rtBufferGetD3D11Resource.
+    ID3D11Resource* getD3D11Resource();
+    /// @}
+
+#endif
+
+    /// @{
+    /// Maps a buffer object for host access.  See @ref rtBufferMap.
+    void* map();
+    /// Unmaps a buffer object.  See @ref rtBufferUnmap.
+    void unmap();
+
+    /// Maps a buffer object for host access.  See @ref rtBufferMapEx.
+    void* map(unsigned int level);
+    /// Unmaps a buffer object.  See @ref rtBufferUnmapEx.
+    void unmap(unsigned int level);
+
     /// @}
 
     /// @{
@@ -1574,15 +1654,6 @@ namespace optix {
     void bindProgressiveStream( Buffer source );
     /// Query updates from a progressive stream. See @ref rtBufferGetProgressiveUpdateReady.
     void getProgressiveUpdateReady( int* ready, unsigned int* subframe_count, unsigned int* max_subframes );
-
-    /// Query updates from a progressive stream. See @ref rtBufferGetProgressiveUpdateReady.
-    bool getProgressiveUpdateReady();
-
-    /// Query updates from a progressive stream. See @ref rtBufferGetProgressiveUpdateReady.
-    bool getProgressiveUpdateReady( unsigned int& subframe_count );
-
-    /// Query updates from a progressive stream. See @ref rtBufferGetProgressiveUpdateReady.
-    bool getProgressiveUpdateReady( unsigned int& subframe_count, unsigned int& max_subframes );
     /// @}
 
     /// Get the underlying OptiX C API RTbuffer opaque pointer.
@@ -1876,11 +1947,12 @@ namespace optix {
     checkError( rtContextValidate( m_context ) );
   }
 
-  inline Acceleration ContextObj::createAcceleration(const std::string& builder, const std::string& /*traverser*/)
+  inline Acceleration ContextObj::createAcceleration(const char* builder, const char* traverser)
   {
     RTacceleration acceleration;
     checkError( rtAccelerationCreate( m_context, &acceleration ) );
-    checkError( rtAccelerationSetBuilder( acceleration, builder.c_str() ) );
+    checkError( rtAccelerationSetBuilder( acceleration, builder ) );
+    checkError( rtAccelerationSetTraverser( acceleration, traverser ) );
     return Acceleration::take(acceleration);
   }
 
@@ -2045,6 +2117,67 @@ namespace optix {
     checkError( rtBufferCreateFromGLBO( m_context, type, vbo, &buffer ) );
     return Buffer::take(buffer);
   }
+
+#ifdef _WIN32
+
+  inline Buffer ContextObj::createBufferFromD3D9Resource(unsigned int type, IDirect3DResource9 *pResource)
+  {
+    RTbuffer buffer;
+    checkError( rtBufferCreateFromD3D9Resource( m_context, type, pResource, &buffer ) );
+    return Buffer::take(buffer);
+  }
+
+  inline Buffer ContextObj::createBufferFromD3D10Resource(unsigned int type, ID3D10Resource *pResource)
+  {
+    RTbuffer buffer;
+    checkError( rtBufferCreateFromD3D10Resource( m_context, type, pResource, &buffer ) );
+    return Buffer::take(buffer);
+  }
+
+  inline Buffer ContextObj::createBufferFromD3D11Resource(unsigned int type, ID3D11Resource *pResource)
+  {
+    RTbuffer buffer;
+    checkError( rtBufferCreateFromD3D11Resource( m_context, type, pResource, &buffer ) );
+    return Buffer::take(buffer);
+  }
+
+  inline TextureSampler ContextObj::createTextureSamplerFromD3D9Resource(IDirect3DResource9 *pResource)
+  {
+    RTtexturesampler textureSampler;
+    checkError( rtTextureSamplerCreateFromD3D9Resource(m_context, pResource, &textureSampler));
+    return TextureSampler::take(textureSampler);
+  }
+
+  inline TextureSampler ContextObj::createTextureSamplerFromD3D10Resource(ID3D10Resource *pResource)
+  {
+    RTtexturesampler textureSampler;
+    checkError( rtTextureSamplerCreateFromD3D10Resource(m_context, pResource, &textureSampler));
+    return TextureSampler::take(textureSampler);
+  }
+
+  inline TextureSampler ContextObj::createTextureSamplerFromD3D11Resource(ID3D11Resource *pResource)
+  {
+    RTtexturesampler textureSampler;
+    checkError( rtTextureSamplerCreateFromD3D11Resource(m_context, pResource, &textureSampler));
+    return TextureSampler::take(textureSampler);
+  }
+
+  inline void ContextObj::setD3D9Device(IDirect3DDevice9* device)
+  {
+    checkError( rtContextSetD3D9Device( m_context, device ) );
+  }
+
+  inline void ContextObj::setD3D10Device(ID3D10Device* device)
+  {
+    checkError( rtContextSetD3D10Device( m_context, device ) );
+  }
+
+  inline void ContextObj::setD3D11Device(ID3D11Device* device)
+  {
+    checkError( rtContextSetD3D11Device( m_context, device ) );
+  }
+
+#endif
 
   inline TextureSampler ContextObj::createTextureSamplerFromGLImage(unsigned int id, RTgltarget target)
   {
@@ -3555,6 +3688,40 @@ namespace optix {
     checkError( rtTextureSamplerGLUnregister( m_texturesampler ) );
   }
 
+#ifdef _WIN32
+
+  inline void TextureSamplerObj::registerD3D9Texture()
+  {
+    checkError( rtTextureSamplerD3D9Register( m_texturesampler ) );
+  }
+
+  inline void TextureSamplerObj::registerD3D10Texture()
+  {
+    checkError( rtTextureSamplerD3D10Register( m_texturesampler ) );
+  }
+
+  inline void TextureSamplerObj::registerD3D11Texture()
+  {
+    checkError( rtTextureSamplerD3D11Register( m_texturesampler ) );
+  }
+
+  inline void TextureSamplerObj::unregisterD3D9Texture()
+  {
+    checkError( rtTextureSamplerD3D9Unregister( m_texturesampler ) );
+  }
+
+  inline void TextureSamplerObj::unregisterD3D10Texture()
+  {
+    checkError( rtTextureSamplerD3D10Unregister( m_texturesampler ) );
+  }
+
+  inline void TextureSamplerObj::unregisterD3D11Texture()
+  {
+    checkError( rtTextureSamplerD3D11Unregister( m_texturesampler ) );
+  }
+
+#endif
+
   inline void BufferObj::destroy()
   {
     Context context = getContext();
@@ -3598,21 +3765,21 @@ namespace optix {
     return result;
   }
 
-  inline void BufferObj::getDevicePointer(int optix_device_ordinal, void** device_pointer)
+  inline void BufferObj::getDevicePointer(unsigned int optix_device_number, CUdeviceptr *device_pointer)
   {
-    checkError( rtBufferGetDevicePointer( m_buffer, optix_device_ordinal, device_pointer ) );
+    checkError( rtBufferGetDevicePointer( m_buffer, optix_device_number, (void**)device_pointer ) );
   }
 
-  inline void* BufferObj::getDevicePointer(int optix_device_ordinal)
+  inline CUdeviceptr BufferObj::getDevicePointer( unsigned int optix_device_number )
   {
-    void* dptr;
-    getDevicePointer( optix_device_ordinal, &dptr );
+    CUdeviceptr dptr;
+    getDevicePointer( optix_device_number, &dptr );
     return dptr;
   }
 
-  inline void BufferObj::setDevicePointer(int optix_device_ordinal, void* device_pointer)
+  inline void BufferObj::setDevicePointer(unsigned int optix_device_number, CUdeviceptr device_pointer)
   {
-    checkError( rtBufferSetDevicePointer( m_buffer, optix_device_ordinal, device_pointer ) );
+    checkError( rtBufferSetDevicePointer( m_buffer, optix_device_number, device_pointer ) );
   }
 
   inline void BufferObj::markDirty()
@@ -3718,15 +3885,81 @@ namespace optix {
     checkError( rtBufferGLUnregister( m_buffer ) );
   }
 
-  inline void* BufferObj::map( unsigned int level, unsigned int map_flags, void* user_owned )
+#ifdef _WIN32
+
+  inline void BufferObj::registerD3D9Buffer()
   {
-    // Note: the order of the 'level' and 'map_flags' argument flips here for compatibility with older versions of this wrapper
-    void* result;
-    checkError( rtBufferMapEx( m_buffer, map_flags, level, user_owned, &result ) );
+    checkError( rtBufferD3D9Register( m_buffer ) );
+  }
+
+  inline void BufferObj::registerD3D10Buffer()
+  {
+    checkError( rtBufferD3D10Register( m_buffer ) );
+  }
+
+  inline void BufferObj::registerD3D11Buffer()
+  {
+    checkError( rtBufferD3D11Register( m_buffer ) );
+  }
+
+  inline void BufferObj::unregisterD3D9Buffer()
+  {
+    checkError( rtBufferD3D9Unregister( m_buffer ) );
+  }
+
+  inline void BufferObj::unregisterD3D10Buffer()
+  {
+    checkError( rtBufferD3D10Unregister( m_buffer ) );
+  }
+
+  inline void BufferObj::unregisterD3D11Buffer()
+  {
+    checkError( rtBufferD3D11Unregister( m_buffer ) );
+  }
+
+  inline IDirect3DResource9* BufferObj::getD3D9Resource()
+  {
+    IDirect3DResource9* result = NULL;
+    checkError( rtBufferGetD3D9Resource( m_buffer, &result ) );
+    return result;
+  }
+  
+  inline ID3D10Resource* BufferObj::getD3D10Resource()
+  {
+    ID3D10Resource* result = NULL;
+    checkError( rtBufferGetD3D10Resource( m_buffer, &result ) );
+    return result;
+  }
+  
+  inline ID3D11Resource* BufferObj::getD3D11Resource()
+  {
+    ID3D11Resource* result = NULL;
+    checkError( rtBufferGetD3D11Resource( m_buffer, &result ) );
     return result;
   }
 
-  inline void BufferObj::unmap( unsigned int level )
+#endif
+
+  inline void* BufferObj::map()
+  {
+    void* result;
+    checkError( rtBufferMap( m_buffer, &result ) );
+    return result;
+  }
+
+  inline void BufferObj::unmap()
+  {
+    checkError( rtBufferUnmap( m_buffer ) );
+  }
+    
+  inline void* BufferObj::map(unsigned int level)
+  {
+    void* result;
+    checkError( rtBufferMapEx( m_buffer, RT_BUFFER_MAP_READ_WRITE, level, 0, &result ) );
+    return result;
+  }
+
+  inline void BufferObj::unmap(unsigned int level)
   {
     checkError( rtBufferUnmapEx( m_buffer, level ) );
   }
@@ -3739,30 +3972,6 @@ namespace optix {
   inline void BufferObj::getProgressiveUpdateReady( int* ready, unsigned int* subframe_count, unsigned int* max_subframes )
   {
     checkError( rtBufferGetProgressiveUpdateReady( m_buffer, ready, subframe_count, max_subframes ) );
-  }
-
-  inline bool BufferObj::getProgressiveUpdateReady()
-  {
-
-    int ready = 0;
-    checkError( rtBufferGetProgressiveUpdateReady( m_buffer, &ready, 0, 0 ) );
-    return ( ready != 0 );
-  }
-
-  inline bool BufferObj::getProgressiveUpdateReady( unsigned int& subframe_count )
-  {
-
-    int ready = 0;
-    checkError( rtBufferGetProgressiveUpdateReady( m_buffer, &ready, &subframe_count, 0 ) );
-    return ( ready != 0 );
-  }
-
-  inline bool BufferObj::getProgressiveUpdateReady( unsigned int& subframe_count, unsigned int& max_subframes )
-  {
-
-    int ready = 0;
-    checkError( rtBufferGetProgressiveUpdateReady( m_buffer, &ready, &subframe_count, &max_subframes ) );
-    return ( ready != 0 );
   }
 
   inline RTbuffer BufferObj::get()

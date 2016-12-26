@@ -6,7 +6,6 @@
 #include <vector>
 #include <algorithm>
 
-#include "glad/glad.h"
 #include "graphics/glfw/CallbackSingleton.hpp"
 
 
@@ -65,6 +64,7 @@ OpenGLWrapper::~OpenGLWrapper( )
 }
 
 
+
 ///
 /// \brief OpenGLWrapper::init
 ///
@@ -89,7 +89,7 @@ OpenGLWrapper::init( )
 //  glFrontFace( GL_CCW );
 
   // Specify the color used when glClear is called
-  glClearColor( 0.0f, 0.0f, 1.0f, 1.0f );
+  glClearColor( 1.0f, 0.5f, 0.0f, 1.0f );
 
 } // init
 
@@ -119,10 +119,10 @@ OpenGLWrapper::addProgram(
 void
 OpenGLWrapper::addTextureArray(
                                const std::string name,
-                               GLsizei     width,
-                               GLsizei     height,
-                               float      *pArray,
-                               bool        linear
+                               GLsizei           width,
+                               GLsizei           height,
+                               float            *pArray,
+                               bool              linear
                                )
 
 {
@@ -136,8 +136,8 @@ OpenGLWrapper::addTextureArray(
   glGenTextures( 1, &texture );
   glBindTexture( GL_TEXTURE_2D, texture );
 
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
 
   if ( linear )
   {
@@ -161,8 +161,8 @@ OpenGLWrapper::addTextureArray(
 void
 OpenGLWrapper::addTextureImage(
                                const std::string name,
-                               GLsizei     width,
-                               GLsizei     height,
+                               GLsizei           width,
+                               GLsizei           height,
                                const std::string
                                )
 {
@@ -175,30 +175,40 @@ OpenGLWrapper::addTextureImage(
   glGenTextures( 1, &texture );
   glBindTexture( GL_TEXTURE_2D, texture );
 
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,     GL_REPEAT );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,     GL_REPEAT );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,      GL_REPEAT );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,      GL_REPEAT );
   glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
   glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 
   glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_FLOAT, NULL );
 
   textures_[ name ] = texture;
+
 } // addTextureImage
 
 
 
+
+///
+/// \brief OpenGLWrapper::addUVBuffer
+/// \param name
+/// \param program
+/// \param data
+/// \param size
+/// \param dynamic
+///
 void
 OpenGLWrapper::addUVBuffer(
                            const std::string name,
                            const std::string program,
-                           GLfloat    *data,
-                           GLuint      size,
-                           bool        dynamic
+                           GLfloat          *data,
+                           GLuint            size,
+                           bool              dynamic
                            )
 {
   Buffer buffer;
 
-  if ( buffers_.count( name ) )
+  if ( buffers_.find( name ) != buffers_.end() )
   {
     buffer = buffers_[ name ];
     glDeleteBuffers( 1, &( buffer.vbo ) );
@@ -261,49 +271,57 @@ OpenGLWrapper::addUVBuffer(
   glBindVertexArray( 0 );
 
   buffers_[ name ] = buffer;
-}
+
+} // OpenGLWrapper::addUVBuffer
 
 
 
 void
 OpenGLWrapper::addFramebuffer(
                               const std::string buffer,
-                              GLsizei     width,
-                              GLsizei     height,
+                              GLsizei           width,
+                              GLsizei           height,
                               const std::string texture
                               )
 
 {
-    if ( framebuffers_.find( buffer ) != framebuffers_.end( ) )
-    {
-        Buffer buf = framebuffers_[buffer];
-        glDeleteFramebuffers(1, &buf.vbo);
-        glDeleteRenderbuffers(1, &buf.vao);
-    }
+  if ( framebuffers_.find( buffer ) != framebuffers_.end( ) )
+  {
+    Buffer buf = framebuffers_[ buffer ];
+    glDeleteFramebuffers( 1, &buf.vbo );
+    glDeleteRenderbuffers( 1, &buf.vao );
+  }
 
-    GLuint fbo;
-    glGenFramebuffers(1, &fbo);
-    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+  GLuint fbo;
+  glGenFramebuffers( 1, &fbo );
+  glBindFramebuffer( GL_FRAMEBUFFER, fbo );
 
-    GLuint rbo;
-    glGenRenderbuffers(1, &rbo);
-    glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
-    glBindRenderbuffer(GL_RENDERBUFFER, 0);
+  GLuint rbo;
+  glGenRenderbuffers( 1, &rbo );
+  glBindRenderbuffer( GL_RENDERBUFFER, rbo );
+  glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height );
+  glBindRenderbuffer( GL_RENDERBUFFER, 0 );
 
-    // attach a texture to FBO color attachment point
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textures_[texture], 0);
+  // attach a texture to FBO color attachment point
+  glFramebufferTexture2D( GL_FRAMEBUFFER,
+                         GL_COLOR_ATTACHMENT0,
+                         GL_TEXTURE_2D,
+                         textures_[ texture ],
+                         0 );
 
-    // attach a renderbuffer to depth attachment point
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo);
+  // attach a renderbuffer to depth attachment point
+  glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo );
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
-    Buffer buf;
-    buf.vbo = fbo;
-    buf.vao = rbo;
-    framebuffers_[buffer] = buf;
-}
+  Buffer buf;
+  buf.vbo                 = fbo;
+  buf.vao                 = rbo;
+  framebuffers_[ buffer ] = buf;
+
+} // OpenGLWrapper::addFramebuffer
+
+
 
 void
 OpenGLWrapper::bindFramebuffer( const std::string name )
@@ -319,12 +337,19 @@ OpenGLWrapper::bindFramebuffer( const std::string name )
 }
 
 
-void OpenGLWrapper::swapFramebuffers(const std::string fbo1, const std::string fbo2)
+
+void
+OpenGLWrapper::swapFramebuffers(
+                                const std::string fbo1,
+                                const std::string fbo2
+                                )
 {
-    Buffer temp = framebuffers_[fbo1];
-    framebuffers_[fbo1] = framebuffers_[fbo2];
-    framebuffers_[fbo2] = temp;
+  Buffer temp = framebuffers_[ fbo1 ];
+
+  framebuffers_[ fbo1 ] = framebuffers_[ fbo2 ];
+  framebuffers_[ fbo2 ] = temp;
 }
+
 
 
 void
@@ -357,66 +382,102 @@ OpenGLWrapper::clearWindow(
 } // clearWindow
 
 
-void OpenGLWrapper::useProgram(const std::string program)
+
+void
+OpenGLWrapper::useProgram( const std::string program )
 {
-    glUseProgram(programs_[program]);
-}
-
-
-void OpenGLWrapper::setTextureUniform(const std::string program, const std::string uniform, const std::string texture, int activeTex)
-{
-    switch(activeTex)
-    {
-    case 0:
-        glActiveTexture(GL_TEXTURE0);
-        break;
-    case 1:
-        glActiveTexture(GL_TEXTURE1);
-        break;
-    case 2:
-        glActiveTexture(GL_TEXTURE2);
-        break;
-    default:
-        glActiveTexture(GL_TEXTURE3);
-        break;
-    }
-    glUniform1i(glGetUniformLocation( programs_[program], uniform.c_str() ), activeTex);
-    glBindTexture(GL_TEXTURE_2D, textures_[texture]);
-}
-
-
-void OpenGLWrapper::renderBuffer(const std::string buffer, int verts, GLenum mode)
-{
-    glBindVertexArray(buffers_[buffer].vao);
-    glDrawArrays(mode, 0, verts);
-    glBindVertexArray(0);
+  glUseProgram( programs_[ program ] );
 }
 
 
 
-void OpenGLWrapper::setBuffer(const std::string bufferName, float *data, GLuint size)
+void
+OpenGLWrapper::setTextureUniform(
+                                 const std::string program,
+                                 const std::string uniform,
+                                 const std::string texture,
+                                 int               activeTex
+                                 )
 {
-    Buffer buffer = buffers_[bufferName];
-    glBindBuffer(GL_ARRAY_BUFFER, buffer.vbo);
-    glBindVertexArray(buffer.vao);
-    glBufferSubData(GL_ARRAY_BUFFER,
-                    0,
-                    static_cast< GLsizeiptr>( size * sizeof(float)),
-                    data);
+  switch ( activeTex )
+  {
+  case 0:
+    glActiveTexture( GL_TEXTURE0 );
+    break;
+
+  case 1:
+    glActiveTexture( GL_TEXTURE1 );
+    break;
+
+  case 2:
+    glActiveTexture( GL_TEXTURE2 );
+    break;
+
+  default:
+    glActiveTexture( GL_TEXTURE3 );
+    break;
+  } // switch
+
+  glUniform1i( glGetUniformLocation( programs_[ program ], uniform.c_str( ) ), activeTex );
+  glBindTexture( GL_TEXTURE_2D, textures_[ texture ] );
+} // OpenGLWrapper::setTextureUniform
+
+
+
+void
+OpenGLWrapper::renderBuffer(
+                            const std::string buffer,
+                            int               verts,
+                            GLenum            mode
+                            )
+{
+  glBindVertexArray( buffers_[ buffer ].vao );
+  glDrawArrays( mode, 0, verts );
+  glBindVertexArray( 0 );
 }
 
 
-void OpenGLWrapper::setBoolUniform(const std::string program, const std::string uniform, bool var)
+
+void
+OpenGLWrapper::setBuffer(
+                         const std::string bufferName,
+                         float            *data,
+                         GLuint            size
+                         )
 {
-    glUniform1i(glGetUniformLocation(programs_[program], uniform.c_str()), var);
+  Buffer buffer = buffers_[ bufferName ];
+
+  glBindBuffer( GL_ARRAY_BUFFER, buffer.vbo );
+  glBindVertexArray( buffer.vao );
+  glBufferSubData( GL_ARRAY_BUFFER,
+                  0,
+                  static_cast< GLsizeiptr >( size * sizeof( float ) ),
+                  data );
 }
 
 
-void OpenGLWrapper::setIntUniform(const std::string program, const std::string uniform, int value)
+
+void
+OpenGLWrapper::setBoolUniform(
+                              const std::string program,
+                              const std::string uniform,
+                              bool              var
+                              )
 {
-    glUniform1i(glGetUniformLocation(programs_[program], uniform.c_str()), value);
+  glUniform1i( glGetUniformLocation( programs_[ program ], uniform.c_str( ) ), var );
 }
 
+
+
+void
+OpenGLWrapper::setIntUniform(
+                             const std::string program,
+                             const std::string uniform,
+                             int               value
+                             )
+{
+  glUniform1i( glGetUniformLocation( programs_[ program ], uniform.c_str( ) ), value );
+}
 
 
 
@@ -458,109 +519,174 @@ OpenGLWrapper::setFloatUniform(
 
 
 
-void OpenGLWrapper::swapTextures(const std::string tex1, const std::string tex2)
+void
+OpenGLWrapper::swapTextures(
+                            const std::string tex1,
+                            const std::string tex2
+                            )
 {
-    GLuint temp = textures_[tex1];
-    textures_[tex1] = textures_[tex2];
-    textures_[tex2] = temp;
+  GLuint temp = textures_[ tex1 ];
+
+  textures_[ tex1 ] = textures_[ tex2 ];
+  textures_[ tex2 ] = temp;
 }
 
 
-void OpenGLWrapper::setBlending(bool blend)
+
+void
+OpenGLWrapper::setBlending( bool blend )
 {
-    if (blend)
-    {
-        glEnable(GL_BLEND);
-        glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD);
-        glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
-    } else
-        glDisable(GL_BLEND);
+  if ( blend )
+  {
+    glEnable( GL_BLEND );
+    glBlendEquationSeparate( GL_FUNC_ADD, GL_FUNC_ADD );
+    glBlendFuncSeparate( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO );
+  }
+  else
+  {
+    glDisable( GL_BLEND );
+  }
 }
 
 
 
-void OpenGLWrapper::setViewportSize(GLsizei width, GLsizei height)
+void
+OpenGLWrapper::setViewportSize(
+                               GLsizei width,
+                               GLsizei height
+                               )
 {
-    viewportWidth_ = width;
-    viewportHeight_ = height;
+  viewportWidth_  = width;
+  viewportHeight_ = height;
 }
 
 
-std::string OpenGLWrapper::_readFile(const std::string filePath) {
-    std::string content;
-    std::ifstream fileStream(filePath, std::ios::in);
 
-    if(!fileStream.is_open()) {
-        std::cerr << "Could not read file " << filePath << ". File does not exist." << std::endl;
-        return "";
-    }
+void
+OpenGLWrapper::bindBufferToTexture(
+                                   const std::string texture,
+                                   GLuint            bufId,
+                                   int               alignment,
+                                   int               width,
+                                   int               height
+                                   )
+{
 
-    std::string line = "";
-    while(!fileStream.eof()) {
-        std::getline(fileStream, line);
-        content.append(line + "\n");
-    }
+  glBindTexture( GL_TEXTURE_2D, getTexture( texture ) );
+  glBindBuffer ( GL_PIXEL_UNPACK_BUFFER, bufId );
 
-    fileStream.close();
-    return content;
-}
+  glPixelStorei( GL_UNPACK_ALIGNMENT, alignment );
+
+  glTexImage2D(
+               GL_TEXTURE_2D,
+               0,
+               GL_RGBA32F,
+               width,
+               height,
+               0,
+               GL_RGBA,
+               GL_FLOAT,
+               0
+               );
+
+  glBindBuffer( GL_PIXEL_UNPACK_BUFFER, 0 );
+
+} // OpenGLWrapper::bindBufferToTexture
 
 
-GLuint OpenGLWrapper::_loadShader(const std::string vertex_path, const std::string fragment_path) {
-    GLuint vertShader = glCreateShader(GL_VERTEX_SHADER);
-    GLuint fragShader = glCreateShader(GL_FRAGMENT_SHADER);
 
-    // Read shaders
-    std::string vertShaderStr = _readFile(vertex_path);
-    std::string fragShaderStr = _readFile(fragment_path);
-    const char *vertShaderSrc = vertShaderStr.c_str();
-    const char *fragShaderSrc = fragShaderStr.c_str();
+std::string
+OpenGLWrapper::_readFile( const std::string filePath )
+{
+  std::string content;
+  std::ifstream fileStream( filePath, std::ios::in );
 
-    GLint result = GL_FALSE;
-    int logLength;
+  if ( !fileStream.is_open( ) )
+  {
+    std::cerr << "Could not read file " << filePath << ". File does not exist." << std::endl;
+    return "";
+  }
 
-    // Compile vertex shader
-    std::cout << "Compiling vertex shader." << std::endl;
-    glShaderSource(vertShader, 1, &vertShaderSrc, NULL);
-    glCompileShader(vertShader);
+  std::string line = "";
 
-    // Check vertex shader
-    glGetShaderiv(vertShader, GL_COMPILE_STATUS, &result);
-    glGetShaderiv(vertShader, GL_INFO_LOG_LENGTH, &logLength);
-    std::vector<char> vertShaderError((logLength > 1) ? static_cast<unsigned long>(logLength) : 1);
-    glGetShaderInfoLog(vertShader, logLength, NULL, &vertShaderError[0]);
-    std::cout << &vertShaderError[0] << std::endl;
+  while ( !fileStream.eof( ) )
+  {
+    std::getline( fileStream, line );
+    content.append( line + "\n" );
+  }
 
-    // Compile fragment shader
-    std::cout << "Compiling fragment shader." << std::endl;
-    glShaderSource(fragShader, 1, &fragShaderSrc, NULL);
-    glCompileShader(fragShader);
+  fileStream.close( );
+  return content;
+} // OpenGLWrapper::_readFile
 
-    // Check fragment shader
-    glGetShaderiv(fragShader, GL_COMPILE_STATUS, &result);
-    glGetShaderiv(fragShader, GL_INFO_LOG_LENGTH, &logLength);
-    std::vector<char> fragShaderError((logLength > 1) ? static_cast<unsigned long>(logLength) : 1);
-    glGetShaderInfoLog(fragShader, logLength, NULL, &fragShaderError[0]);
-    std::cout << &fragShaderError[0] << std::endl;
 
-    std::cout << "Linking program" << std::endl;
-    GLuint program = glCreateProgram();
-    glAttachShader(program, vertShader);
-    glAttachShader(program, fragShader);
-    glLinkProgram(program);
 
-    glGetProgramiv(program, GL_LINK_STATUS, &result);
-    glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logLength);
-    std::vector<char> programError((logLength > 1) ? static_cast<unsigned long>(logLength) : 1);
-    glGetProgramInfoLog(program, logLength, NULL, &programError[0]);
-    std::cout << &programError[0] << std::endl;
+GLuint
+OpenGLWrapper::_loadShader(
+                           const std::string vertex_path,
+                           const std::string fragment_path
+                           )
+{
+  GLuint vertShader = glCreateShader( GL_VERTEX_SHADER );
+  GLuint fragShader = glCreateShader( GL_FRAGMENT_SHADER );
 
-    glDeleteShader(vertShader);
-    glDeleteShader(fragShader);
+  // Read shaders
+  std::string vertShaderStr = _readFile( vertex_path );
+  std::string fragShaderStr = _readFile( fragment_path );
+  const char *vertShaderSrc = vertShaderStr.c_str( );
+  const char *fragShaderSrc = fragShaderStr.c_str( );
 
-    return program;
-}
+  GLint result = GL_FALSE;
+  int logLength;
+
+  // Compile vertex shader
+  std::cout << "Compiling vertex shader." << std::endl;
+  glShaderSource( vertShader, 1, &vertShaderSrc, NULL );
+  glCompileShader( vertShader );
+
+  // Check vertex shader
+  glGetShaderiv( vertShader, GL_COMPILE_STATUS,  &result );
+  glGetShaderiv( vertShader, GL_INFO_LOG_LENGTH, &logLength );
+  std::vector< char > vertShaderError(
+                                      ( logLength >
+                                       1 ) ? static_cast< unsigned long >( logLength ) : 1 );
+  glGetShaderInfoLog( vertShader, logLength, NULL, &vertShaderError[ 0 ] );
+  std::cout << &vertShaderError[ 0 ] << std::endl;
+
+  // Compile fragment shader
+  std::cout << "Compiling fragment shader." << std::endl;
+  glShaderSource( fragShader, 1, &fragShaderSrc, NULL );
+  glCompileShader( fragShader );
+
+  // Check fragment shader
+  glGetShaderiv( fragShader, GL_COMPILE_STATUS,  &result );
+  glGetShaderiv( fragShader, GL_INFO_LOG_LENGTH, &logLength );
+  std::vector< char > fragShaderError(
+                                      ( logLength >
+                                       1 ) ? static_cast< unsigned long >( logLength ) : 1 );
+  glGetShaderInfoLog( fragShader, logLength, NULL, &fragShaderError[ 0 ] );
+  std::cout << &fragShaderError[ 0 ] << std::endl;
+
+  std::cout << "Linking program" << std::endl;
+  GLuint program = glCreateProgram( );
+  glAttachShader( program, vertShader );
+  glAttachShader( program, fragShader );
+  glLinkProgram( program );
+
+  glGetProgramiv( program, GL_LINK_STATUS,     &result );
+  glGetProgramiv( program, GL_INFO_LOG_LENGTH, &logLength );
+  std::vector< char > programError(
+                                   ( logLength >
+                                    1 ) ? static_cast< unsigned long >( logLength ) : 1 );
+  glGetProgramInfoLog( program, logLength, NULL, &programError[ 0 ] );
+  std::cout << &programError[ 0 ] << std::endl;
+
+  glDeleteShader( vertShader );
+  glDeleteShader( fragShader );
+
+  return program;
+} // OpenGLWrapper::_loadShader
+
 
 
 } // namespace graphics
-

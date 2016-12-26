@@ -65,12 +65,12 @@ void
 ImguiOpenGLIOHandler::showWorld( const double alpha )
 {
 
-  onRender( alpha );
+  _onRender( alpha );
 
 
   ImGui_ImplGlfwGL3_NewFrame();
 
-  onGuiRender( );
+  _onGuiRender( );
 
   ImGui::Render();
 

@@ -32,6 +32,12 @@
 
 #include "optix.h"
 
+#if defined(__x86_64) || defined(AMD64) || defined(_M_AMD64)
+typedef unsigned long long CUdeviceptr;
+#else
+typedef unsigned int CUdeviceptr;
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -43,8 +49,44 @@ extern "C" {
   * 
   * <B>Description</B>
   * 
-  * @ref DEPRECATED in OptiX 4.0. Now forwards to @ref rtBufferCreate.
+  * @ref rtBufferCreateForCUDA allocates and returns a new handle to a new buffer object in *\a buffer
+  * associated with \a context. This buffer will function like a normal OptiX buffer created with @ref rtBufferCreate,
+  * except OptiX will not allocate or upload data for it.
   *
+  * After a buffer object has been created with @ref rtBufferCreateForCUDA, the user needs to call
+  * @ref rtBufferSetDevicePointer to provide one or more device pointers to the buffer data.
+  * When the user provides a single device's data pointer for a buffer prior to calling @ref rtContextLaunch "rtContextLaunch",
+  * OptiX will allocate memory on the other devices and copy the data there. Setting pointers for more than one
+  * but fewer than all devices is not supported.
+  *
+  * If @ref rtBufferSetDevicePointer or @ref rtBufferGetDevicePointer have been called for a single device for a given buffer,
+  * the user can change the buffer's content on that device. OptiX must then synchronize the new buffer contents to all devices.
+  * These synchronization copies occur at every @ref rtContextLaunch "rtContextLaunch", unless the buffer is declared with @ref RT_BUFFER_COPY_ON_DIRTY.
+  * In this case, use @ref rtBufferMarkDirty to notify OptiX that the buffer has been dirtied and must be synchronized.
+  *
+  * The backing storage of the buffer is managed by OptiX. A buffer is specified by a bitwise 
+  * \a or combination of a \a type and \a flags in \a bufferdesc. The supported types are:
+  *
+  * - @ref RT_BUFFER_INPUT
+  * - @ref RT_BUFFER_OUTPUT
+  * - @ref RT_BUFFER_INPUT_OUTPUT
+  *
+  * The type values are used to specify the direction of data flow from the host to the OptiX devices.
+  * @ref RT_BUFFER_INPUT specifies that the host may only write to the buffer and the device may only read from the buffer.
+  * @ref RT_BUFFER_OUTPUT specifies the opposite, read only access on the host and write only access on the device.
+  * Devices and the host may read and write from buffers of type @ref RT_BUFFER_INPUT_OUTPUT. Reading or writing to
+  * a buffer of the incorrect type (e.g., the host writing to a buffer of type @ref RT_BUFFER_OUTPUT) is undefined.
+  *
+  * The supported flags are:
+  *
+  * - @ref RT_BUFFER_GPU_LOCAL
+  * - @ref RT_BUFFER_COPY_ON_DIRTY
+  *
+  * Flags can be used to optimize data transfers between the host and its devices. The flag @ref RT_BUFFER_GPU_LOCAL can only be 
+  * used in combination with @ref RT_BUFFER_INPUT_OUTPUT. @ref RT_BUFFER_INPUT_OUTPUT and @ref RT_BUFFER_GPU_LOCAL used together specify a buffer 
+  * that allows the host to \b only write, and the device to read \b and write data. The written data will be never visible 
+  * on the host side.
+  * 
   * @param[in]   context          The context to create the buffer in
   * @param[in]   bufferdesc       Bitwise \a or combination of the \a type and \a flags of the new buffer
   * @param[out]  buffer           The return handle for the buffer object
@@ -77,15 +119,15 @@ extern "C" {
   * 
   * <B>Description</B>
   * 
-  * @ref rtBufferGetDevicePointer returns the pointer to the data of \a buffer on device \a optix_device_ordinal in **\a device_pointer.
+  * @ref rtBufferGetDevicePointer returns the pointer to the data of \a buffer on device \a optix_device_number in **\a device_pointer.
   *
   * If @ref rtBufferGetDevicePointer has been called for a single device for a given buffer,
-  * the user can change the buffer's content on that device through the pointer. OptiX must then synchronize the new buffer contents to all devices.
-  * These synchronization copies occur at every @ref rtContextLaunch "rtContextLaunch", unless the buffer is created with @ref RT_BUFFER_COPY_ON_DIRTY.
-  * In this case, @ref rtBufferMarkDirty can be used to notify OptiX that the buffer has been dirtied and must be synchronized.
+  * the user can change the buffer's content on that device. OptiX must then synchronize the new buffer contents to all devices.
+  * These synchronization copies occur at every @ref rtContextLaunch "rtContextLaunch", unless the buffer is declared with @ref RT_BUFFER_COPY_ON_DIRTY.
+  * In this case, use @ref rtBufferMarkDirty to notify OptiX that the buffer has been dirtied and must be synchronized.
   * 
   * @param[in]   buffer                          The buffer to be queried for its device pointer
-  * @param[in]   optix_device_ordinal            The number assigned by OptiX to the device
+  * @param[in]   optix_device_number             The number of OptiX device
   * @param[out]  device_pointer                  The return handle to the buffer's device pointer
   * 
   * <B>Return values</B>
@@ -104,7 +146,7 @@ extern "C" {
   * @ref rtBufferSetDevicePointer
   * 
   */
-  RTresult RTAPI rtBufferGetDevicePointer (RTbuffer buffer, int optix_device_ordinal, void** device_pointer);
+  RTresult RTAPI rtBufferGetDevicePointer (RTbuffer buffer, unsigned int optix_device_number, void** device_pointer);
   
   /**
   * @brief Sets a buffer as dirty
@@ -114,11 +156,11 @@ extern "C" {
   * <B>Description</B>
   * 
   * If @ref rtBufferSetDevicePointer or @ref rtBufferGetDevicePointer have been called for a single device for a given buffer,
-  * the user can change the buffer's content on that device through the pointer. OptiX must then synchronize the new buffer contents to all devices.
-  * These synchronization copies occur at every @ref rtContextLaunch, unless the buffer is declared with @ref RT_BUFFER_COPY_ON_DIRTY.
-  * In this case, @ref rtBufferMarkDirty can be used to notify OptiX that the buffer has been dirtied and must be synchronized.
+  * the user can change the buffer's content on that device. OptiX must then synchronize the new buffer contents to all devices.
+  * These synchronization copies occur at every @ref rtContextLaunch "rtContextLaunch", unless the buffer is declared with @ref RT_BUFFER_COPY_ON_DIRTY.
+  * In this case, use @ref rtBufferMarkDirty to notify OptiX that the buffer has been dirtied and must be synchronized.
   *
-  * Note that RT_BUFFER_COPY_ON_DIRTY currently only applies to CUDA interop buffers (buffers for which the application has a device pointer).
+  * Note that RT_BUFFER_COPY_ON_DIRTY currently only applies to CUDA Interop buffers (buffers for which the application has a device pointer).
   * 
   * @param[in]   buffer                          The buffer to be marked dirty
   * 
@@ -147,15 +189,18 @@ extern "C" {
   * 
   * <B>Description</B>
   * 
-  * @ref rtBufferSetDevicePointer sets the pointer to the data of \a buffer on device \a optix_device_ordinal to \a device_pointer.
+  * @ref rtBufferSetDevicePointer sets the pointer to the data of \a buffer on device \a optix_device_number to \a device_pointer.
+  *
+  * The buffer needs to be allocated with @ref rtBufferCreateForCUDA in order for the call to @ref rtBufferSetDevicePointer to be valid.
+  * Likewise, before providing a device pointer for the buffer, the application must first specify the size and format of the buffer.
   *
   * If @ref rtBufferSetDevicePointer has been called for a single device for a given buffer,
-  * the user can change the buffer's content on that device through the pointer. OptiX must then synchronize the new buffer contents to all devices.
+  * the user can change the buffer's content on that device. OptiX must then synchronize the new buffer contents to all devices.
   * These synchronization copies occur at every @ref rtContextLaunch "rtContextLaunch", unless the buffer is declared with @ref RT_BUFFER_COPY_ON_DIRTY.
-  * In this case, @ref rtBufferMarkDirty can be used to notify OptiX that the buffer has been dirtied and must be synchronized.
+  * In this case, use @ref rtBufferMarkDirty to notify OptiX that the buffer has been dirtied and must be synchronized.
   * 
   * @param[in]   buffer                          The buffer for which the device pointer is to be set
-  * @param[in]   optix_device_ordinal            The number assigned by OptiX to the device
+  * @param[in]   optix_device_number             The number of OptiX device
   * @param[in]   device_pointer                  The pointer to the data on the specified device
   * 
   * <B>Return values</B>
@@ -174,7 +219,7 @@ extern "C" {
   * @ref rtBufferGetDevicePointer
   * 
   */
-  RTresult RTAPI rtBufferSetDevicePointer (RTbuffer buffer, int optix_device_ordinal, void* device_pointer);
+  RTresult RTAPI rtBufferSetDevicePointer (RTbuffer buffer, unsigned int optix_device_number, CUdeviceptr device_pointer);
 
 #ifdef __cplusplus
 }
