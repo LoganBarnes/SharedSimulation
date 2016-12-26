@@ -26,8 +26,12 @@ if ( PROJECT_CUDA_SOURCE )
   find_package( CUDA REQUIRED )
 
   # set nvcc options
-  set( CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -O3 ${CUDA_COMPUTE_FLAGS}" )
-  set( CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} --compiler-options -fno-strict-aliasing -use_fast_math" )
+  if ( NOT MSVC )
+    set( CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -O3 ${CUDA_COMPUTE_FLAGS}" )
+    set( CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} --compiler-options -fno-strict-aliasing -use_fast_math" )
+  else()
+    set( CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} ${CUDA_COMPUTE_FLAGS}" )
+  endif()
 
 
   include_directories( ${PROJECT_CUDA_INCLUDE_DIRS} ${PROJECT_BINARY_DIR} )
@@ -38,7 +42,10 @@ if ( PROJECT_CUDA_SOURCE )
 
   # build CUDA library
   cuda_add_library     ( ${CUDA_LIB} ${PROJECT_CUDA_SOURCE} )
-  target_link_libraries( ${CUDA_LIB} ${CUDA_curand_LIBRARY} )
+
+  if ( USE_CURAND )
+    target_link_libraries( ${CUDA_LIB} ${CUDA_curand_LIBRARY} )
+  endif( )
 
   set( PROJECT_LINK_LIBS           ${PROJECT_LINK_LIBS}           ${CUDA_LIB} )
   set( PROJECT_INSTALL_TARGETS     ${PROJECT_INSTALL_TARGETS}     ${CUDA_LIB} )
