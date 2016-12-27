@@ -356,7 +356,7 @@ void
 Camera::setProjectionMatrix( )
 {
   // Projection Matrices
-  float h = m_far * glm::tan( glm::radians( m_heightDegrees / 2.0 ) );
+  float h = m_far * glm::tan( glm::radians( m_heightDegrees / 2.0f ) );
   float w = m_aspectRatio * h;
 
   // row-major order

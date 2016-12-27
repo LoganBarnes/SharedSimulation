@@ -1,7 +1,9 @@
 #include "OpenGLIOHandler.hpp"
 
+// system
 #include <iostream>
 
+// shared
 #include "glad/glad.h"
 #include "graphics/glfw/GlfwWrapper.hpp"
 #include "graphics/opengl/OpenGLWrapper.hpp"

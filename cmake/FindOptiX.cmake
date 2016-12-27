@@ -52,6 +52,7 @@ macro(OPTIX_find_api_library name version)
       )
     find_file(${name}_DLL
       NAMES ${name}.${version}.dll
+      HINTS $ENV{OPTIX_SDK}/bin${bit_dest}
       )
   endif()
 endmacro()

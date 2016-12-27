@@ -27,10 +27,10 @@ if ( PROJECT_CUDA_SOURCE )
 
   # set nvcc options
   if ( NOT MSVC )
-    set( CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -O3 ${CUDA_COMPUTE_FLAGS}" )
+    set( CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -O3 ${CUDA_COMPUTE_FLAGS} -Wno-deprecated-gpu-targets" )
     set( CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} --compiler-options -fno-strict-aliasing -use_fast_math" )
   else()
-    set( CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} ${CUDA_COMPUTE_FLAGS}" )
+    set( CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} ${CUDA_COMPUTE_FLAGS} -Wno-deprecated-gpu-targets" )
   endif()
 
 

@@ -1,9 +1,9 @@
 #ifndef OpenGLWrapper_hpp
 #define OpenGLWrapper_hpp
 
-
 #include <string>
 #include <unordered_map>
+
 #include "glad/glad.h"
 
 

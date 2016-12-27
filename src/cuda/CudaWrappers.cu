@@ -1,3 +1,6 @@
+#if defined(WIN32) || defined(_WIN32) || defined(WIN64) || defined(_WIN64)
+#include <windows.h>
+#endif
 #include <cuda_runtime.h>
 #include <cuda_gl_interop.h>
 #include <cuda_profiler_api.h>

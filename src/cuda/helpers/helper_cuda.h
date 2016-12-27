@@ -23,6 +23,8 @@
 
 #include <helper_string.h>
 
+typedef unsigned uint;
+
 #ifndef EXIT_WAIVED
 #define EXIT_WAIVED 2
 #endif
