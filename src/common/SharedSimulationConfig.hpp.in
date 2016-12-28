@@ -6,6 +6,7 @@
 #cmakedefine USE_GLFW
 #cmakedefine USE_VULKAN
 #cmakedefine USE_GLM
+#cmakedefine USE_OPTIX
 #cmakedefine USE_CUDA
 
 
