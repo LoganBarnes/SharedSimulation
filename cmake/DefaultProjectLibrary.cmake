@@ -102,7 +102,7 @@ if ( PROJECT_MAIN )
   target_link_libraries ( ${PROJECT_EXEC} ${PROJECT_NAME} )
   add_dependencies      ( ${PROJECT_EXEC} ${PROJECT_NAME} )
 
-  set_property ( TARGET ${PROJECT_EXEC} PROPERTY CXX_STANDARD 11 ) # c++11
+  target_compile_features( ${PROJECT_EXEC} PRIVATE cxx_range_for )
 
   target_include_directories( ${PROJECT_EXEC} PUBLIC
                               ${PROJECT_INCLUDE_DIRS}
@@ -137,17 +137,27 @@ endif()
 # testing
 if ( BUILD_TESTS )
 
-  include_directories(${GTEST_INCLUDE_DIRS})
+  include_directories( ${GTEST_INCLUDE_DIRS} )
 
   add_executable( test${PROJECT_NAME} ${TESTING_SOURCE} )
 
   target_include_directories( test${PROJECT_NAME} SYSTEM PUBLIC ${TESTING_SYSTEM_INCLUDE_DIRS} )
   target_include_directories( test${PROJECT_NAME}        PUBLIC ${TESTING_INCLUDE_DIRS}        )
 
-  target_link_libraries     ( test${PROJECT_NAME} ${TESTING_LINK_LIBS}   )
+  target_link_libraries( test${PROJECT_NAME} ${TESTING_LINK_LIBS}   )
+
+  target_compile_features( test${PROJECT_NAME} PRIVATE cxx_range_for )
 
   if ( ${DEP_TARGETS} )
+
     add_dependencies ( test${PROJECT_NAME} ${TESTING_DEP_TARGETS} )
+
   endif( )
+
+  # Adds logic to INSTALL.vcproj to copy ${PROJECT_EXEC}.exe to destination directory
+  install(
+          TARGETS test${PROJECT_NAME}
+          RUNTIME DESTINATION testbin
+          )
 
 endif ( BUILD_TESTS )

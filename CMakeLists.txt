@@ -6,6 +6,7 @@ option( USE_GLAD   "Use glad library"   OFF )
 option( USE_GLM    "Use glm library"    OFF )
 option( USE_OPTIX  "Use optix library"  OFF )
 option( USE_GUI    "Use imgui library"  OFF )
+option( USE_GMOCK  "Use gmock library"  OFF )
 
 
 set( SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src )
