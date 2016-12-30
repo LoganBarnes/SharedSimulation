@@ -149,9 +149,12 @@ endif( )
 ################################################
 if ( USE_GMOCK )
 
+  # prevent /MT MSVC flag
+  set( gtest_force_shared_crt ON CACHE BOOL "" FORCE )
+
   add_subdirectory( ${THIRDPARTY}/googletest/googlemock )
 
-  # gmock and glad header dir
+  # gmock and gtest header dir
   set(
       GMOCK_INCLUDE_DIRS
       ${THIRDPARTY}/googletest/googletest/include
