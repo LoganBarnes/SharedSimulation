@@ -82,7 +82,7 @@ endif( )
 # make project into library that can be used by multiple executables ( such as test classes )
 add_library            ( ${PROJECT_NAME} ${PROJECT_SOURCE}                   )
 target_link_libraries  ( ${PROJECT_NAME} ${PROJECT_LINK_LIBS} ${DEP_TARGETS} )
-target_compile_features( ${PROJECT_NAME} PRIVATE cxx_range_for )
+target_compile_features( ${PROJECT_NAME} PRIVATE cxx_range_for               )
 
 
 if ( ${DEP_TARGETS} )
