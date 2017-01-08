@@ -118,7 +118,7 @@ endif( )
 ################################################
 if ( USE_OPTIX )
 
-  find_package( CUDA REQUIRED  )
+  find_package( CUDA  REQUIRED  )
   find_package( OptiX REQUIRED )
 
   set( CUDA_SYSTEM_INCLUDE_DIRS ${CUDA_SYSTEM_INCLUDE_DIRS} ${OptiX_INCLUDE} ${THIRDPARTY}/include )
@@ -144,9 +144,8 @@ if ( USE_OPTIX )
               optixUtil
 
               ${THIRDPARTY}/glad/src/glad.c
-#              ${THIRDPARTY}/optixUtil/HDRLoader.cpp
-#              ${THIRDPARTY}/optixUtil/PPMLoader.cpp
-#              ${THIRDPARTY}/optixUtil/sutil.cpp
+              ${THIRDPARTY}/optixUtil/HDRLoader.cpp
+              ${THIRDPARTY}/optixUtil/PPMLoader.cpp
               ${THIRDPARTY}/optixUtil/tinyobjloader/tiny_obj_loader.cc
               ${THIRDPARTY}/optixUtil/rply-1.01/rply.c
               ${THIRDPARTY}/optixUtil/Mesh.cpp

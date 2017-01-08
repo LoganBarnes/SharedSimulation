@@ -48,6 +48,9 @@ namespace optix {
 namespace
 {
 
+// temporary hard coded path
+const std::string TEMP_RES_PATH ( "../res/" );
+
 
 optix::TextureSampler loadTexture( optix::Context context,
         const std::string& filename, optix::float3 default_color )
@@ -130,16 +133,13 @@ void createMaterialPrograms(
     optix::Program&        any_hit
     )
 {
-  const std::string path = std::string( sutil::samplesPTXDir() ) + 
-                          "/cuda_compile_ptx_generated_phong.cu.ptx";
-  const std::string closest_name = use_textures ?
-                                   "closest_hit_radiance_textured" :
-                                   "closest_hit_radiance";
+
+  const std::string path = TEMP_RES_PATH + "ptx/cudaLightBender_generated_Brdf.cu.ptx";
 
   if( !closest_hit )
-      closest_hit = context->createProgramFromPTXFile( path, closest_name );
+      closest_hit = context->createProgramFromPTXFile( path, "closest_hit_simple_shading" );
   if( !any_hit )
-      any_hit     = context->createProgramFromPTXFile( path, "any_hit_shadow" );
+      any_hit     = context->createProgramFromPTXFile( path, "any_hit_occlusion" );
 }
 
 
@@ -156,9 +156,9 @@ optix::Material createOptiXMaterial(
   mat->setAnyHitProgram( 1u, any_hit ) ;    
 
   if( use_textures )
-    mat[ "Kd_map"]->setTextureSampler( sutil::loadTexture( context, mat_params.Kd_map, optix::make_float3(mat_params.Kd) ) );
+    mat[ "Kd_map"]->setTextureSampler( loadTexture( context, mat_params.Kd_map, optix::make_float3(mat_params.Kd) ) );
   else
-    mat[ "Kd_map"]->setTextureSampler( sutil::loadTexture( context, "", optix::make_float3(mat_params.Kd) ) );
+    mat[ "Kd_map"]->setTextureSampler( loadTexture( context, "", optix::make_float3(mat_params.Kd) ) );
 
   mat[ "Kd_mapped" ]->setInt( use_textures  );
   mat[ "Kd"        ]->set3fv( mat_params.Kd );
@@ -173,16 +173,14 @@ optix::Material createOptiXMaterial(
 
 optix::Program createBoundingBoxProgram( optix::Context context )
 {
-  std::string path = std::string( sutil::samplesPTXDir() ) +
-                     "/cuda_compile_ptx_generated_triangle_mesh.cu.ptx";
+  std::string path = TEMP_RES_PATH + "ptx/cudaLightBender_generated_TriangleMesh.cu.ptx";
   return context->createProgramFromPTXFile( path, "mesh_bounds" );
 }
 
 
 optix::Program createIntersectionProgram( optix::Context context )
 {
-  std::string path = std::string( sutil::samplesPTXDir() ) +
-                     "/cuda_compile_ptx_generated_triangle_mesh.cu.ptx";
+  std::string path = TEMP_RES_PATH + "ptx/cudaLightBender_generated_TriangleMesh.cu.ptx";
   return context->createProgramFromPTXFile( path, "mesh_intersect" );
 }
 
