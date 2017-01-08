@@ -114,6 +114,9 @@ if ( PROJECT_MAIN )
 
 endif()
 
+# rpath for unix libs
+set_property( TARGET ${PROJECT_EXEC} PROPERTY INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/lib )
+
 # Adds logic to INSTALL.vcproj to copy ${PROJECT_EXEC}.exe to destination directory
 install(
         TARGETS ${PROJECT_EXEC} ${PROJECT_NAME} ${PROJECT_INSTALL_TARGETS}
