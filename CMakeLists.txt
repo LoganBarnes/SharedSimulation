@@ -139,9 +139,13 @@ if ( USE_OPTIX )
       ${optixu_LIBRARY}
       )
 
+  # windows defines for exports and warnings
+  add_definitions( -Dsutil_sdk_EXPORTS -D_CRT_SECURE_NO_DEPRECATE )
+
   # model loading utils taken from the SDK samples
   add_library(
               optixUtil
+              SHARED
 
               ${THIRDPARTY}/glad/src/glad.c
               ${THIRDPARTY}/optixUtil/HDRLoader.cpp
@@ -177,6 +181,13 @@ if ( USE_OPTIX )
 
   # must be built before project lib
   set( DEP_TARGETS optixUtil )
+
+  install(
+          TARGETS optixUtil
+          RUNTIME DESTINATION bin
+          LIBRARY DESTINATION lib
+          ARCHIVE DESTINATION lib
+          )
 
   message( "USING OPTIX" )
 
