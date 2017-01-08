@@ -118,6 +118,7 @@ endif( )
 ################################################
 if ( USE_OPTIX )
 
+  find_package( CUDA REQUIRED  )
   find_package( OptiX REQUIRED )
 
   set( CUDA_SYSTEM_INCLUDE_DIRS ${CUDA_SYSTEM_INCLUDE_DIRS} ${OptiX_INCLUDE} ${THIRDPARTY}/include )
@@ -137,6 +138,46 @@ if ( USE_OPTIX )
       ${optix_LIBRARY}
       ${optixu_LIBRARY}
       )
+
+  # model loading utils taken from the SDK samples
+  add_library(
+              optixUtil
+
+              ${THIRDPARTY}/glad/src/glad.c
+#              ${THIRDPARTY}/optixUtil/HDRLoader.cpp
+#              ${THIRDPARTY}/optixUtil/PPMLoader.cpp
+#              ${THIRDPARTY}/optixUtil/sutil.cpp
+              ${THIRDPARTY}/optixUtil/tinyobjloader/tiny_obj_loader.cc
+              ${THIRDPARTY}/optixUtil/rply-1.01/rply.c
+              ${THIRDPARTY}/optixUtil/Mesh.cpp
+              ${THIRDPARTY}/optixUtil/OptiXMesh.cpp
+              )
+
+  target_link_libraries     ( optixUtil ${optix_LIBRARY} ${optixu_LIBRARY} )
+  target_include_directories(
+                             optixUtil SYSTEM PUBLIC
+
+                             ${OptiX_INCLUDE}
+                             ${CUDA_INCLUDE_DIRS}
+                             ${THIRDPARTY}/optixUtil
+                             ${THIRDPARTY}/include
+                             )
+
+
+  # imgui header dirs
+  set(
+      SYSTEM_INCLUDE_DIRS
+      ${SYSTEM_INCLUDE_DIRS}
+
+      ${THIRDPARTY}/optixUtil
+      )
+
+
+  # optixUtil lib
+  set( LINK_LIBS ${LINK_LIBS} optixUtil )
+
+  # must be built before project lib
+  set( DEP_TARGETS optixUtil )
 
   message( "USING OPTIX" )
 
