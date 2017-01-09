@@ -198,6 +198,7 @@ GlfwWrapper::createNewWindow(
   glfwSetKeyCallback        ( pWindow_, CallbackSingleton::keyCallback            );
   glfwSetCursorPosCallback  ( pWindow_, CallbackSingleton::cursorPositionCallback );
   glfwSetScrollCallback     ( pWindow_, CallbackSingleton::scrollCallback         );
+  glfwSetCharCallback       ( pWindow_, CallbackSingleton::charCallback           );
 
 } // GlfwWrapper::createNewWindow
 

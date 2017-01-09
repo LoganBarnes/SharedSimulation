@@ -239,7 +239,7 @@ ImguiCallback::handleChar(
 
   ImGuiIO &io = ImGui::GetIO( );
 
-  if ( !io.WantCaptureKeyboard && codepoint > 0 && codepoint < 0x10000 )
+  if ( io.WantCaptureKeyboard && codepoint > 0 && codepoint < 0x10000 )
   {
 
     io.AddInputCharacter( static_cast< unsigned short >( codepoint ) );
