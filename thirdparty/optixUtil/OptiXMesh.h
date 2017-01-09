@@ -68,8 +68,7 @@ struct OptiXMesh
 };
 
 
-SUTILAPI void loadMesh(
-    const std::string&        filename,
-    OptiXMesh&                mesh, 
+SUTILAPI void loadMesh(const std::string&        filename,
+    OptiXMesh&                mesh, const std::string &ptxPath,
     const optix::Matrix4x4&   load_xform = optix::Matrix4x4::identity()
     );

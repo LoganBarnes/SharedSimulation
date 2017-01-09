@@ -166,6 +166,10 @@ if ( USE_OPTIX )
                              ${THIRDPARTY}/include
                              )
 
+  set_target_properties(
+                        optixUtil PROPERTIES
+                        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
+                        )
 
   # imgui header dirs
   set(
