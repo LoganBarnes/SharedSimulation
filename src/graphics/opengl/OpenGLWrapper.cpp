@@ -126,6 +126,25 @@ OpenGLWrapper::initContext(
 
 
 
+// getters
+GLuint
+OpenGLWrapper::getTexture( const std::string name )
+{
+  checkItemExists( name, textures_, "texture" );
+  return textures_[ name ];
+}
+
+
+
+GLuint
+OpenGLWrapper::getBuffer( const std::string name )
+{
+  checkItemExists( name, buffers_, "buffer" );
+  return buffers_[ name ].vbo;
+}
+
+
+
 ///
 /// \brief OpenGLWrapper::addProgram
 /// \param name
@@ -787,7 +806,6 @@ OpenGLWrapper::_loadShader(
 
   return program;
 } // OpenGLWrapper::_loadShader
-
 
 
 } // namespace graphics

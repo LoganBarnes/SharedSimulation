@@ -81,11 +81,9 @@ public:
                     );
 
   // getters
-  GLuint
-  getTexture( const std::string name ) { return textures_[ name ]; }
+  GLuint getTexture ( const std::string name );
 
-  GLuint
-  getBuffer( const std::string name ) { return buffers_[ name ].vbo; }
+  GLuint getBuffer ( const std::string name );
 
   GLsizei
   getViewportWidth( ) { return viewportWidth_; }
@@ -118,19 +116,11 @@ public:
   template< typename T >
   void addBuffer (
                   const std::string  name,
-                  const GLsizeiptr   sizeBytes,
                   const T           *pData,
+                  const size_t       numElements,
                   const GLenum       type,
                   const VAOSettings &settings
                   );
-
-//  void addUVBuffer (
-//                    const std::string buffer,
-//                    const std::string program,
-//                    GLfloat          *data,
-//                    GLuint            size,
-//                    bool              dynamic = false
-//                    );
 
 
   void addFramebuffer (
@@ -280,13 +270,12 @@ template< typename T >
 void
 OpenGLWrapper::addBuffer(
                          const std::string  name,
-                         const GLsizeiptr   sizeBytes,
                          const T           *pData,
+                         const size_t       numElements,
                          const GLenum       type,
                          const VAOSettings &settings
                          )
 {
-
   if ( buffers_.find( name ) != buffers_.end( ) )
   {
     Buffer &buffer = buffers_[ name ];
@@ -299,7 +288,7 @@ OpenGLWrapper::addBuffer(
   glBindBuffer( GL_ARRAY_BUFFER, buffer.vbo );
   glBufferData(
                GL_ARRAY_BUFFER,
-               sizeBytes,
+               static_cast< GLsizeiptr >( numElements * sizeof( T ) ),
                pData,
                type
                );
