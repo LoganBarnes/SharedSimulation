@@ -1,0 +1,66 @@
+// EventDriver.hpp
+#pragma once
+
+
+#include "Driver.hpp"
+
+
+namespace shared
+{
+
+
+/////////////////////////////////////////////
+/// \brief The EventDriver class
+///
+/// \author Logan Barnes
+/////////////////////////////////////////////
+class EventDriver : public Driver
+{
+
+
+public:
+
+  /////////////////////////////////////////////
+  /// \brief EventDriver
+  /// \param world
+  /////////////////////////////////////////////
+  EventDriver(
+              World     &world,
+              IOHandler &ioHandler
+              ) noexcept;
+
+
+  /////////////////////////////////////////////
+  /// \brief ~EventDriver
+  /////////////////////////////////////////////
+  virtual
+  ~EventDriver( ) = default;
+
+
+  /////////////////////////////////////////////
+  /// \brief exec
+  /// \param argc
+  /// \param argv
+  /// \return
+  /////////////////////////////////////////////
+  int exec (
+            int          argc,
+            const char **argv
+            );
+
+
+private:
+
+  ///////////////////////////////////////////////////////////////
+  /// \brief _runEventLoop
+  ///
+  ///        Waits for event callbacks from glfw.
+  ///
+  ///////////////////////////////////////////////////////////////
+  void _runEventLoop ( );
+
+
+};
+
+
+} // namespace shared

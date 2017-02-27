@@ -5,6 +5,8 @@
 #include <fstream>
 #include <vector>
 #include <algorithm>
+#include <sstream>
+#include <stdexcept>
 
 #include "graphics/glfw/CallbackSingleton.hpp"
 
@@ -13,64 +15,94 @@ namespace graphics
 {
 
 
-OpenGLWrapper::OpenGLWrapper(
-                             GLsizei width,
-                             GLsizei height
-                             )
-  : viewportWidth_( width )
-  , viewportHeight_( height )
+namespace
+{
+
+template< typename Map >
+void
+checkItemExists(
+                const std::string &key,
+                const Map         &map,
+                const std::string &mapDiscription = ""
+                )
+{
+  if ( map.find( key ) == map.end( ) )
+  {
+    std::stringstream msg;
+    msg << "Item '" << key << "' not found in " << mapDiscription << " map.";
+    throw std::runtime_error( msg.str( ) );
+  }
+}
+
+
+
+}
+
+
+///
+/// \brief OpenGLWrapper::OpenGLWrapper
+///
+OpenGLWrapper::OpenGLWrapper( )
+  : viewportWidth_( 0 )
+  , viewportHeight_( 0 )
   , input_( &CallbackSingleton::getInstance( ) )
+  , pContext_( nullptr )
   , initialized_( false )
 {}
 
 
 
+///
+/// \brief OpenGLWrapper::~OpenGLWrapper
+///
 OpenGLWrapper::~OpenGLWrapper( )
 {
-
-  for ( auto it = programs_.begin( ); it != programs_.end( ); ++it )
+  for ( auto & it : programs_ )
   {
-
-    glDeleteProgram( it->second );
-
+    glDeleteProgram( it.second );
   }
 
-
-  for ( auto it = textures_.begin( ); it != textures_.end( ); ++it )
+  for ( auto & it : textures_ )
   {
-
-    glDeleteTextures( 1, &( it->second ) );
-
+    glDeleteTextures( 1, &( it.second ) );
   }
 
-  for ( auto it = buffers_.begin( ); it != buffers_.end( ); ++it )
+  for ( auto & it : buffers_ )
   {
-
-    const Buffer &buffer = it->second;
-    glDeleteBuffers( 1, &( buffer.vbo ) );
-    glDeleteVertexArrays( 1, &( buffer.vao ) );
-
+    glDeleteBuffers( 1, &( it.second.vbo ) );
   }
 
-  for ( auto it = framebuffers_.begin( ); it != framebuffers_.end( ); ++it )
+  for ( auto & vaos : vaoMap_ )
   {
-
-    const Buffer &buffer = it->second;
-    glDeleteFramebuffers( 1, &( buffer.vbo ) );
-    glDeleteRenderbuffers( 1, &( buffer.vao ) );
-
+    for ( auto & it : vaos.second )
+    {
+      glDeleteVertexArrays( 1, &it.second );
+    }
   }
 
+  for ( auto & it : framebuffers_ )
+  {
+    const FrameBuffer &buffer = it.second;
+    glDeleteFramebuffers( 1, &( buffer.fbo ) );
+    glDeleteRenderbuffers( 1, &( buffer.rbo ) );
+  }
 }
 
 
 
 ///
-/// \brief OpenGLWrapper::init
+/// \brief OpenGLWrapper::initContext
+/// \param width
+/// \param height
 ///
 void
-OpenGLWrapper::init( )
+OpenGLWrapper::initContext(
+                           GLsizei width,
+                           GLsizei height
+                           )
 {
+  viewportWidth_  = width;
+  viewportHeight_ = height;
 
   // Enable depth testing, so that objects are occluded based on depth instead of drawing order.
   glEnable( GL_DEPTH_TEST );
@@ -80,18 +112,17 @@ OpenGLWrapper::init( )
   glEnable( GL_POLYGON_OFFSET_LINE );
   glPolygonOffset( -1, -1 );
 
-//  // Enable back-face culling, meaning only the front side of every face is rendered.
-//  glEnable( GL_CULL_FACE );
-//  glCullFace( GL_BACK );
+  // Enable back-face culling, meaning only the front side of every face is rendered.
+  glEnable( GL_CULL_FACE );
+  glCullFace( GL_BACK );
 
-//  // Specify that the front face is represented by vertices in counterclockwise order (this is
-//  // the default).
-//  glFrontFace( GL_CCW );
+  // Specify that the front face is represented by vertices in counterclockwise order (this is
+  // the default).
+  glFrontFace( GL_CCW );
 
   // Specify the color used when glClear is called
-  glClearColor( 1.0f, 0.5f, 0.0f, 1.0f );
-
-} // init
+  setClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
+} // initContext
 
 
 
@@ -109,9 +140,7 @@ OpenGLWrapper::addProgram(
                           )
 
 {
-
   programs_[ name ] = OpenGLWrapper::_loadShader( vertFilePath, fragFilePath );
-
 }
 
 
@@ -127,7 +156,7 @@ OpenGLWrapper::addTextureArray(
 
 {
 
-  if ( textures_.count( name ) )
+  if ( textures_.find( name ) != textures_.end( ) )
   {
     glDeleteTextures( 1, &( textures_[ name ] ) );
   }
@@ -166,7 +195,7 @@ OpenGLWrapper::addTextureImage(
                                const std::string
                                )
 {
-  if ( textures_.count( name ) )
+  if ( textures_.find( name ) != textures_.end( ) )
   {
     glDeleteTextures( 1, &( textures_[ name ] ) );
   }
@@ -188,91 +217,76 @@ OpenGLWrapper::addTextureImage(
 
 
 
-
-///
-/// \brief OpenGLWrapper::addUVBuffer
-/// \param name
-/// \param program
-/// \param data
-/// \param size
-/// \param dynamic
-///
-void
-OpenGLWrapper::addUVBuffer(
-                           const std::string name,
-                           const std::string program,
-                           GLfloat          *data,
-                           GLuint            size,
-                           bool              dynamic
-                           )
+GLuint
+OpenGLWrapper::_addVAOToBuffer(
+                               const GLuint       vbo,
+                               const VAOSettings &settings
+                               ) const
 {
-  Buffer buffer;
+  GLuint vao;
 
-  if ( buffers_.find( name ) != buffers_.end() )
-  {
-    buffer = buffers_[ name ];
-    glDeleteBuffers( 1, &( buffer.vbo ) );
-    glDeleteVertexArrays( 1, &( buffer.vao ) );
-  }
-
-  // Initialize the vertex buffer object.
-  glGenBuffers( 1, &( buffer.vbo ) );
-  glBindBuffer( GL_ARRAY_BUFFER, ( buffer.vbo ) );
-
-  if ( dynamic )
-  {
-    glBufferData(
-                 GL_ARRAY_BUFFER,
-                 static_cast< GLsizeiptr >( size * sizeof( GLfloat ) ),
-                 data,
-                 GL_DYNAMIC_DRAW
-                 );
-  }
-  else
-  {
-    glBufferData(
-                 GL_ARRAY_BUFFER,
-                 static_cast< GLsizeiptr >( size * sizeof( GLfloat ) ),
-                 data,
-                 GL_STATIC_DRAW
-                 );
-  }
-
+  glBindBuffer( GL_ARRAY_BUFFER, vbo );
 
   // Initialize the vertex array object.
-  glGenVertexArrays( 1, &( buffer.vao ) );
-  glBindVertexArray( ( buffer.vao ) );
+  glGenVertexArrays( 1, &vao );
+  glBindVertexArray( vao );
 
-  int pos = glGetAttribLocation( programs_[ program ], "inScreenPos" );
+  checkItemExists( settings.program, programs_, "programs" );
 
-  if ( pos < 0 )
+  const GLuint &program = programs_.at( settings.program );
+
+  for ( size_t i = 0; i < settings.settings.size( ); ++i )
   {
-    std::cerr << "attrib location not found for program " << program << std::endl;
-    // Unbind buffers and return
-    glBindBuffer( GL_ARRAY_BUFFER, 0 );
-    glBindVertexArray( 0 );
-    return;
+    const VAOElement &vaoElmt = settings.settings[ i ];
+    int pos                   = glGetAttribLocation( program, vaoElmt.name.c_str( ) );
+
+    if ( pos < 0 )
+    {
+      std::stringstream msg;
+      msg << "attrib location "
+          << vaoElmt.name
+          << " not found for program "
+          << settings.program;
+
+      throw std::runtime_error( msg.str( ) );
+    }
+
+    GLuint position = static_cast< GLuint >( pos );
+
+    glEnableVertexAttribArray( position );
+    glVertexAttribPointer(
+                          position,
+                          vaoElmt.size,         // Num coordinates per position
+                          vaoElmt.type,         // Type
+                          GL_FALSE,             // Normalized
+                          settings.totalStride, // Stride, 0 = tightly packed
+                          vaoElmt.pointer       // Array buffer offset
+                          );
   }
-
-  GLuint position = static_cast< GLuint >( pos );
-
-  glEnableVertexAttribArray( position );
-  glVertexAttribPointer(
-                        position,
-                        3,        // Num coordinates per position
-                        GL_FLOAT, // Type
-                        GL_FALSE, // Normalized
-                        0,        // Stride, 0 = tightly packed
-                        nullptr   // Array buffer offset
-                        );
 
   // Unbind buffers.
   glBindBuffer( GL_ARRAY_BUFFER, 0 );
   glBindVertexArray( 0 );
 
-  buffers_[ name ] = buffer;
+  return vao;
 
-} // OpenGLWrapper::addUVBuffer
+} // OpenGLWrapper::addVAOToBuffer
+
+
+
+GLuint
+OpenGLWrapper::_getVAO( const Buffer &buf )
+{
+  ContextVAOMap &vaos = vaoMap_[ buf.vbo ];
+
+  if ( vaos.find( pContext_ ) == vaos.end( ) )
+  {
+    vaos[ pContext_ ] = _addVAOToBuffer( buf.vbo, buf.settings );
+  }
+
+  return vaos[ pContext_ ];
+
+}
 
 
 
@@ -285,20 +299,22 @@ OpenGLWrapper::addFramebuffer(
                               )
 
 {
+  checkItemExists( texture, textures_, "textures" );
+
   if ( framebuffers_.find( buffer ) != framebuffers_.end( ) )
   {
-    Buffer buf = framebuffers_[ buffer ];
-    glDeleteFramebuffers( 1, &buf.vbo );
-    glDeleteRenderbuffers( 1, &buf.vao );
+    FrameBuffer &buf = framebuffers_[ buffer ];
+    glDeleteFramebuffers( 1, &buf.fbo );
+    glDeleteRenderbuffers( 1, &buf.rbo );
   }
 
-  GLuint fbo;
-  glGenFramebuffers( 1, &fbo );
-  glBindFramebuffer( GL_FRAMEBUFFER, fbo );
+  FrameBuffer &buf = framebuffers_[ buffer ];
 
-  GLuint rbo;
-  glGenRenderbuffers( 1, &rbo );
-  glBindRenderbuffer( GL_RENDERBUFFER, rbo );
+  glGenFramebuffers( 1, &buf.fbo );
+  glBindFramebuffer( GL_FRAMEBUFFER, buf.fbo );
+
+  glGenRenderbuffers( 1, &buf.rbo );
+  glBindRenderbuffer( GL_RENDERBUFFER, buf.rbo );
   glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height );
   glBindRenderbuffer( GL_RENDERBUFFER, 0 );
 
@@ -310,14 +326,9 @@ OpenGLWrapper::addFramebuffer(
                          0 );
 
   // attach a renderbuffer to depth attachment point
-  glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo );
+  glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, buf.rbo );
 
   glBindFramebuffer( GL_FRAMEBUFFER, 0 );
-
-  Buffer buf;
-  buf.vbo                 = fbo;
-  buf.vao                 = rbo;
-  framebuffers_[ buffer ] = buf;
 
 } // OpenGLWrapper::addFramebuffer
 
@@ -328,7 +339,7 @@ OpenGLWrapper::bindFramebuffer( const std::string name )
 {
   if ( framebuffers_.find( name ) != framebuffers_.end( ) )
   {
-    glBindFramebuffer( GL_FRAMEBUFFER, framebuffers_[ name ].vbo );
+    glBindFramebuffer( GL_FRAMEBUFFER, framebuffers_[ name ].fbo );
   }
   else
   {
@@ -344,7 +355,10 @@ OpenGLWrapper::swapFramebuffers(
                                 const std::string fbo2
                                 )
 {
-  Buffer temp = framebuffers_[ fbo1 ];
+  checkItemExists( fbo1, framebuffers_, "framebuffer" );
+  checkItemExists( fbo2, framebuffers_, "framebuffer" );
+
+  FrameBuffer temp = framebuffers_[ fbo1 ];
 
   framebuffers_[ fbo1 ] = framebuffers_[ fbo2 ];
   framebuffers_[ fbo2 ] = temp;
@@ -386,6 +400,7 @@ OpenGLWrapper::clearWindow(
 void
 OpenGLWrapper::useProgram( const std::string program )
 {
+  checkItemExists( program, programs_, "programs" );
   glUseProgram( programs_[ program ] );
 }
 
@@ -399,6 +414,9 @@ OpenGLWrapper::setTextureUniform(
                                  int               activeTex
                                  )
 {
+  checkItemExists( program, programs_, "programs" );
+  checkItemExists( texture, textures_, "textures" );
+
   switch ( activeTex )
   {
   case 0:
@@ -427,12 +445,17 @@ OpenGLWrapper::setTextureUniform(
 void
 OpenGLWrapper::renderBuffer(
                             const std::string buffer,
-                            int               verts,
+                            const int         start,
+                            const int         verts,
                             GLenum            mode
                             )
 {
-  glBindVertexArray( buffers_[ buffer ].vao );
-  glDrawArrays( mode, 0, verts );
+  checkItemExists( buffer, buffers_, "buffer" );
+
+  GLuint vao = _getVAO( buffers_[ buffer ] );
+
+  glBindVertexArray( vao );
+  glDrawArrays( mode, start, verts );
   glBindVertexArray( 0 );
 }
 
@@ -445,14 +468,19 @@ OpenGLWrapper::setBuffer(
                          GLuint            size
                          )
 {
-  Buffer buffer = buffers_[ bufferName ];
+  checkItemExists( bufferName, buffers_, "buffer" );
+
+  Buffer &buffer = buffers_[ bufferName ];
+  GLuint vao     = _getVAO( buffer );
 
   glBindBuffer( GL_ARRAY_BUFFER, buffer.vbo );
-  glBindVertexArray( buffer.vao );
-  glBufferSubData( GL_ARRAY_BUFFER,
+  glBindVertexArray( vao );
+  glBufferSubData(
+                  GL_ARRAY_BUFFER,
                   0,
                   static_cast< GLsizeiptr >( size * sizeof( float ) ),
-                  data );
+                  data
+                  );
 }
 
 
@@ -464,6 +492,7 @@ OpenGLWrapper::setBoolUniform(
                               bool              var
                               )
 {
+  checkItemExists( program, programs_, "programs" );
   glUniform1i( glGetUniformLocation( programs_[ program ], uniform.c_str( ) ), var );
 }
 
@@ -476,6 +505,7 @@ OpenGLWrapper::setIntUniform(
                              int               value
                              )
 {
+  checkItemExists( program, programs_, "programs" );
   glUniform1i( glGetUniformLocation( programs_[ program ], uniform.c_str( ) ), value );
 }
 
@@ -490,6 +520,7 @@ OpenGLWrapper::setFloatUniform(
                                const int         count
                                )
 {
+  checkItemExists( program, programs_, "programs" );
 
   switch ( size )
   {
@@ -511,6 +542,9 @@ OpenGLWrapper::setFloatUniform(
     break;
 
   default:
+    std::stringstream msg;
+    msg << "Float or vector of size " << size << " does not exist";
+    throw std::runtime_error( msg.str( ) );
     break;
 
   } // switch
@@ -520,11 +554,66 @@ OpenGLWrapper::setFloatUniform(
 
 
 void
+OpenGLWrapper::setMatrixUniform(
+                                const std::string program,
+                                const std::string uniform,
+                                const float      *pValue,
+                                const int         size,
+                                const int         count
+                                )
+{
+  checkItemExists( program, programs_, "programs" );
+
+  switch ( size )
+  {
+  case 2:
+    glUniformMatrix2fv(
+                       glGetUniformLocation( programs_[ program ], uniform.c_str( ) ),
+                       count,
+                       GL_FALSE,
+                       pValue
+                       );
+    break;
+
+  case 3:
+    glUniformMatrix3fv(
+                       glGetUniformLocation( programs_[ program ], uniform.c_str( ) ),
+                       count,
+                       GL_FALSE,
+                       pValue
+                       );
+    break;
+
+
+  case 4:
+    glUniformMatrix4fv(
+                       glGetUniformLocation( programs_[ program ], uniform.c_str( ) ),
+                       count,
+                       GL_FALSE,
+                       pValue
+                       );
+    break;
+
+  default:
+    std::stringstream msg;
+    msg << "Matrix of size " << size << " does not exist";
+    throw std::runtime_error( msg.str( ) );
+    break;
+  } // switch
+
+} // OpenGLWrapper::setMatrixUniform
+
+
+
+void
 OpenGLWrapper::swapTextures(
                             const std::string tex1,
                             const std::string tex2
                             )
 {
+  checkItemExists( tex1, textures_, "textures" );
+  checkItemExists( tex2, textures_, "textures" );
+
   GLuint temp = textures_[ tex1 ];
 
   textures_[ tex1 ] = textures_[ tex2 ];
@@ -571,7 +660,6 @@ OpenGLWrapper::bindBufferToTexture(
                                    int               height
                                    )
 {
-
   glBindTexture( GL_TEXTURE_2D, getTexture( texture ) );
   glBindBuffer ( GL_PIXEL_UNPACK_BUFFER, bufId );
 
@@ -592,6 +680,19 @@ OpenGLWrapper::bindBufferToTexture(
   glBindBuffer( GL_PIXEL_UNPACK_BUFFER, 0 );
 
 } // OpenGLWrapper::bindBufferToTexture
+
+
+
+void
+OpenGLWrapper::setClearColor(
+                             const float r,
+                             const float g,
+                             const float b,
+                             const float a
+                             )
+{
+  glClearColor( r, g, b, a );
+}
 
 
 

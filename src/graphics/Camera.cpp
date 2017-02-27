@@ -1,6 +1,6 @@
 #include "graphics/Camera.hpp"
 
-#define GLM_FORCE_RADIANS
+#define GLFORCE_RADIANS_
 #include "glm/gtx/rotate_vector.hpp"
 #include "glm/gtx/vector_angle.hpp"
 #include <cmath>
@@ -11,136 +11,144 @@ namespace graphics
 {
 
 
-Camera::Camera( )
-  : m_orbitX( 0.f )
-  , m_orbitY( 0.f )
-  , m_zoomZ( 0.f )
+template< typename T >
+Camera< T >::Camera( )
+  : orbitX_( 0.f )
+  , orbitY_( 0.f )
+  , zoomZ_( 0.f )
 {
-  glm::vec4 eye  = glm::vec4( 0, 0, 5, 0 );
-  glm::vec4 look = -eye;   // normalized in "orientLook()"
-  glm::vec4 up   = glm::vec4( 0, 1, 0, 0 );
+  glm::tvec4< T > eye  = glm::tvec4< T >( 0, 0, 5, 0 );
+  glm::tvec4< T > look = -eye;   // normalized in "orientLook()"
+  glm::tvec4< T > up   = glm::tvec4< T >( 0, 1, 0, 0 );
 
   orientLook( eye, look, up );
 
   // Projection Defaults
-  m_heightDegrees = 60.f;
-  m_aspectRatio   = 1.0f;
-  m_near          = 0.1f;
-  m_far           = 1000.0f;
+  heightDegrees_ = 60.f;
+  aspectRatio_   = 1.0f;
+  near_          = 0.1f;
+  far_           = 1000.0f;
   setProjectionMatrix( );
 
-  m_thirdDist = 0.f;
+  thirdDist_ = 0.f;
   setFrustumMatrix( );
 }
 
 
 
-Camera::~Camera( )
-{}
-
-
-
-const glm::mat4&
-Camera::getProjectionMatrix( ) const
+template< typename T >
+const glm::tmat4x4< T >&
+Camera< T >::getProjectionMatrix( ) const
 {
-  return m_proj;
+  return proj_;
 }
 
 
 
-const glm::mat4&
-Camera::getViewMatrix( ) const
+template< typename T >
+const glm::tmat4x4< T >&
+Camera< T >::getViewMatrix( ) const
 {
-  return m_view;
+  return view_;
 }
 
 
 
-const glm::mat4&
-Camera::getScaleMatrix( ) const
+template< typename T >
+const glm::tmat4x4< T >&
+Camera< T >::getScaleMatrix( ) const
 {
-  return m_scale;
+  return scale_;
 }
 
 
 
-const glm::mat4&
-Camera::getScaleViewInvMatrix( ) const
+template< typename T >
+const glm::tmat4x4< T >&
+Camera< T >::getScaleViewInvMatrix( ) const
 {
-  return m_scaleViewInv;
+  return scaleViewInv_;
 }
 
 
 
-const glm::mat4&
-Camera::getFrustumMatrix( ) const
+template< typename T >
+const glm::tmat4x4< T >&
+Camera< T >::getFrustumMatrix( ) const
 {
-  return m_frustum;
+  return frustum_;
 }
 
 
 
-const glm::vec4&
-Camera::getLook( ) const
+template< typename T >
+const glm::tvec4< T >&
+Camera< T >::getLook( ) const
 {
-  return m_look;
+  return look_;
 }
 
 
 
-const glm::vec4&
-Camera::getUp( ) const
+template< typename T >
+const glm::tvec4< T >&
+Camera< T >::getUp( ) const
 {
-  return m_up;
+  return up_;
 }
 
 
 
-const glm::vec4&
-Camera::getRight( ) const
+template< typename T >
+const glm::tvec4< T >&
+Camera< T >::getRight( ) const
 {
-  return m_right;
+  return right_;
 }
 
 
 
-const glm::vec4&
-Camera::getEye( ) const
+template< typename T >
+const glm::tvec4< T >&
+Camera< T >::getEye( ) const
 {
-  return m_eye;
+  return eye_;
 }
 
 
 
-float
-Camera::getAspectRatio( ) const
+template< typename T >
+T
+Camera< T >::getAspectRatio( ) const
 {
-  return m_aspectRatio;
+  return aspectRatio_;
 }
 
 
 
+template< typename T >
 void
-Camera::setAspectRatio( float a )
+Camera< T >::setAspectRatio( T a )
 {
-  m_aspectRatio = a;
+  aspectRatio_ = a;
   setProjectionMatrix( );
   setFrustumMatrix( );
 }
 
 
 
+template< typename T >
 void
-Camera::orientLook(
-                   glm::vec4 &eye,
-                   glm::vec4 &look,
-                   glm::vec4 &up
-                   )
+Camera< T >::orientLook(
+                        glm::tvec4< T > &eye,
+                        glm::tvec4< T > &look,
+                        glm::tvec4< T > &up
+                        )
 {
   // Camera vecs
-  m_eye  = eye;
-  m_look = look;
-  m_up   = up;
+  eye_  = eye;
+  look_ = look;
+  up_   = up;
 
   setCameraSpace( );
   setViewMatrix( );
@@ -149,78 +157,85 @@ Camera::orientLook(
 
 
 
+template< typename T >
 void
-Camera::moveHorizontal( glm::vec2 dir )
+Camera< T >::moveHorizontal( glm::tvec2< T > dir )
 {
-  m_eye += glm::normalize( glm::vec4( m_look.x, 0.f, m_look.z, 0.f ) ) * dir.x;
-  m_eye += glm::normalize( glm::vec4( -m_look.z, 0.f, m_look.x, 0.f ) ) * dir.y;
+  eye_ += glm::normalize( glm::tvec4< T >( look_.x, 0.f, look_.z, 0.f ) ) * dir.x;
+  eye_ += glm::normalize( glm::tvec4< T >( -look_.z, 0.f, look_.x, 0.f ) ) * dir.y;
   setViewMatrix( );
   setFrustumMatrix( );
 }
 
 
 
+template< typename T >
 void
-Camera::moveAlongU( float mag )
+Camera< T >::moveAlongU( T mag )
 {
-  m_eye += m_u * mag;
+  eye_ += u_ * mag;
   setViewMatrix( );
   setFrustumMatrix( );
 }
 
 
 
+template< typename T >
 void
-Camera::moveAlongUp( float mag )
+Camera< T >::moveAlongUp( T mag )
 {
-  m_eye += m_up * mag;
+  eye_ += up_ * mag;
   setViewMatrix( );
   setFrustumMatrix( );
 }
 
 
 
+template< typename T >
 void
-Camera::moveAlongLook( float mag )
+Camera< T >::moveAlongLook( T mag )
 {
-  m_eye += m_look * mag;
+  eye_ += look_ * mag;
   setViewMatrix( );
   setFrustumMatrix( );
 }
 
 
 
+template< typename T >
 void
-Camera::pitch( float degrees )
+Camera< T >::pitch( T degrees )
 {
-  glm::vec4 oldLook = m_look;
+  glm::tvec4< T > oldLook = look_;
 
-  m_look =
-    glm::rotate( m_look, glm::radians( degrees ), glm::cross( glm::vec3( m_up ), glm::vec3(
-                                                                                           m_look ) ) );
+  look_ =
+    glm::rotate( look_, glm::radians( degrees ),
+                glm::cross( glm::tvec3< T >( up_ ), glm::tvec3< T >(
+                                                                    look_ ) ) );
   setCameraSpace( );
 
-  if ( m_up.y < 0 )
+  if ( up_.y < 0 )
   {
-    m_look = oldLook;
+    look_ = oldLook;
     setCameraSpace( );
   }
 
   setViewMatrix( );
   setFrustumMatrix( );
-}
+} // >::pitch
 
 
 
+template< typename T >
 void
-Camera::yaw( float degrees )
+Camera< T >::yaw( T degrees )
 {
-  float radians = glm::radians( degrees );
+  T radians = glm::radians( degrees );
 
-  glm::vec3 vec = glm::vec3( 0.f, -1.f, 0.f );
+  glm::tvec3< T > vec = glm::tvec3< T >( 0.f, -1.f, 0.f );
 
-  m_look = glm::rotate( m_look, radians, vec );
-  m_up   = glm::rotate( m_up, radians, vec );
+  look_ = glm::rotate( look_, radians, vec );
+  up_   = glm::rotate( up_, radians, vec );
   setCameraSpace( );
   setViewMatrix( );
   setFrustumMatrix( );
@@ -228,10 +243,11 @@ Camera::yaw( float degrees )
 
 
 
+template< typename T >
 void
-Camera::roll( float degrees )
+Camera< T >::roll( T degrees )
 {
-  m_up = glm::rotate( m_up, glm::radians( degrees ), glm::vec3( m_look ) );
+  up_ = glm::rotate( up_, glm::radians( degrees ), glm::tvec3< T >( look_ ) );
   setCameraSpace( );
   setViewMatrix( );
   setFrustumMatrix( );
@@ -239,33 +255,34 @@ Camera::roll( float degrees )
 
 
 
+template< typename T >
 void
-Camera::updateOrbit(
-                    float zoomZ,
-                    float deltaX,
-                    float deltaY
-                    )
+Camera< T >::updateOrbit(
+                         T zoomZ,
+                         T deltaX,
+                         T deltaY
+                         )
 {
   // x = dy and y = dx because orbits are angles around that axis
   // and deltas are translations in that direction
-  m_zoomZ  += zoomZ;
-  m_orbitX += deltaY;
-  m_orbitY += deltaX;
+  zoomZ_  += zoomZ;
+  orbitX_ += deltaY;
+  orbitY_ += deltaX;
 
-  if ( m_zoomZ < 0.001f )
+  if ( zoomZ_ < 0.001f )
   {
-    m_zoomZ = 0.001f;
+    zoomZ_ = 0.001f;
   }
 
-  glm::mat4 trans =
-    glm::rotate( glm::radians( m_orbitY ), glm::vec3( 0.f, 1.f, 0.f ) )
-    * glm::rotate( glm::radians( m_orbitX ), glm::vec3( 1.f, 0.f, 0.f ) )
-    * glm::translate( glm::vec3( 0.f, 0.f, m_zoomZ ) );
+  glm::tmat4x4< T > trans =
+    glm::rotate( glm::radians( orbitY_ ), glm::tvec3< T >( 0.f, 1.f, 0.f ) )
+    * glm::rotate( glm::radians( orbitX_ ), glm::tvec3< T >( 1.f, 0.f, 0.f ) )
+    * glm::translate( glm::tvec3< T >( 0.f, 0.f, zoomZ_ ) );
 
 
-  glm::vec4 eye  = trans * glm::vec4( 0, 0, 0, 1 );
-  glm::vec4 look = -eye;   // normalized in "orientLook()"
-  glm::vec4 up   = trans * glm::vec4( 0, 1, 0, 0 );
+  glm::tvec4< T > eye  = trans * glm::tvec4< T >( 0, 0, 0, 1 );
+  glm::tvec4< T > look = -eye;   // normalized in "orientLook()"
+  glm::tvec4< T > up   = trans * glm::tvec4< T >( 0, 1, 0, 0 );
   this->orientLook( eye, look, up );
 
 } // updateOrbit
@@ -273,129 +290,139 @@ Camera::updateOrbit(
 
 
 ///
-/// \brief Camera::buildRayBasisVectors
+/// \brief Camera< T >::buildRayBasisVectors
 /// \param pU
 /// \param pV
 /// \param pW
 ///
+template< typename T >
 void
-Camera::buildRayBasisVectors(
-                             glm::vec3 *pU,
-                             glm::vec3 *pV,
-                             glm::vec3 *pW
-                             ) const
+Camera< T >::buildRayBasisVectors(
+                                  glm::tvec3< T > *pU,
+                                  glm::tvec3< T > *pV,
+                                  glm::tvec3< T > *pW
+                                  ) const
 {
 
-  glm::vec3 &U = *pU;
-  glm::vec3 &V = *pV;
-  glm::vec3 &W = *pW;
+  glm::tvec3< T > &U = *pU;
+  glm::tvec3< T > &V = *pV;
+  glm::tvec3< T > &W = *pW;
 
-  float ulen, vlen, wlen;
-  W = -glm::vec3( m_eye - glm::vec4( 0, 3, 0, 1 ) ); // always looking at spot above origin for now
+  T ulen, vlen, wlen;
+  W = -glm::tvec3< T >( eye_ - glm::tvec4< T >( 0, 3, 0, 1 ) ); // always looking at spot above origin for now
 
   wlen = glm::length( W );
-  U = glm::normalize( glm::cross( W, glm::vec3( m_up ) ) );
-  V = glm::normalize( glm::cross( U, W ) );
+  U    = glm::normalize( glm::cross( W, glm::tvec3< T >( up_ ) ) );
+  V    = glm::normalize( glm::cross( U, W ) );
 
-  ulen = wlen * glm::tan( glm::radians( 0.5f * m_heightDegrees ) );
+  ulen = wlen * glm::tan( glm::radians( 0.5f * heightDegrees_ ) );
   U   *= ulen;
-  vlen = ulen / m_aspectRatio;
+  vlen = ulen / aspectRatio_;
   V   *= vlen;
 
-}
+} // >::buildRayBasisVectors
 
 
 
+template< typename T >
 void
-Camera::setCameraSpace( )
+Camera< T >::setCameraSpace( )
 {
   // Camera coordinate space
-  m_look = glm::normalize( m_look );
-  m_w    = -m_look;
-  m_v    = glm::normalize( m_up - ( glm::dot( m_up, m_w ) * m_w ) );
-  m_u    = glm::vec4( glm::normalize( glm::cross(
-                                                 glm::vec3( m_v ),
-                                                 glm::vec3( m_w )
-                                                 ) ), 0 );
-  m_up    = m_v;
-  m_right = m_u;
+  look_ = glm::normalize( look_ );
+  w_    = -look_;
+  v_    = glm::normalize( up_ - ( glm::dot( up_, w_ ) * w_ ) );
+  u_    = glm::tvec4< T >( glm::normalize( glm::cross(
+                                                      glm::tvec3< T >( v_ ),
+                                                      glm::tvec3< T >( w_ )
+                                                      ) ), 0 );
+  up_    = v_;
+  right_ = u_;
 
 }
 
 
 
+template< typename T >
 void
-Camera::setViewMatrix( )
+Camera< T >::setViewMatrix( )
 {
   // View Matrices
-  glm::mat4 trans = glm::mat4( );
+  glm::tmat4x4< T > trans = glm::tmat4x4< T >( );
 
-  trans[ 3 ][ 0 ] = -m_eye[ 0 ];
-  trans[ 3 ][ 1 ] = -m_eye[ 1 ];
-  trans[ 3 ][ 2 ] = -m_eye[ 2 ];
+  trans[ 3 ][ 0 ] = -eye_[ 0 ];
+  trans[ 3 ][ 1 ] = -eye_[ 1 ];
+  trans[ 3 ][ 2 ] = -eye_[ 2 ];
 
   // row-major order
-  glm::mat4 rot = glm::mat4(
-                            m_u.x, m_u.y, m_u.z, 0.0,
-                            m_v.x, m_v.y, m_v.z, 0.0,
-                            m_w.x, m_w.y, m_w.z, 0.0,
-                            0.0,   0.0,   0.0,  1.0
-                            );
+  glm::tmat4x4< T > rot = glm::tmat4x4< T >(
+                                            u_.x, u_.y, u_.z, 0.0,
+                                            v_.x, v_.y, v_.z, 0.0,
+                                            w_.x, w_.y, w_.z, 0.0,
+                                            0.0,   0.0,   0.0,  1.0
+                                            );
 
   // column-major order for glm and glsl
   rot = glm::transpose( rot );
 
-  m_view = rot * trans;
+  view_ = rot * trans;
 
-  m_scaleViewInv = glm::inverse( m_scale * m_view );
+  scaleViewInv_ = glm::inverse( scale_ * view_ );
 } // setViewMatrix
 
 
 
+template< typename T >
 void
-Camera::setProjectionMatrix( )
+Camera< T >::setProjectionMatrix( )
 {
   // Projection Matrices
-  float h = m_far * glm::tan( glm::radians( m_heightDegrees / 2.0f ) );
-  float w = m_aspectRatio * h;
+  T h = far_ * glm::tan( glm::radians( heightDegrees_ / 2.0f ) );
+  T w = aspectRatio_ * h;
 
   // row-major order
-  m_scale = glm::mat4(
-                      1.0 / w,       0.0,          0.0,        0.0,
-                      0.0,        1.0 / h,         0.0,        0.0,
-                      0.0,           0.0,       1.0 / m_far,   0.0,
-                      0.0,           0.0,          0.0,        1.0
-                      );
+  scale_ = glm::tmat4x4< T >(
+                             1.0 / w,       0.0,          0.0,        0.0,
+                             0.0,        1.0 / h,         0.0,        0.0,
+                             0.0,           0.0,       1.0 / far_,   0.0,
+                             0.0,           0.0,          0.0,        1.0
+                             );
 
   // column-major order for glm and glsl
-  m_scale = glm::transpose( m_scale );
+  scale_ = glm::transpose( scale_ );
 
-  float c = -m_near / m_far;
+  T c = -near_ / far_;
 
   // row-major order
-  glm::mat4 perspective = glm::mat4(
-                                    1.0,   0.0,      0.0,               0.0,
-                                    0.0,   1.0,      0.0,               0.0,
-                                    0.0,   0.0, -1.0 / ( 1.0 + c ),  c / ( 1.0 + c ),
-                                    0.0,   0.0,     -1.0,               0.0
-                                    );
+  glm::tmat4x4< T > perspective
+    = glm::tmat4x4< T >(
+                        1.0, 0.0,         0.0,               0.0,
+                        0.0, 1.0,         0.0,               0.0,
+                        0.0, 0.0, -1.0 / ( 1.0 + c ), c / ( 1.0 + c ),
+                        0.0, 0.0,        -1.0,               0.0
+                        );
 
   // column-major order for glm and glsl
   perspective = glm::transpose( perspective );
 
-  m_proj = perspective * m_scale;
+  proj_ = perspective * scale_;
 
-  m_scaleViewInv = glm::inverse( m_scale * m_view );
+  scaleViewInv_ = glm::inverse( scale_ * view_ );
 } // setProjectionMatrix
 
 
 
+template< typename T >
 void
-Camera::setFrustumMatrix( )
+Camera< T >::setFrustumMatrix( )
 {
-  m_frustum = glm::transpose( m_proj * m_view );
+  frustum_ = glm::transpose( proj_ * view_ );
 }
 
+
+
+template class Camera< float >;
+template class Camera< double >;
 
 
 } // namespace graphics

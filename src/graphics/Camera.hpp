@@ -9,53 +9,55 @@ namespace graphics
 {
 
 
+template< typename T >
 class Camera
 {
 public:
 
   Camera( );
 
-  ~Camera( );
+  virtual
+  ~Camera( ) = default;
 
-  const glm::mat4 &getProjectionMatrix ( ) const;
-  const glm::mat4 &getViewMatrix ( ) const;
-  const glm::mat4 &getScaleMatrix ( ) const;
-  const glm::mat4 &getScaleViewInvMatrix ( ) const;
-  const glm::mat4 &getFrustumMatrix ( ) const;
-  const glm::vec4 &getLook ( ) const;
-  const glm::vec4 &getUp ( ) const;
-  const glm::vec4 &getRight ( ) const;
-  const glm::vec4 &getEye ( ) const;
+  const glm::tmat4x4< T > &getProjectionMatrix ( ) const;
+  const glm::tmat4x4< T > &getViewMatrix ( ) const;
+  const glm::tmat4x4< T > &getScaleMatrix ( ) const;
+  const glm::tmat4x4< T > &getScaleViewInvMatrix ( ) const;
+  const glm::tmat4x4< T > &getFrustumMatrix ( ) const;
+  const glm::tvec4< T > &getLook ( ) const;
+  const glm::tvec4< T > &getUp ( ) const;
+  const glm::tvec4< T > &getRight ( ) const;
+  const glm::tvec4< T > &getEye ( ) const;
 
-  float getAspectRatio ( ) const;
-  void setAspectRatio ( float a );
+  T getAspectRatio ( ) const;
+  void setAspectRatio ( T a );
 
 
   void orientLook (
-                   glm::vec4 &eye,
-                   glm::vec4 &look,
-                   glm::vec4 &up
+                   glm::tvec4< T > &eye,
+                   glm::tvec4< T > &look,
+                   glm::tvec4< T > &up
                    );
 
-  void moveHorizontal ( glm::vec2 dir );
-  void moveAlongU ( float mag );
-  void moveAlongUp ( float mag );
-  void moveAlongLook ( float mag );
+  void moveHorizontal ( glm::tvec2< T > dir );
+  void moveAlongU ( T mag );
+  void moveAlongUp ( T mag );
+  void moveAlongLook ( T mag );
 
-  void pitch ( float degrees );
-  void yaw ( float degrees );
-  void roll ( float degrees );
+  void pitch ( T degrees );
+  void yaw ( T degrees );
+  void roll ( T degrees );
 
   void updateOrbit (
-                    float zoomZ,
-                    float deltaX,
-                    float deltaY
+                    T zoomZ,
+                    T deltaX,
+                    T deltaY
                     );
 
   void buildRayBasisVectors (
-                             glm::vec3 *pU,
-                             glm::vec3 *pV,
-                             glm::vec3 *pW
+                             glm::tvec3< T > *pU,
+                             glm::tvec3< T > *pV,
+                             glm::tvec3< T > *pW
                              ) const;
 
 
@@ -66,18 +68,18 @@ protected:
   void setProjectionMatrix ( );
   void setFrustumMatrix ( );
 
-  glm::vec4 m_u, m_v, m_w;
-  glm::vec4 m_eye, m_look, m_up, m_right;
+  glm::tvec4< T > u_, v_, w_;
+  glm::tvec4< T > eye_, look_, up_, right_;
 
-  glm::mat4 m_view, m_proj, m_frustum;
-  glm::mat4 m_scale, m_scaleViewInv;
+  glm::tmat4x4< T > view_, proj_, frustum_;
+  glm::tmat4x4< T > scale_, scaleViewInv_;
 
   // View variables
-  float m_near, m_far, m_heightDegrees, m_aspectRatio;
+  T near_, far_, heightDegrees_, aspectRatio_;
 
-  float m_orbitX, m_orbitY, m_zoomZ;
+  T orbitX_, orbitY_, zoomZ_;
 
-  float m_thirdDist;
+  T thirdDist_;
 
 };
 

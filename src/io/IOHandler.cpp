@@ -99,6 +99,21 @@ IOHandler::updateIO( )
 
 
 /////////////////////////////////////////////
+/// \brief IOHandler::waitForIO
+///
+/// \author Logan Barnes
+/////////////////////////////////////////////
+void
+IOHandler::waitForIO( )
+{
+
+  exitRequested_ |= signalCaught;
+
+}
+
+
+
+/////////////////////////////////////////////
 /// \brief IOHandler::onLoopExit
 ///
 /// \author Logan Barnes

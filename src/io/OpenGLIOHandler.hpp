@@ -11,6 +11,8 @@ namespace graphics
 
 class GlfwWrapper;
 class OpenGLWrapper;
+
+template< typename T >
 class Camera;
 
 }
@@ -38,10 +40,11 @@ public:
   ///////////////////////////////////////////////////////////////
   OpenGLIOHandler(
                   World &world,
-                  bool  printInfo = true,
-                  int   width     = 1080,
-                  int   height    = 720,
-                  bool  resizable = true
+                  bool   printInfo = true,
+                  int    width     = 1080,
+                  int    height    = 720,
+                  bool   resizable = true,
+                  int    aaSamples = 8
                   );
 
 
@@ -72,11 +75,23 @@ public:
   void updateIO ( );
 
 
+  ///////////////////////////////////////////////////////////////
+  /// \brief waitForIO
+  ///
+  ///        Waits for keystrokes or mouse movement (or
+  ///        alternate controllers) and updates output text,
+  ///        images, or buffer swaps not handled by showWorld()
+  ///
+  ///////////////////////////////////////////////////////////////
+  virtual
+  void waitForIO ( );
+
+
 protected:
 
-  std::unique_ptr< graphics::GlfwWrapper >   upGlfwWrapper_;
-  std::unique_ptr< graphics::OpenGLWrapper > upGLWrapper_;
-  std::unique_ptr< graphics::Camera >        upCamera_;
+  std::unique_ptr< graphics::GlfwWrapper >     upGlfwWrapper_;
+  std::unique_ptr< graphics::OpenGLWrapper >   upGLWrapper_;
+  std::unique_ptr< graphics::Camera< float > > upCamera_;
 
 
 private:

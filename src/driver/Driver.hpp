@@ -1,9 +1,8 @@
-#ifndef Driver_hpp
-#define Driver_hpp
+// Driver.hpp
+#pragma once
 
 #include <string>
 #include <type_traits>
-#include <chrono>
 
 
 namespace shared
@@ -39,7 +38,7 @@ public:
   /// \brief ~Driver
   /////////////////////////////////////////////
   virtual
-  ~Driver( );
+  ~Driver( ) = default;
 
 
   /////////////////////////////////////////////
@@ -48,10 +47,11 @@ public:
   /// \param argv
   /// \return
   /////////////////////////////////////////////
+  virtual
   int exec (
             int          argc,
             const char **argv
-            );
+            ) = 0;
 
 
 
@@ -73,58 +73,11 @@ public:
 
 protected:
 
-  double timeScale_;
-  bool paused_;
-
   World     &world_;
   IOHandler &ioHandler_;
-
-
-private:
-
-  ///////////////////////////////////////////////////////////////
-  /// \brief _runAFAPLoop
-  ///
-  ///        As Fast As Possible Loop. Alternates world updates
-  ///        and render calls as fast as possible.
-  ///
-  ///////////////////////////////////////////////////////////////
-  void _runAFAPLoop ( );
-
-
-  ///////////////////////////////////////////////////////////////
-  /// \brief _runNFTRLoop
-  ///
-  ///        No Faster Than Real-time Loop. Compares world time
-  ///        to CPU clock time and only updates the world to
-  ///        time 'X' after the time 'X' has elapsed on the CPU
-  ///        clock. No constraints are applied to render calls.
-  ///
-  ///////////////////////////////////////////////////////////////
-  void _runNFTRLoop ( );
-
-
-  ///////////////////////////////////////////////////////////////
-  /// \brief _getTimeSeconds
-  ///////////////////////////////////////////////////////////////
-  double _getTimeSeconds ( );
-
-
-
-  const double startTime_;
-  const double timeStep_;
-  double worldTime_;
-  unsigned long updateFrame_;
-
-
-  /// \brief initTime_
-  const std::chrono::time_point< std::chrono::system_clock > initTime_;
 
 
 };
 
 
 } // namespace shared
-
-
-#endif // Driver_hpp

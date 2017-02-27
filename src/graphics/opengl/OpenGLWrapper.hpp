@@ -2,21 +2,63 @@
 #define OpenGLWrapper_hpp
 
 #include <string>
+#include <vector>
 #include <unordered_map>
 
 #include "glad/glad.h"
 
 
-struct Buffer
-{
-  GLuint vbo;
-  GLuint vao;
-};
-
-
 
 namespace graphics
 {
+
+///
+/// \brief The VAOSetting struct
+///
+struct VAOElement
+{
+  std::string name;
+  GLint size;
+  GLenum type;
+  void *pointer;
+};
+
+///
+/// \brief The VAOSettings struct
+///
+struct VAOSettings
+{
+  std::string program;
+  GLsizei totalStride;
+  std::vector< VAOElement > settings;
+
+  VAOSettings( ) {}
+
+  VAOSettings(
+              std::string program_,
+              GLsizei     totalStride_ = 0
+              )
+    : program( program_ ), totalStride( totalStride_ )
+  {}
+};
+
+///
+/// \brief The Buffer struct
+///
+struct Buffer
+{
+  GLuint vbo;
+  VAOSettings settings;
+};
+
+///
+/// \brief The FrameBuffer struct
+///
+struct FrameBuffer
+{
+  GLuint fbo;
+  GLuint rbo;
+};
 
 
 class CallbackSingleton;
@@ -29,14 +71,14 @@ class OpenGLWrapper
 public:
 
   explicit
-  OpenGLWrapper(
-                GLsizei width  = 640,
-                GLsizei height = 480
-                );
+  OpenGLWrapper( );
 
   ~OpenGLWrapper( );
 
-  void init ( );
+  void initContext (
+                    GLsizei width  = 640,
+                    GLsizei height = 480
+                    );
 
   // getters
   GLuint
@@ -65,6 +107,7 @@ public:
                         float            *pArray = NULL,
                         bool              linear = false
                         );
+
   void addTextureImage (
                         const std::string name,
                         GLsizei           width,
@@ -73,20 +116,21 @@ public:
                         );
 
   template< typename T >
-  void addBufferNoVAO (
-                       const std::string name,
-                       GLsizeiptr        sizeBytes,
-                       T                *pData,
-                       GLenum            type
-                       );
+  void addBuffer (
+                  const std::string  name,
+                  const GLsizeiptr   sizeBytes,
+                  const T           *pData,
+                  const GLenum       type,
+                  const VAOSettings &settings
+                  );
 
-  void addUVBuffer (
-                    const std::string buffer,
-                    const std::string program,
-                    GLfloat          *data,
-                    GLuint            size,
-                    bool              dynamic = false
-                    );
+//  void addUVBuffer (
+//                    const std::string buffer,
+//                    const std::string program,
+//                    GLfloat          *data,
+//                    GLuint            size,
+//                    bool              dynamic = false
+//                    );
 
 
   void addFramebuffer (
@@ -110,7 +154,8 @@ public:
 
   void renderBuffer (
                      const std::string buffer,
-                     int               verts,
+                     const int         start,
+                     const int         verts,
                      GLenum            mode
                      );
 
@@ -138,6 +183,14 @@ public:
                         const int         size  = 1,
                         const int         count = 1
                         );
+
+  void setMatrixUniform (
+                         const std::string program,
+                         const std::string uniform,
+                         const float      *pValue,
+                         const int         size  = 4,
+                         const int         count = 1
+                         );
 
   void setBuffer (
                   const std::string bufferName,
@@ -171,6 +224,16 @@ public:
                             int               height
                             );
 
+  void setClearColor (
+                      const float r,
+                      const float g,
+                      const float b,
+                      const float a
+                      );
+
+  void
+  setCurrentContext( void *pContext ) { pContext_ = pContext; }
+
 
 private:
 
@@ -183,15 +246,29 @@ private:
                       const std::string fragment_path
                       );
 
+  GLuint _getVAO ( const Buffer &buf );
+
+  GLuint _addVAOToBuffer (
+                          const GLuint       vbo,
+                          const VAOSettings &settings
+                          ) const;
+
 
   std::unordered_map< std::string, GLuint > programs_;
   std::unordered_map< std::string, GLuint > textures_;
   std::unordered_map< std::string, Buffer > buffers_;
-  std::unordered_map< std::string, Buffer > framebuffers_;
+  std::unordered_map< std::string, FrameBuffer > framebuffers_;
+
+  typedef std::unordered_map< void*, GLuint > ContextVAOMap;
+  typedef std::unordered_map< GLuint, ContextVAOMap > BufferVAOMap;
+
+  BufferVAOMap vaoMap_;
 
   GLsizei viewportWidth_, viewportHeight_;
 
   CallbackSingleton *input_;
+
+  void *pContext_;
 
   bool initialized_;
 
@@ -201,21 +278,22 @@ private:
 
 template< typename T >
 void
-OpenGLWrapper::addBufferNoVAO(
-                              const std::string name,
-                              GLsizeiptr        sizeBytes,
-                              T                *pData,
-                              GLenum            type
-                              )
+OpenGLWrapper::addBuffer(
+                         const std::string  name,
+                         const GLsizeiptr   sizeBytes,
+                         const T           *pData,
+                         const GLenum       type,
+                         const VAOSettings &settings
+                         )
 {
-
-  Buffer buffer;
 
   if ( buffers_.find( name ) != buffers_.end( ) )
   {
-    buffer = buffers_[ name ];
+    Buffer &buffer = buffers_[ name ];
     glDeleteBuffers( 1, &( buffer.vbo ) );
   }
+
+  Buffer &buffer = buffers_[ name ];
 
   glGenBuffers( 1, &buffer.vbo );
   glBindBuffer( GL_ARRAY_BUFFER, buffer.vbo );
@@ -228,7 +306,7 @@ OpenGLWrapper::addBufferNoVAO(
 
   glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
-  buffers_[ name ] = buffer;
+  buffer.settings = settings;
 
 } // OpenGLWrapper::addBufferNoVAO
 

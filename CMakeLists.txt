@@ -325,6 +325,8 @@ set(
 
     # driver
     ${SRC_DIR}/driver/Driver.cpp
+    ${SRC_DIR}/driver/ContinuousDriver.cpp
+    ${SRC_DIR}/driver/EventDriver.cpp
 
     # rendering
     ${SRC_DIR}/io/IOHandler.cpp

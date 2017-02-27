@@ -11,6 +11,8 @@ namespace graphics
 
 class GlfwWrapper;
 class OpenGLWrapper;
+
+template< typename T >
 class Camera;
 
 }
@@ -23,7 +25,7 @@ namespace shared
 class World;
 class ImguiCallback;
 
-typedef ImguiCallback* ImguiCallback_t;
+typedef ImguiCallback*ImguiCallback_t;
 
 
 /////////////////////////////////////////////
@@ -44,7 +46,8 @@ public:
                        bool   printInfo = true,
                        int    width     = 1080,
                        int    height    = 720,
-                       bool   resizable = true
+                       bool   resizable = true,
+                       int    aaSamples = 8
                        );
 
 
@@ -60,12 +63,13 @@ public:
   /// \param alpha
   ///////////////////////////////////////////////////////////////
   virtual
-  void showWorld ( const double alpha );
+  void showWorld ( const double alpha = 1.0 );
 
 
 protected:
 
   ImguiCallback_t imguiCallback_;
+
 
 private:
 
@@ -73,7 +77,7 @@ private:
   void _onRender ( const double alpha ) = 0;
 
   virtual
-  void _onGuiRender( ) = 0;
+  void _onGuiRender ( ) = 0;
 
 };
 

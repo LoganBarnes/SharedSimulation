@@ -1,6 +1,7 @@
 #include "ImguiCallback.hpp"
 #include "GLFW/glfw3.h"
 #include "imgui.h"
+#include "IOHandler.hpp"
 
 
 namespace shared
@@ -8,9 +9,13 @@ namespace shared
 
 
 
-ImguiCallback::ImguiCallback( std::unique_ptr< Callback > upCallback )
+ImguiCallback::ImguiCallback(
+                             std::unique_ptr< Callback > upCallback,
+                             IOHandler                  *pEventDrivenIO
+                             )
   : graphics::Callback( )
   , upCallback_( std::move( upCallback ) )
+  , pEventDrivenIO_( pEventDrivenIO )
 {}
 
 
@@ -46,6 +51,20 @@ ImguiCallback::setCallback( std::unique_ptr< graphics::Callback > upCallback )
 
 
 
+///
+/// \brief ImguiCallback::setEventHandler
+/// \param pEventDrivenIO
+///
+void
+ImguiCallback::setEventHandler( IOHandler *pEventDrivenIO )
+{
+
+  pEventDrivenIO_ = pEventDrivenIO;
+
+}
+
+
+
 ////////////////////////////////////////////////////////
 /// \brief handleWindowSize
 /// \param pWindow
@@ -64,6 +83,13 @@ ImguiCallback::handleWindowSize(
   {
 
     upCallback_->handleWindowSize( pWindow, width, height );
+
+  }
+
+  if ( pEventDrivenIO_ )
+  {
+
+    pEventDrivenIO_->showWorld( );
 
   }
 
@@ -95,8 +121,7 @@ ImguiCallback::handleMouseButton(
     upCallback_->handleMouseButton( pWindow, button, action, mods );
 
   }
-  else
-  if ( io.WantCaptureMouse )
+  else if ( io.WantCaptureMouse )
   {
 
     if ( action == GLFW_PRESS && button >= 0 && button < 3 )
@@ -105,6 +130,13 @@ ImguiCallback::handleMouseButton(
       io.MouseDown[ button ] = true;
 
     }
+
+  }
+
+  if ( pEventDrivenIO_ )
+  {
+
+    pEventDrivenIO_->showWorld( );
 
   }
 
@@ -138,7 +170,8 @@ ImguiCallback::handleKey(
     upCallback_->handleKey( pWindow, key, scancode, action, mods );
 
   }
-  else if ( io.WantCaptureKeyboard )
+  else
+  if ( io.WantCaptureKeyboard )
   {
 
     if ( action == GLFW_PRESS )
@@ -147,7 +180,8 @@ ImguiCallback::handleKey(
       io.KeysDown[ key ] = true;
 
     }
-    else if ( action == GLFW_RELEASE )
+    else
+    if ( action == GLFW_RELEASE )
     {
 
       io.KeysDown[ key ] = false;
@@ -161,7 +195,14 @@ ImguiCallback::handleKey(
 
   }
 
-}
+  if ( pEventDrivenIO_ )
+  {
+
+    pEventDrivenIO_->showWorld( );
+
+  }
+
+} // ImguiCallback::handleKey
 
 
 
@@ -185,6 +226,13 @@ ImguiCallback::handleCursorPosition(
   {
 
     upCallback_->handleCursorPosition( pWindow, xpos, ypos );
+
+  }
+
+  if ( pEventDrivenIO_ )
+  {
+
+    pEventDrivenIO_->showWorld( );
 
   }
 
@@ -214,14 +262,22 @@ ImguiCallback::handleScroll(
     upCallback_->handleScroll( pWindow, xoffset, yoffset );
 
   }
-  else if ( io.WantCaptureMouse )
+  else
+  if ( io.WantCaptureMouse )
   {
 
     io.MouseWheel += static_cast< float >( yoffset ); // the fractional mouse wheel. 1.0 unit 5 lines
 
   }
 
-}
+  if ( pEventDrivenIO_ )
+  {
+
+    pEventDrivenIO_->showWorld( );
+
+  }
+
+} // ImguiCallback::handleScroll
 
 
 
@@ -243,6 +299,13 @@ ImguiCallback::handleChar(
   {
 
     io.AddInputCharacter( static_cast< unsigned short >( codepoint ) );
+
+  }
+
+  if ( pEventDrivenIO_ )
+  {
+
+    pEventDrivenIO_->showWorld( );
 
   }
 

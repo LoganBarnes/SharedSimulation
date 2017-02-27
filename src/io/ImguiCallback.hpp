@@ -9,14 +9,18 @@
 namespace shared
 {
 
+class IOHandler;
+
 
 class ImguiCallback : public graphics::Callback
 {
 
 public:
 
-  ImguiCallback( std::unique_ptr< graphics::Callback > upCallback
-                  = std::unique_ptr< graphics::Callback >( nullptr ) );
+  ImguiCallback(
+                std::unique_ptr< graphics::Callback > upCallback = nullptr,
+                IOHandler                            *pEventDrivenIO = nullptr
+                );
 
   ~ImguiCallback( );
 
@@ -26,6 +30,13 @@ public:
   /// \param upCallback
   ////////////////////////////////////////////////////////
   void setCallback ( std::unique_ptr< graphics::Callback > upCallback );
+
+
+  ////////////////////////////////////////////////////////
+  /// \brief setEventHandler
+  /// \param pEventDrivenIO
+  ////////////////////////////////////////////////////////
+  void setEventHandler ( IOHandler *pEventDrivenIO );
 
   ////////////////////////////////////////////////////////
   /// \brief handleWindowSize
@@ -113,6 +124,7 @@ public:
 private:
 
   std::unique_ptr< graphics::Callback > upCallback_;
+  IOHandler *pEventDrivenIO_;
 
 
 };

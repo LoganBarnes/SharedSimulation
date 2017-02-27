@@ -55,7 +55,8 @@ public:
                         const int          width,
                         const int          height,
                         const bool         resizable  = true,
-                        const bool         initOpengl = true
+                        const bool         initOpengl = true,
+                        const int          sampleCount = 0 // no anti-aliasing
                         );
 
 
@@ -100,8 +101,15 @@ public:
   //////////////////////////////////////////////////
   /// \brief pollEvents
   //////////////////////////////////////////////////
-  static
+
   void pollEvents ( );
+
+
+  //////////////////////////////////////////////////
+  /// \brief waitEvents
+  //////////////////////////////////////////////////
+
+  void waitEvents ( );
 
 
   //////////////////////////////////////////////////

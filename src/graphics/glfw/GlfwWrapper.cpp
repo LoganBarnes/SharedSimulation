@@ -125,7 +125,8 @@ GlfwWrapper::createNewWindow(
                              const int          width,
                              const int          height,
                              const bool         resizable,
-                             const bool         initOpengl
+                             const bool         initOpengl,
+                             const int          sampleCount
                              )
 {
 
@@ -157,6 +158,8 @@ GlfwWrapper::createNewWindow(
     glfwWindowHint( GLFW_RESIZABLE, GLFW_FALSE );
 
   }
+
+  glfwWindowHint( GLFW_SAMPLES, sampleCount );
 
   pWindow_ = glfwCreateWindow(
                               width,
@@ -219,6 +222,19 @@ GlfwWrapper::pollEvents( )
 {
 
   glfwPollEvents( );
+
+}
+
+
+
+//////////////////////////////////////////////////
+/// \brief GlfwWrapper::waitEvents
+//////////////////////////////////////////////////
+void
+GlfwWrapper::waitEvents( )
+{
+
+  glfwWaitEvents( );
 
 }
 

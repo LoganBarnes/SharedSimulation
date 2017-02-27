@@ -1,9 +1,12 @@
-#version 450
+#version 410
 #extension GL_ARB_separate_shader_objects : enable
 
 
-layout( location = 0 ) in vec2 inPosition;
+layout( location = 0 ) in vec3 inPosition;
 layout( location = 1 ) in vec3 inColor;
+
+
+uniform mat4 projectionViewModel;
 
 
 layout( location = 0 ) out vec3 fragColor;
@@ -19,7 +22,7 @@ out gl_PerVertex
 void main( void )
 {
 
-  gl_Position = vec4( inPosition, 0.0, 1.0 );
+  gl_Position = projectionViewModel * vec4( inPosition, 1.0 );
   fragColor   = inColor;
 
 }

@@ -23,15 +23,16 @@ namespace shared
 /////////////////////////////////////////////
 ImguiOpenGLIOHandler::ImguiOpenGLIOHandler(
                                            World &world,
-                                           bool  printInfo,
-                                           int   width,
-                                           int   height,
-                                           bool  resizable
+                                           bool   printInfo,
+                                           int    width,
+                                           int    height,
+                                           bool   resizable,
+                                           int    aaSamples
                                            )
-  : OpenGLIOHandler( world, printInfo, width, height, resizable )
+  : OpenGLIOHandler( world, printInfo, width, height, resizable, aaSamples )
 {
 
-  imguiCallback_ = new shared::ImguiCallback();
+  imguiCallback_ = new shared::ImguiCallback( );
 
   // imguiCallback no longer has ownership of memory
   std::unique_ptr< graphics::Callback > upCallback( imguiCallback_ );
@@ -51,7 +52,7 @@ ImguiOpenGLIOHandler::ImguiOpenGLIOHandler(
 ImguiOpenGLIOHandler::~ImguiOpenGLIOHandler( )
 {
 
-  ImGui_ImplGlfwGL3_Shutdown();
+  ImGui_ImplGlfwGL3_Shutdown( );
 
 }
 
@@ -67,19 +68,17 @@ void
 ImguiOpenGLIOHandler::showWorld( const double alpha )
 {
 
-  _onRender( alpha );
-
-
-  ImGui_ImplGlfwGL3_NewFrame();
+  ImGui_ImplGlfwGL3_NewFrame( );
 
   _onGuiRender( );
 
-  ImGui::Render();
+  _onRender( alpha );
+
+  ImGui::Render( );
 
   upGlfwWrapper_->swapBuffers( );
 
 } // ImguiOpenGLIOHandler::showWorld
-
 
 
 
