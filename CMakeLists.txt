@@ -23,24 +23,7 @@ configure_file (
 
 set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
 
-function( downloadProject projName )
-
-  # Download and unpack ${projName} at configure time
-  configure_file( cmake/CMakeLists.txt.${projName} ${CMAKE_BINARY_DIR}/${projName}-download/CMakeLists.txt )
-  execute_process( COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
-    RESULT_VARIABLE result
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/${projName}-download )
-  if( result )
-    message( FATAL_ERROR "CMake step for ${projName} failed: ${result}" )
-  endif( )
-  execute_process( COMMAND ${CMAKE_COMMAND} --build .
-    RESULT_VARIABLE result
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/${projName}-download )
-  if( result )
-    message( FATAL_ERROR "Build step for ${projName} failed: ${result}" )
-  endif( )
-
-endFunction( downloadProject )
+include( cmake/DownloadProject.cmake )
 
 ################################################
 # add glfw3 functionality
