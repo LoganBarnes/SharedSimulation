@@ -27,19 +27,34 @@ set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
 # add glfw3 functionality
 ################################################
 if ( USE_GLFW )
+  # Download and unpack glfw at configure time
+  configure_file( cmake/CMakeLists.txt.glfw ${CMAKE_BINARY_DIR}/glfw-download/CMakeLists.txt )
+  execute_process( COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
+    RESULT_VARIABLE result
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/glfw-download )
+  if( result )
+    message( FATAL_ERROR "CMake step for glfw failed: ${result}" )
+  endif( )
+  execute_process( COMMAND ${CMAKE_COMMAND} --build .
+    RESULT_VARIABLE result
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/glfw-download )
+  if( result )
+    message( FATAL_ERROR "Build step for glfw failed: ${result}" )
+  endif( )
 
   set( GLFW_BUILD_DOCS     OFF CACHE BOOL "" FORCE )
   set( GLFW_BUILD_TESTS    OFF CACHE BOOL "" FORCE )
   set( GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE )
 
-  add_subdirectory( ${THIRDPARTY}/glfw )
+  add_subdirectory( ${CMAKE_BINARY_DIR}/glfw-src
+                    ${CMAKE_BINARY_DIR}/glfw-build )
 
   # glfw and glad header dir
   set(
       SYSTEM_INCLUDE_DIRS
       ${SYSTEM_INCLUDE_DIRS}
 
-      ${THIRDPARTY}/glfw/include
+      ${CMAKE_BINARY_DIR}/glfw-src/include
       ${THIRDPARTY}/include
       )
 
@@ -73,7 +88,7 @@ endif( USE_GLFW )
 ################################################
 if ( USE_VULKAN )
 
-  set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${THIRDPARTY}/glfw/CMake/modules )
+  set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_BINARY_DIR}/glfw-src/CMake/modules )
 
   find_package( Vulkan REQUIRED )
 
@@ -203,17 +218,35 @@ endif( )
 # add gmock functionality
 ################################################
 if ( USE_GMOCK )
+  # Download and unpack googletest at configure time
+  configure_file( cmake/CMakeLists.txt.googletest ${CMAKE_BINARY_DIR}/googletest-download/CMakeLists.txt )
+  execute_process( COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
+    RESULT_VARIABLE result
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/googletest-download )
+  if( result )
+    message( FATAL_ERROR "CMake step for googletest failed: ${result}" )
+  endif( )
+  execute_process( COMMAND ${CMAKE_COMMAND} --build .
+    RESULT_VARIABLE result
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/googletest-download )
+  if( result )
+    message( FATAL_ERROR "Build step for googletest failed: ${result}" )
+  endif( )
 
-  # prevent /MT MSVC flag
+  # Prevent overriding the parent project's compiler/linker
+  # settings on Windows
   set( gtest_force_shared_crt ON CACHE BOOL "" FORCE )
 
-  add_subdirectory( ${THIRDPARTY}/googletest/googlemock )
+  # Add googletest directly to our build. This defines
+  # the gtest and gtest_main targets.
+  add_subdirectory( ${CMAKE_BINARY_DIR}/googletest-src/googlemock
+                    ${CMAKE_BINARY_DIR}/googletest-build )
 
   # gmock and gtest header dir
   set(
       GMOCK_INCLUDE_DIRS
-      ${THIRDPARTY}/googletest/googletest/include
-      ${THIRDPARTY}/googletest/googlemock/include
+      ${CMAKE_BINARY_DIR}/googletest-src/googletest/include
+      ${CMAKE_BINARY_DIR}/googletest-src/googlemock/include
       PARENT_SCOPE
       )
 
@@ -234,21 +267,35 @@ endif( USE_GMOCK )
 # add imgui functionality
 ################################################
 if ( USE_GUI )
+  # Download and unpack imgui at configure time
+  configure_file( cmake/CMakeLists.txt.imgui ${CMAKE_BINARY_DIR}/imgui-download/CMakeLists.txt )
+  execute_process( COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
+    RESULT_VARIABLE result
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/imgui-download )
+  if( result )
+    message( FATAL_ERROR "CMake step for imgui failed: ${result}" )
+  endif( )
+  execute_process( COMMAND ${CMAKE_COMMAND} --build .
+    RESULT_VARIABLE result
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/imgui-download )
+  if( result )
+    message( FATAL_ERROR "Build step for imgui failed: ${result}" )
+  endif( )
 
   # create lib here before any
   # strict compile flags are set
   add_library(
               imgui
 
-              ${THIRDPARTY}/imgui/imgui.cpp
-              ${THIRDPARTY}/imgui/imgui.h
-              ${THIRDPARTY}/imgui/imgui_demo.cpp
-              ${THIRDPARTY}/imgui/imgui_draw.cpp
-              ${THIRDPARTY}/imgui/imgui_internal.h
-              ${THIRDPARTY}/imgui/imconfig.h
-              ${THIRDPARTY}/imgui/stb_rect_pack.h
-              ${THIRDPARTY}/imgui/stb_textedit.h
-              ${THIRDPARTY}/imgui/stb_truetype.h
+              ${CMAKE_BINARY_DIR}/imgui-src/imgui.cpp
+              ${CMAKE_BINARY_DIR}/imgui-src/imgui.h
+              ${CMAKE_BINARY_DIR}/imgui-src/imgui_demo.cpp
+              ${CMAKE_BINARY_DIR}/imgui-src/imgui_draw.cpp
+              ${CMAKE_BINARY_DIR}/imgui-src/imgui_internal.h
+              ${CMAKE_BINARY_DIR}/imgui-src/imconfig.h
+              ${CMAKE_BINARY_DIR}/imgui-src/stb_rect_pack.h
+              ${CMAKE_BINARY_DIR}/imgui-src/stb_textedit.h
+              ${CMAKE_BINARY_DIR}/imgui-src/stb_truetype.h
 
               ${SRC_DIR}/gui/imgui_impl_glfw_gl3.h
               ${SRC_DIR}/gui/imgui_impl_glfw_gl3.cpp
@@ -256,9 +303,9 @@ if ( USE_GUI )
 
   target_include_directories(
                              imgui SYSTEM PUBLIC
-                             ${THIRDPARTY}/glfw/include
+                             ${CMAKE_BINARY_DIR}/glfw-src/include
                              ${THIRDPARTY}/include
-                             ${THIRDPARTY}/imgui
+                             ${CMAKE_BINARY_DIR}/imgui-src
                              ${SRC_DIR}/gui
                              )
 
@@ -267,7 +314,7 @@ if ( USE_GUI )
       SYSTEM_INCLUDE_DIRS
       ${SYSTEM_INCLUDE_DIRS}
 
-      ${THIRDPARTY}/imgui
+      ${CMAKE_BINARY_DIR}/imgui-src
       ${SRC_DIR}/gui
       )
 
