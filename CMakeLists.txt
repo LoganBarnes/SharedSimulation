@@ -133,7 +133,7 @@ endif( )
 ################################################
 if ( USE_OPTIX )
 
-  find_package( CUDA  REQUIRED  )
+  find_package( CUDA  REQUIRED )
   find_package( OptiX REQUIRED )
 
   set( CUDA_SYSTEM_INCLUDE_DIRS ${CUDA_SYSTEM_INCLUDE_DIRS} ${OptiX_INCLUDE} ${THIRDPARTY}/include )
@@ -160,7 +160,6 @@ if ( USE_OPTIX )
   # model loading utils taken from the SDK samples
   add_library(
               optixUtil
-              SHARED
 
               ${THIRDPARTY}/glad/src/glad.c
               ${THIRDPARTY}/optixUtil/HDRLoader.cpp
