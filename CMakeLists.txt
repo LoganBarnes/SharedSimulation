@@ -23,24 +23,31 @@ configure_file (
 
 set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
 
+function( downloadProject projName )
+
+  # Download and unpack ${projName} at configure time
+  configure_file( cmake/CMakeLists.txt.${projName} ${CMAKE_BINARY_DIR}/${projName}-download/CMakeLists.txt )
+  execute_process( COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
+    RESULT_VARIABLE result
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/${projName}-download )
+  if( result )
+    message( FATAL_ERROR "CMake step for ${projName} failed: ${result}" )
+  endif( )
+  execute_process( COMMAND ${CMAKE_COMMAND} --build .
+    RESULT_VARIABLE result
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/${projName}-download )
+  if( result )
+    message( FATAL_ERROR "Build step for ${projName} failed: ${result}" )
+  endif( )
+
+endFunction( downloadProject )
+
 ################################################
 # add glfw3 functionality
 ################################################
 if ( USE_GLFW )
   # Download and unpack glfw at configure time
-  configure_file( cmake/CMakeLists.txt.glfw ${CMAKE_BINARY_DIR}/glfw-download/CMakeLists.txt )
-  execute_process( COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
-    RESULT_VARIABLE result
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/glfw-download )
-  if( result )
-    message( FATAL_ERROR "CMake step for glfw failed: ${result}" )
-  endif( )
-  execute_process( COMMAND ${CMAKE_COMMAND} --build .
-    RESULT_VARIABLE result
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/glfw-download )
-  if( result )
-    message( FATAL_ERROR "Build step for glfw failed: ${result}" )
-  endif( )
+  downloadProject( glfw )
 
   set( GLFW_BUILD_DOCS     OFF CACHE BOOL "" FORCE )
   set( GLFW_BUILD_TESTS    OFF CACHE BOOL "" FORCE )
@@ -218,19 +225,7 @@ endif( )
 ################################################
 if ( USE_GMOCK )
   # Download and unpack googletest at configure time
-  configure_file( cmake/CMakeLists.txt.googletest ${CMAKE_BINARY_DIR}/googletest-download/CMakeLists.txt )
-  execute_process( COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
-    RESULT_VARIABLE result
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/googletest-download )
-  if( result )
-    message( FATAL_ERROR "CMake step for googletest failed: ${result}" )
-  endif( )
-  execute_process( COMMAND ${CMAKE_COMMAND} --build .
-    RESULT_VARIABLE result
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/googletest-download )
-  if( result )
-    message( FATAL_ERROR "Build step for googletest failed: ${result}" )
-  endif( )
+  downloadProject( googletest )
 
   # Prevent overriding the parent project's compiler/linker
   # settings on Windows
@@ -267,19 +262,7 @@ endif( USE_GMOCK )
 ################################################
 if ( USE_GUI )
   # Download and unpack imgui at configure time
-  configure_file( cmake/CMakeLists.txt.imgui ${CMAKE_BINARY_DIR}/imgui-download/CMakeLists.txt )
-  execute_process( COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
-    RESULT_VARIABLE result
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/imgui-download )
-  if( result )
-    message( FATAL_ERROR "CMake step for imgui failed: ${result}" )
-  endif( )
-  execute_process( COMMAND ${CMAKE_COMMAND} --build .
-    RESULT_VARIABLE result
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/imgui-download )
-  if( result )
-    message( FATAL_ERROR "Build step for imgui failed: ${result}" )
-  endif( )
+  downloadProject( imgui )
 
   # create lib here before any
   # strict compile flags are set
