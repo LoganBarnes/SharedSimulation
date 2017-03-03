@@ -3,7 +3,6 @@
 option( USE_GLFW   "Use GLFW library"   OFF )
 option( USE_VULKAN "Use Vulkan library" OFF )
 option( USE_GLAD   "Use glad library"   OFF )
-option( USE_GLM    "Use glm library"    OFF )
 option( USE_OPTIX  "Use optix library"  OFF )
 option( USE_GUI    "Use imgui library"  OFF )
 option( USE_GMOCK  "Use gmock library"  OFF )
@@ -103,21 +102,6 @@ endif ( USE_VULKAN )
 
 
 
-
-################################################
-# add glm functionality
-################################################
-if ( USE_GLM )
-
-  set( SYSTEM_INCLUDE_DIRS ${SYSTEM_INCLUDE_DIRS} ${THIRDPARTY}/include )
-
-  message( "USING GLM" )
-
-endif( )
-
-
-
-
 ################################################
 # add optix functionality
 ################################################
@@ -204,43 +188,6 @@ endif( )
 
 
 ################################################
-# add gmock functionality
-################################################
-if ( USE_GMOCK )
-  # Download and unpack googletest at configure time
-  downloadProject( googletest )
-
-  # Prevent overriding the parent project's compiler/linker
-  # settings on Windows
-  set( gtest_force_shared_crt ON CACHE BOOL "" FORCE )
-
-  # Add googletest directly to our build. This defines
-  # the gtest and gtest_main targets.
-  add_subdirectory( ${CMAKE_BINARY_DIR}/googletest-src/googlemock
-                    ${CMAKE_BINARY_DIR}/googletest-build )
-
-  # gmock and gtest header dir
-  set(
-      GMOCK_INCLUDE_DIRS
-      ${CMAKE_BINARY_DIR}/googletest-src/googletest/include
-      ${CMAKE_BINARY_DIR}/googletest-src/googlemock/include
-      PARENT_SCOPE
-      )
-
-  # gmock lib
-  set( GMOCK_LIB       gmock            PARENT_SCOPE )
-  set( GMOCK_MAIN_LIB  gmock_main       PARENT_SCOPE )
-  set( GMOCK_BOTH_LIBS gmock gmock_main PARENT_SCOPE )
-
-  message( "USING GMOCK" )
-
-endif( USE_GMOCK )
-
-
-
-
-
-################################################
 # add imgui functionality
 ################################################
 if ( USE_GUI )
@@ -303,6 +250,48 @@ if ( USE_GUI )
 
 endif( USE_GUI )
 
+
+
+
+################################################
+# add gmock functionality
+################################################
+if ( USE_GMOCK )
+  # Download and unpack googletest at configure time
+  downloadProject( googletest )
+
+  # Prevent overriding the parent project's compiler/linker
+  # settings on Windows
+  set( gtest_force_shared_crt ON CACHE BOOL "" FORCE )
+
+  # Add googletest directly to our build. This defines
+  # the gtest and gtest_main targets.
+  add_subdirectory( ${CMAKE_BINARY_DIR}/googletest-src/googlemock
+                    ${CMAKE_BINARY_DIR}/googletest-build )
+
+  # gmock and gtest header dir
+  set(
+      GMOCK_INCLUDE_DIRS
+      ${CMAKE_BINARY_DIR}/googletest-src/googletest/include
+      ${CMAKE_BINARY_DIR}/googletest-src/googlemock/include
+      PARENT_SCOPE
+      )
+
+  # gmock lib
+  set( GMOCK_LIB       gmock            PARENT_SCOPE )
+  set( GMOCK_MAIN_LIB  gmock_main       PARENT_SCOPE )
+  set( GMOCK_BOTH_LIBS gmock gmock_main PARENT_SCOPE )
+
+  message( "USING GMOCK" )
+
+endif( USE_GMOCK )
+
+
+
+################################################
+# add glm functionality
+################################################
+set( SYSTEM_INCLUDE_DIRS ${SYSTEM_INCLUDE_DIRS} ${THIRDPARTY}/include )
 
 
 

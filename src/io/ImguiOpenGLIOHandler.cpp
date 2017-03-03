@@ -6,7 +6,9 @@
 // shared
 #include "glad/glad.h"
 #include "graphics/glfw/GlfwWrapper.hpp"
+#include "graphics/opengl/OpenGLWrapper.hpp"
 #include "io/ImguiCallback.hpp"
+#include "io/SharedCallback.hpp"
 #include "imgui.h"
 #include "imgui_impl_glfw_gl3.h"
 
@@ -37,6 +39,10 @@ ImguiOpenGLIOHandler::ImguiOpenGLIOHandler(
   // imguiCallback no longer has ownership of memory
   std::unique_ptr< graphics::Callback > upCallback( imguiCallback_ );
   upGlfwWrapper_->setCallback( std::move( upCallback ) );
+
+  // default callback
+  std::unique_ptr< shared::SharedCallback > upSharedCallback( new shared::SharedCallback( ) );
+  imguiCallback_->setCallback ( std::move( upSharedCallback ) );
 
   ImGui_ImplGlfwGL3_Init( upGlfwWrapper_->getWindow( ), false ); // false for no callbacks
 
@@ -80,6 +86,32 @@ ImguiOpenGLIOHandler::showWorld( const double alpha )
 
 } // ImguiOpenGLIOHandler::showWorld
 
+
+
+void
+ImguiOpenGLIOHandler::_onRender ( const double )
+{
+  upGLWrapper_->clearWindow( );
+};
+
+
+void
+ImguiOpenGLIOHandler::_onGuiRender ( )
+{
+  bool alwaysOpen = true;
+
+  ImGui::SetNextWindowSize( ImVec2( 0, 0 ), ImGuiSetCond_FirstUseEver ); // auto scale size?
+  ImGui::SetNextWindowPos ( ImVec2( 0, 0 ), ImGuiSetCond_FirstUseEver );
+
+  ImGui::Begin( "Example Window", &alwaysOpen );
+
+  if ( ImGui::CollapsingHeader( "Controls", "controls", false, true ) )
+  {
+    ImGui::Text( "Press ESC to exit sim  \n" );
+  }
+
+  ImGui::End( );
+};
 
 
 } // namespace shared

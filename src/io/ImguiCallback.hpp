@@ -1,5 +1,5 @@
-#ifndef ImguiCallback_hpp
-#define ImguiCallback_hpp
+// ImguiCallback.hpp
+#pragma once
 
 
 #include <memory>
@@ -132,5 +132,3 @@ private:
 
 } // namespace shared
 
-
-#endif // ImguiCallback_hpp

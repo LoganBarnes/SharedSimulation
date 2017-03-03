@@ -1,5 +1,5 @@
-#ifndef ImguiOpenGLIOHandler_hpp
-#define ImguiOpenGLIOHandler_hpp
+// ImguiOpenGLIOHandler.hpp
+#pragma once
 
 
 #include <memory>
@@ -44,8 +44,8 @@ public:
   ImguiOpenGLIOHandler(
                        World &world,
                        bool   printInfo = true,
-                       int    width     = 1080,
-                       int    height    = 720,
+                       int    width     = 640,
+                       int    height    = 480,
                        bool   resizable = true,
                        int    aaSamples = 8
                        );
@@ -74,15 +74,13 @@ protected:
 private:
 
   virtual
-  void _onRender ( const double alpha ) = 0;
+  void _onRender ( const double alpha );
 
   virtual
-  void _onGuiRender ( ) = 0;
+  void _onGuiRender ( );
 
 };
 
 
 } // namespace shared
 
-
-#endif // ImguiOpenGLIOHandler_hpp

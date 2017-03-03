@@ -9,6 +9,41 @@ if ( PROJECT_CONFIG_FILE )
 endif( ) # PROJECT_CONFIG_FILE
 
 
+# system header dirs
+set(
+    PROJECT_SYSTEM_INCLUDE_DIRS
+    ${PROJECT_SYSTEM_INCLUDE_DIRS}
+    ${SHARED_SYSTEM_INCLUDE_DIRS}
+    )
+
+# libraries to link against
+set(
+    PROJECT_LINK_LIBS
+    ${PROJECT_LINK_LIBS}
+    ${SHARED_LINK_LIBS}
+    )
+
+# must be built before project lib
+set(
+    PROJECT_DEP_TARGETS
+    ${PROJECT_DEP_TARGETS}
+    ${SHARED_DEP_TARGETS}
+    )
+
+# header dirs
+set(
+    PROJECT_INCLUDE_DIRS
+    ${PROJECT_INCLUDE_DIRS}
+    ${SHARED_INCLUDE_DIRS}
+    )
+
+# cpp files
+set(
+    PROJECT_SOURCE
+    ${PROJECT_SOURCE}
+    ${SHARED_SOURCE}
+    )
+
 
 set ( PROJECT_INCLUDE_DIRS ${PROJECT_INCLUDE_DIRS} ${PROJECT_BINARY_DIR} )
 
@@ -70,27 +105,40 @@ endif( PROJECT_CUDA_SOURCE )
 
 # compile flags
 if ( NOT MSVC AND STRICT_FLAGS )
-  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic -Wall -Wextra -Wcast-align -Wcast-qual"            )
-  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wctor-dtor-privacy -Wdisabled-optimization -Wformat=2"      )
-  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Winit-self -Wmissing-declarations -Wmissing-include-dirs"   )
-  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wold-style-cast -Woverloaded-virtual -Wredundant-decls"     )
-  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wshadow -Wsign-conversion -Wsign-promo -Wstrict-overflow=5" )
-  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wswitch-default -Wundef -Werror -Wno-unused"                )
+  set( INTENSE_FLAGS "${INTENSE_FLAGS} -pedantic -Wall -Wextra -Wcast-align -Wcast-qual"            )
+  set( INTENSE_FLAGS "${INTENSE_FLAGS} -Wctor-dtor-privacy -Wdisabled-optimization -Wformat=2"      )
+  set( INTENSE_FLAGS "${INTENSE_FLAGS} -Winit-self -Wmissing-declarations -Wmissing-include-dirs"   )
+  set( INTENSE_FLAGS "${INTENSE_FLAGS} -Wold-style-cast -Woverloaded-virtual -Wredundant-decls"     )
+  set( INTENSE_FLAGS "${INTENSE_FLAGS} -Wshadow -Wsign-conversion -Wsign-promo -Wstrict-overflow=5" )
+  set( INTENSE_FLAGS "${INTENSE_FLAGS} -Wswitch-default -Wundef -Werror -Wno-unused"                )
 endif( )
+
+set( STRICT_DEBUG_FLAGS "${INTENSE_FLAGS}" )
+set( STRICT_RELEASE_FLAGS "${INTENSE_FLAGS} -O3" )
 
 
 # make project into library that can be used by multiple executables ( such as test classes )
-add_library            ( ${PROJECT_NAME} ${PROJECT_SOURCE}                   )
-target_link_libraries  ( ${PROJECT_NAME} ${PROJECT_LINK_LIBS} ${DEP_TARGETS} )
-target_compile_features( ${PROJECT_NAME} PRIVATE cxx_range_for               )
+if ( PROJECT_SOURCE )
+
+  set( PROJECT_LIB ${PROJECT_NAME} )
+
+  add_library            ( ${PROJECT_LIB} ${PROJECT_SOURCE}                   )
+  target_link_libraries  ( ${PROJECT_LIB} ${PROJECT_LINK_LIBS} ${DEP_TARGETS} )
+  target_compile_features( ${PROJECT_LIB} PRIVATE cxx_range_for               )
+
+  target_compile_options ( ${PROJECT_LIB} PUBLIC "$<$<CONFIG:DEBUG>:${INTENSE_DEBUG_FLAGS}>")
+  target_compile_options ( ${PROJECT_LIB} PUBLIC "$<$<CONFIG:RELEASE>:${INTENSE_RELEASE_FLAGS}>")
 
 
-if ( ${DEP_TARGETS} )
-  add_dependencies ( ${PROJECT_NAME} ${DEP_TARGETS} )
-endif( )
+  if ( ${DEP_TARGETS} )
+    add_dependencies ( ${PROJECT_LIB} ${DEP_TARGETS} )
+  endif( )
 
-target_include_directories( ${PROJECT_NAME} SYSTEM PUBLIC ${PROJECT_SYSTEM_INCLUDE_DIRS} )
-target_include_directories( ${PROJECT_NAME}        PUBLIC ${PROJECT_INCLUDE_DIRS}        )
+  target_include_directories( ${PROJECT_LIB} SYSTEM PUBLIC ${PROJECT_SYSTEM_INCLUDE_DIRS} )
+  target_include_directories( ${PROJECT_LIB}        PUBLIC ${PROJECT_INCLUDE_DIRS}        )
+
+endif( PROJECT_SOURCE )
+
 
 
 # make executable to run
@@ -98,11 +146,17 @@ if ( PROJECT_MAIN )
 
   set( PROJECT_EXEC run${PROJECT_NAME} )
 
-  add_executable        ( ${PROJECT_EXEC} ${PROJECT_MAIN} )
-  target_link_libraries ( ${PROJECT_EXEC} ${PROJECT_NAME} )
-  add_dependencies      ( ${PROJECT_EXEC} ${PROJECT_NAME} )
+  add_executable ( ${PROJECT_EXEC} ${PROJECT_MAIN} )
+
+  if ( PROJECT_LIB )
+    target_link_libraries ( ${PROJECT_EXEC} ${PROJECT_LIB} )
+    add_dependencies      ( ${PROJECT_EXEC} ${PROJECT_LIB} )
+  endif( )
 
   target_compile_features( ${PROJECT_EXEC} PRIVATE cxx_range_for )
+
+  target_compile_options ( ${PROJECT_EXEC} PUBLIC "$<$<CONFIG:DEBUG>:${INTENSE_DEBUG_FLAGS}>")
+  target_compile_options ( ${PROJECT_EXEC} PUBLIC "$<$<CONFIG:RELEASE>:${INTENSE_RELEASE_FLAGS}>")
 
   target_include_directories( ${PROJECT_EXEC} PUBLIC
                               ${PROJECT_INCLUDE_DIRS}
@@ -119,7 +173,7 @@ set_property( TARGET ${PROJECT_EXEC} PROPERTY INSTALL_RPATH ${CMAKE_INSTALL_PREF
 
 # Adds logic to INSTALL.vcproj to copy ${PROJECT_EXEC}.exe to destination directory
 install(
-        TARGETS ${PROJECT_EXEC} ${PROJECT_NAME} ${PROJECT_INSTALL_TARGETS}
+        TARGETS ${PROJECT_EXEC} ${PROJECT_LIB} ${PROJECT_INSTALL_TARGETS}
         RUNTIME DESTINATION bin
         LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib
@@ -142,24 +196,26 @@ if ( BUILD_TESTS )
 
   include_directories( ${GTEST_INCLUDE_DIRS} )
 
-  add_executable( test${PROJECT_NAME} ${TESTING_SOURCE} )
+  set( PROJECT_UNIT_TESTS test${PROJECT_NAME} )
 
-  target_include_directories( test${PROJECT_NAME} SYSTEM PUBLIC ${TESTING_SYSTEM_INCLUDE_DIRS} )
-  target_include_directories( test${PROJECT_NAME}        PUBLIC ${TESTING_INCLUDE_DIRS}        )
+  add_executable( PROJECT_UNIT_TEST ${TESTING_SOURCE} )
 
-  target_link_libraries( test${PROJECT_NAME} ${TESTING_LINK_LIBS}   )
+  target_include_directories( PROJECT_UNIT_TEST SYSTEM PUBLIC ${TESTING_SYSTEM_INCLUDE_DIRS} )
+  target_include_directories( PROJECT_UNIT_TEST        PUBLIC ${TESTING_INCLUDE_DIRS}        )
 
-  target_compile_features( test${PROJECT_NAME} PRIVATE cxx_range_for )
+  target_link_libraries( PROJECT_UNIT_TEST ${TESTING_LINK_LIBS}   )
+
+  target_compile_features( PROJECT_UNIT_TEST PRIVATE cxx_range_for )
 
   if ( ${DEP_TARGETS} )
 
-    add_dependencies ( test${PROJECT_NAME} ${TESTING_DEP_TARGETS} )
+    add_dependencies ( PROJECT_UNIT_TEST ${TESTING_DEP_TARGETS} )
 
   endif( )
 
   # Adds logic to INSTALL.vcproj to copy ${PROJECT_EXEC}.exe to destination directory
   install(
-          TARGETS test${PROJECT_NAME}
+          TARGETS PROJECT_UNIT_TEST
           RUNTIME DESTINATION testbin
           )
 

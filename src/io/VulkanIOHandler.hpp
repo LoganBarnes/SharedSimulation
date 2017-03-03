@@ -1,5 +1,5 @@
-#ifndef VulkanIOHandler_hpp
-#define VulkanIOHandler_hpp
+// VulkanIOHandler.hpp
+#pragma once
 
 
 #include <memory>
@@ -85,5 +85,3 @@ private:
 
 } // namespace shared
 
-
-#endif // VulkanIOHandler_hpp

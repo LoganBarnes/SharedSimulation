@@ -1,5 +1,5 @@
-#ifndef IoHandler_hpp
-#define IoHandler_hpp
+// IoHandler.hpp
+#pragma once
 
 
 namespace shared
@@ -96,5 +96,3 @@ protected:
 
 } // namespace shared
 
-
-#endif // IoHandler_hpp

@@ -1,31 +1,38 @@
-// World.hpp
+// CubeWorld.hpp
 #pragma once
 
 
-namespace shared
+#include "world/World.hpp"
+#include <memory>
+
+
+namespace simple
 {
 
+// class Cube;
+
+
 /////////////////////////////////////////////
-/// \brief The World class
+/// \brief The CubeWorld class
 ///
 /// \author Logan Barnes
 /////////////////////////////////////////////
-class World
+class CubeWorld : public shared::World
 {
 
 public:
 
   ///////////////////////////////////////////////////////////////
-  /// \brief World
+  /// \brief CubeWorld
   ///////////////////////////////////////////////////////////////
-  World( );
+  CubeWorld( );
 
 
   ///////////////////////////////////////////////////////////////
-  /// \brief ~World
+  /// \brief ~CubeWorld
   ///////////////////////////////////////////////////////////////
   virtual
-  ~World( );
+  ~CubeWorld( ) = default;
 
 
   ///////////////////////////////////////////////////////////////
@@ -35,29 +42,20 @@ public:
   void update (
                const double worldTime, ///< update to this time
                const double timestep   ///< interval since last update
-               );
-
-
-  ///////////////////////////////////////////////////////////////
-  /// \brief requestExit_
-  ///////////////////////////////////////////////////////////////
-  void
-  requestExit( ) { requestExit_ = true; }
+               ) final;
 
   ///////////////////////////////////////////////////////////////
-  /// \brief requestingExit
+  /// \brief getCube
   /// \return
   ///////////////////////////////////////////////////////////////
-  bool
-  requestingExit( ) { return requestExit_; }
-
+  // Cube &getCube() const { return *upCube_; }
 
 private:
 
-  bool requestExit_;
+  // std::unique_ptr< Cube > upCube_;
 
 };
 
 
-} // end namespace shared
+} // end namespace simple
 

@@ -1,7 +1,6 @@
-#ifndef @PROJECT_NAME@Config_hpp
-#define @PROJECT_NAME@Config_hpp
-
+// ProjectConfig.hpp
 // the configured options and settings for Project
+#pragma once
 
 
 #include <string>
@@ -31,6 +30,3 @@ const std::string OUTPUT_PATH   = "@OUTPUT_PATH@/";
 }
 
 } // namespace @PROJECT_NAMESPACE@
-
-
-#endif // @PROJECT_NAME@Config_hpp

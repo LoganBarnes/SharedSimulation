@@ -1,7 +1,7 @@
-#ifndef SharedSimulationConfig_hpp
-#define SharedSimulationConfig_hpp
-
+// SharedSimulationConfig.hpp
 // the configured options and settings for Project
+#pragma once
+
 
 #cmakedefine USE_GLFW
 #cmakedefine USE_VULKAN
@@ -9,5 +9,3 @@
 #cmakedefine USE_OPTIX
 #cmakedefine USE_CUDA
 
-
-#endif // SharedSimulationConfig_hpp

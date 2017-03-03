@@ -1,5 +1,5 @@
-#ifndef OpenGLIOHandler_hpp
-#define OpenGLIOHandler_hpp
+// OpenGLIOHandler.hpp
+#pragma once
 
 
 #include <memory>
@@ -41,8 +41,8 @@ public:
   OpenGLIOHandler(
                   World &world,
                   bool   printInfo = true,
-                  int    width     = 1080,
-                  int    height    = 720,
+                  int    width     = 640,
+                  int    height    = 480,
                   bool   resizable = true,
                   int    aaSamples = 8
                   );
@@ -103,6 +103,3 @@ private:
 
 
 } // namespace shared
-
-
-#endif // OpenGLIOHandler_hpp

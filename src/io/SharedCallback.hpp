@@ -1,5 +1,5 @@
-#ifndef SharedCallback_hpp
-#define SharedCallback_hpp
+// SharedCallback.hpp
+#pragma once
 
 
 #include "graphics/glfw/Callback.hpp"
@@ -42,5 +42,3 @@ public:
 
 } // namespace shared
 
-
-#endif // SharedCallback_hpp

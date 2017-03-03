@@ -1,0 +1,47 @@
+# QT Creator #
+##############
+*.pro.user*
+*.qmake.stash
+*.user*
+*.config
+*.creator
+*.files
+*.includes
+
+# Compiled Source #
+###################
+*.o
+build/
+# cuda
+*.ptx
+
+# Executables #
+###############
+*.app
+
+# OS Generated Files #
+######################
+*.DS_Store
+
+# Makefiles #
+#############
+Makefile
+
+# Run Install Dirs #
+####################
+run/_build
+run/bin
+run/include
+run/lib
+run/testbin
+*.ini
+run/output/*
+
+# Custom Output #
+#################
+run/output/*
+
+# Valgrind #
+############
+*.supp
+
