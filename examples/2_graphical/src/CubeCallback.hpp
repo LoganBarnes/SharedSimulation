@@ -1,0 +1,47 @@
+// CubeCallback.hpp
+#pragma once
+
+#include "io/SharedCallback.hpp"
+
+namespace example
+{
+
+class CubeImguiOpenGLIOHandler;
+
+
+class CubeCallback : public shared::SharedCallback
+{
+public:
+
+  CubeCallback( CubeImguiOpenGLIOHandler &handler );
+
+  virtual
+  ~CubeCallback( );
+
+
+  virtual
+  void handleWindowSize (
+                         GLFWwindow *pWindow,
+                         int         width,
+                         int         height
+                         );
+
+  virtual
+  void handleKey (
+                  GLFWwindow *pWindow,
+                  int         key,
+                  int         scancode,
+                  int         action,
+                  int         mods
+                  );
+
+
+private:
+
+  CubeImguiOpenGLIOHandler &handler_;
+
+};
+
+
+} //  namespace example
+

@@ -5,7 +5,7 @@
 
 #include "driver/ContinuousDriver.hpp"
 #include "CubeWorld.hpp"
-#include "io/IOHandler.hpp"
+#include "CubeIOHandler.hpp"
 
 
 int main( const int argc, const char **argv )
@@ -18,7 +18,7 @@ int main( const int argc, const char **argv )
     // world and the user
     //
     simple::CubeWorld world;
-    shared::IOHandler io( world );
+    simple::CubeIOHandler io( world );
 
     //
     // pass world and ioHandler to driver

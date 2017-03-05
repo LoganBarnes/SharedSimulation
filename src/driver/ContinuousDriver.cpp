@@ -26,9 +26,9 @@ const double MAX_TIMESTEP_NFTR_LOOP = 0.05;
 /// \author Logan Barnes
 /////////////////////////////////////////////
 ContinuousDriver::ContinuousDriver(
-               World     &world,
-               IOHandler &ioHandler
-               ) noexcept
+                                   World     &world,
+                                   IOHandler &ioHandler
+                                   ) noexcept
   :
   Driver( world, ioHandler )
   , timeScale_  ( 1.0 )
@@ -50,20 +50,20 @@ ContinuousDriver::ContinuousDriver(
 /////////////////////////////////////////////
 int
 ContinuousDriver::exec(
-             int          argc, ///< number of arguments
-             const char **argv  ///< array of argument strings
-             )
+                       int          argc, ///< number of arguments
+                       const char **argv ///< array of argument strings
+                       )
 {
 
-  bool useDefaultLoop( true );
+  bool useGameLoop( true );
 
   for ( int i = 1; i < argc; ++i )
   {
 
-    if ( std::string( argv[ i ] ) == "-r" )
+    if ( std::string( argv[ i ] ) == "--loop=fast" )
     {
 
-      useDefaultLoop = false;
+      useGameLoop = false;
 
     }
     else
@@ -75,16 +75,16 @@ ContinuousDriver::exec(
 
   }
 
-  if ( useDefaultLoop )
+  if ( useGameLoop )
   {
 
-    _runAFAPLoop( );
+    _runNFTRLoop( );
 
   }
   else
   {
 
-    _runNFTRLoop( );
+    _runAFAPLoop( );
 
   }
 
@@ -142,7 +142,6 @@ ContinuousDriver::_runAFAPLoop( )
 void
 ContinuousDriver::_runNFTRLoop( )
 {
-
   //
   // physics game loop:
   // http://gafferongames.com/game-physics/fix-your-timestep/
@@ -204,7 +203,6 @@ ContinuousDriver::_runNFTRLoop( )
     alpha = accumulator / deltaTime;
 
     ioHandler_.showWorld( alpha );
-
   }
 
 } // ContinuousDriver::_runNFTRLoop
@@ -233,6 +231,7 @@ ContinuousDriver::_getTimeSeconds( )
   return timeElapsedSecs.count( );
 
 }
+
 
 
 } // namespace shared

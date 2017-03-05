@@ -68,7 +68,7 @@ public:
   ///
   ///        Checks for keystrokes or mouse movement (or
   ///        alternate controllers) and updates output text,
-  ///        images, or buffer swaps not handled by showWorld()
+  ///        images, or buffer swaps not handled by showWorld().
   ///
   ///////////////////////////////////////////////////////////////
   virtual
@@ -80,11 +80,24 @@ public:
   ///
   ///        Waits for keystrokes or mouse movement (or
   ///        alternate controllers) and updates output text,
-  ///        images, or buffer swaps not handled by showWorld()
+  ///        images, or buffer swaps not handled by showWorld().
   ///
   ///////////////////////////////////////////////////////////////
   virtual
   void waitForIO ( );
+
+
+  ///////////////////////////////////////////////////////////////
+  /// \brief resize
+  ///
+  ///        Updates the camera aspect ratio and OpenGL viewport.
+  ///
+  ///////////////////////////////////////////////////////////////
+  virtual
+  void resize (
+               const int width,
+               const int height
+               );
 
 
 protected:

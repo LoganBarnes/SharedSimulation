@@ -1,4 +1,7 @@
+cmake_minimum_required ( VERSION 3.6.0 )
+project ( SharedSimulation )
 
+get_directory_property( hasParent PARENT_DIRECTORY )
 
 option( USE_GLFW   "Use GLFW library"   OFF )
 option( USE_VULKAN "Use Vulkan library" OFF )
@@ -11,7 +14,7 @@ option( USE_GMOCK  "Use gmock library"  OFF )
 set( SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src )
 
 # other paths
-set( THIRDPARTY  ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty )
+set( THIRDPARTY ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty )
 
 
 configure_file (
@@ -274,13 +277,24 @@ if ( USE_GMOCK )
       GMOCK_INCLUDE_DIRS
       ${CMAKE_BINARY_DIR}/googletest-src/googletest/include
       ${CMAKE_BINARY_DIR}/googletest-src/googlemock/include
-      PARENT_SCOPE
       )
 
   # gmock lib
-  set( GMOCK_LIB       gmock            PARENT_SCOPE )
-  set( GMOCK_MAIN_LIB  gmock_main       PARENT_SCOPE )
-  set( GMOCK_BOTH_LIBS gmock gmock_main PARENT_SCOPE )
+  set( GMOCK_LIB       gmock            )
+  set( GMOCK_MAIN_LIB  gmock_main       )
+  set( GMOCK_BOTH_LIBS gmock gmock_main )
+
+  if ( hasParent )
+
+    # gmock and gtest header dir
+    set( GMOCK_INCLUDE_DIRS ${GMOCK_INCLUDE_DIRS} PARENT_SCOPE )
+
+    # gmock lib
+    set( GMOCK_LIB       ${GMOCK_LIB}       PARENT_SCOPE )
+    set( GMOCK_MAIN_LIB  ${GMOCK_MAIN_LIB}  PARENT_SCOPE )
+    set( GMOCK_BOTH_LIBS ${GMOCK_BOTH_LIBS} PARENT_SCOPE )
+
+  endif( hasParent )
 
   message( "USING GMOCK" )
 
@@ -294,29 +308,11 @@ endif( USE_GMOCK )
 set( SYSTEM_INCLUDE_DIRS ${SYSTEM_INCLUDE_DIRS} ${THIRDPARTY}/include )
 
 
-
-
-set( SHARED_SYSTEM_INCLUDE_DIRS ${SYSTEM_INCLUDE_DIRS} PARENT_SCOPE )
-set( SHARED_LINK_LIBS           ${LINK_LIBS}           PARENT_SCOPE )
-set( SHARED_DEP_TARGETS         ${DEP_TARGETS}         PARENT_SCOPE )
-
-
-set( SHARED_CUDA_SYSTEM_INCLUDE_DIRS ${CUDA_SYSTEM_INCLUDE_DIRS} PARENT_SCOPE )
-set( SHARED_CUDA_LINK_LIBS           ${CUDA_LINK_LIBS}           PARENT_SCOPE )
-set( SHARED_CUDA_DEP_TARGETS         ${CUDA_DEP_TARGETS}         PARENT_SCOPE )
-
-
-set( SHARED_UNCRUSTIFY_FILE ${CMAKE_CURRENT_SOURCE_DIR}/formatting/uncrustify.cfg  PARENT_SCOPE )
-
-
+################################################
+# add shared source
+################################################
 # header dirs
-set(
-    SHARED_INCLUDE_DIRS
-
-    ${SRC_DIR}
-
-    PARENT_SCOPE
-    )
+set( SHARED_INCLUDE_DIRS ${SHARED_INCLUDE_DIRS} ${SRC_DIR} ${PROJECT_BINARY_DIR} )
 
 # cpp files
 set(
@@ -337,8 +333,24 @@ set(
 
     # world
     ${SRC_DIR}/world/World.cpp
-
-    PARENT_SCOPE
     )
 
+
+if( hasParent )
+
+  set( SHARED_SYSTEM_INCLUDE_DIRS ${SYSTEM_INCLUDE_DIRS} PARENT_SCOPE )
+  set( SHARED_LINK_LIBS           ${LINK_LIBS}           PARENT_SCOPE )
+  set( SHARED_DEP_TARGETS         ${DEP_TARGETS}         PARENT_SCOPE )
+
+
+  set( SHARED_CUDA_SYSTEM_INCLUDE_DIRS ${CUDA_SYSTEM_INCLUDE_DIRS} PARENT_SCOPE )
+  set( SHARED_CUDA_LINK_LIBS           ${CUDA_LINK_LIBS}           PARENT_SCOPE )
+  set( SHARED_CUDA_DEP_TARGETS         ${CUDA_DEP_TARGETS}         PARENT_SCOPE )
+
+  set( SHARED_UNCRUSTIFY_FILE ${CMAKE_CURRENT_SOURCE_DIR}/formatting/uncrustify.cfg  PARENT_SCOPE )
+
+  set( SHARED_INCLUDE_DIRS ${SHARED_INCLUDE_DIRS} PARENT_SCOPE )
+  set( SHARED_SOURCE       ${SHARED_SOURCE}       PARENT_SCOPE )
+
+endif( hasParent )
 

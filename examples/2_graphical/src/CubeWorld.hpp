@@ -7,7 +7,7 @@
 #include <deque>
 
 
-namespace simple
+namespace example
 {
 
 class RotatingCube;
@@ -66,5 +66,5 @@ private:
 };
 
 
-} // end namespace simple
+} // end namespace example
 

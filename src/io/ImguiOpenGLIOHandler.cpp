@@ -33,7 +33,6 @@ ImguiOpenGLIOHandler::ImguiOpenGLIOHandler(
                                            )
   : OpenGLIOHandler( world, printInfo, width, height, resizable, aaSamples )
 {
-
   imguiCallback_ = new shared::ImguiCallback( );
 
   // imguiCallback no longer has ownership of memory
@@ -45,7 +44,6 @@ ImguiOpenGLIOHandler::ImguiOpenGLIOHandler(
   imguiCallback_->setCallback ( std::move( upSharedCallback ) );
 
   ImGui_ImplGlfwGL3_Init( upGlfwWrapper_->getWindow( ), false ); // false for no callbacks
-
 }
 
 

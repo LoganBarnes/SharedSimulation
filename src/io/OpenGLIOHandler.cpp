@@ -47,6 +47,8 @@ OpenGLIOHandler::OpenGLIOHandler(
 
   upGLWrapper_->setCurrentContext( upGlfwWrapper_->getWindow( ) ); // optional with only one window
   upGLWrapper_->initContext( width, height );
+
+  upCamera_->setAspectRatio( width * 1.0f / height );
 }
 
 
@@ -109,6 +111,25 @@ OpenGLIOHandler::waitForIO( )
 
   exitRequested_ |= ( upGlfwWrapper_->windowShouldClose( ) != 0 );
 
+}
+
+
+
+/////////////////////////////////////////////
+/// \brief OpenGLIOHandler::resize
+/// \param width
+/// \param height
+///
+/// \author Logan Barnes
+/////////////////////////////////////////////
+void
+OpenGLIOHandler::resize(
+                        const int width,
+                        const int height
+                        )
+{
+  upCamera_->setAspectRatio( width * 1.0f / height );
+  upGLWrapper_->setViewportSize( width, height );
 }
 
 

@@ -124,7 +124,13 @@ if ( PROJECT_SOURCE )
 
   add_library            ( ${PROJECT_LIB} ${PROJECT_SOURCE}                   )
   target_link_libraries  ( ${PROJECT_LIB} ${PROJECT_LINK_LIBS} ${DEP_TARGETS} )
-  target_compile_features( ${PROJECT_LIB} PRIVATE cxx_range_for               )
+
+  if ( FORCE_CPP_STANDARD )
+    set_property( TARGET ${PROJECT_LIB} PROPERTY CXX_STANDARD ${FORCE_CPP_STANDARD} )
+    set_property( TARGET ${PROJECT_LIB} PROPERTY CXX_STANDARD_REQUIRED ON )
+  else()
+    target_compile_features( ${PROJECT_LIB} PRIVATE cxx_range_for )
+  endif()
 
   target_compile_options ( ${PROJECT_LIB} PUBLIC "$<$<CONFIG:DEBUG>:${INTENSE_DEBUG_FLAGS}>")
   target_compile_options ( ${PROJECT_LIB} PUBLIC "$<$<CONFIG:RELEASE>:${INTENSE_RELEASE_FLAGS}>")
@@ -153,7 +159,12 @@ if ( PROJECT_MAIN )
     add_dependencies      ( ${PROJECT_EXEC} ${PROJECT_LIB} )
   endif( )
 
-  target_compile_features( ${PROJECT_EXEC} PRIVATE cxx_range_for )
+  if ( FORCE_CPP_STANDARD )
+    set_property( TARGET ${PROJECT_EXEC} PROPERTY CXX_STANDARD ${FORCE_CPP_STANDARD} )
+    set_property( TARGET ${PROJECT_EXEC} PROPERTY CXX_STANDARD_REQUIRED ON )
+  else()
+    target_compile_features( ${PROJECT_EXEC} PRIVATE cxx_range_for )
+  endif()
 
   target_compile_options ( ${PROJECT_EXEC} PUBLIC "$<$<CONFIG:DEBUG>:${INTENSE_DEBUG_FLAGS}>")
   target_compile_options ( ${PROJECT_EXEC} PUBLIC "$<$<CONFIG:RELEASE>:${INTENSE_RELEASE_FLAGS}>")
@@ -192,7 +203,7 @@ endif()
 
 
 # testing
-if ( BUILD_TESTS )
+if ( BUILD_TESTS AND TESTING_SOURCE )
 
   include_directories( ${GTEST_INCLUDE_DIRS} )
 
@@ -219,4 +230,4 @@ if ( BUILD_TESTS )
           RUNTIME DESTINATION testbin
           )
 
-endif ( BUILD_TESTS )
+endif ( BUILD_TESTS AND TESTING_SOURCE )

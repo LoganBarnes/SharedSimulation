@@ -4,8 +4,8 @@
 #include <cstdlib>
 
 #include "driver/ContinuousDriver.hpp"
-#include "world/World.hpp"
-#include "io/ImguiOpenGLIOHandler.hpp"
+#include "CubeWorld.hpp"
+#include "CubeImguiOpenGLIOHandler.hpp"
 
 
 int main( const int argc, const char **argv )
@@ -17,8 +17,8 @@ int main( const int argc, const char **argv )
     // and ioHandler to interface between the
     // world and the user
     //
-    shared::World world;
-    shared::ImguiOpenGLIOHandler io( world );
+    example::CubeWorld world;
+    example::CubeImguiOpenGLIOHandler io( world );
 
     //
     // pass world and ioHandler to driver

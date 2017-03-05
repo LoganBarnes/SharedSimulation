@@ -2,6 +2,7 @@
 #define OpenGLWrapper_hpp
 
 #include <string>
+#include <sstream>
 #include <vector>
 #include <unordered_map>
 
@@ -50,6 +51,7 @@ struct Buffer
   GLuint vbo;
   VAOSettings settings;
 };
+
 
 ///
 /// \brief The FrameBuffer struct
@@ -119,8 +121,18 @@ public:
                   const T           *pData,
                   const size_t       numElements,
                   const GLenum       type,
-                  const VAOSettings &settings
+                  const VAOSettings &settings,
+                  const bool         forceOverride = false
                   );
+
+  template< typename T >
+  void addIndexBuffer (
+                       const std::string name,
+                       const T          *pData,
+                       const size_t      numElements,
+                       const GLenum      type,
+                       const bool        forceOverride = false
+                       );
 
 
   void addFramebuffer (
@@ -146,8 +158,12 @@ public:
                      const std::string buffer,
                      const int         start,
                      const int         verts,
-                     GLenum            mode
+                     const GLenum      mode,
+                     const std::string ibo = "",
+                     const void       *pOffset = 0,
+                     const GLenum      iboType = GL_UNSIGNED_SHORT
                      );
+
 
   void setTextureUniform (
                           const std::string program,
@@ -247,6 +263,7 @@ private:
   std::unordered_map< std::string, GLuint > programs_;
   std::unordered_map< std::string, GLuint > textures_;
   std::unordered_map< std::string, Buffer > buffers_;
+  std::unordered_map< std::string, unsigned > indexBuffers_;
   std::unordered_map< std::string, FrameBuffer > framebuffers_;
 
   typedef std::unordered_map< void*, GLuint > ContextVAOMap;
@@ -273,11 +290,19 @@ OpenGLWrapper::addBuffer(
                          const T           *pData,
                          const size_t       numElements,
                          const GLenum       type,
-                         const VAOSettings &settings
+                         const VAOSettings &settings,
+                         const bool         forceOverride
                          )
 {
   if ( buffers_.find( name ) != buffers_.end( ) )
   {
+    if ( !forceOverride )
+    {
+      std::stringstream msg;
+      msg << "Buffer with name " << name << " already exists and 'forceOverride' is false.";
+      throw std::runtime_error( msg.str( ) );
+    }
+
     Buffer &buffer = buffers_[ name ];
     glDeleteBuffers( 1, &( buffer.vbo ) );
   }
@@ -297,7 +322,46 @@ OpenGLWrapper::addBuffer(
 
   buffer.settings = settings;
 
-} // OpenGLWrapper::addBufferNoVAO
+} // OpenGLWrapper::addBuffer
+
+
+
+template< typename T >
+void
+OpenGLWrapper::addIndexBuffer(
+                              const std::string name,
+                              const T          *pData,
+                              const size_t      numElements,
+                              const GLenum      type,
+                              const bool        forceOverride
+                              )
+{
+  if ( indexBuffers_.find( name ) != indexBuffers_.end( ) )
+  {
+    if ( !forceOverride )
+    {
+      std::stringstream msg;
+      msg << "Index buffer with name " << name << " already exists and 'forceOverride' is false.";
+      throw std::runtime_error( msg.str( ) );
+    }
+
+    GLuint &ibo = indexBuffers_[ name ];
+    glDeleteBuffers( 1, &( ibo ) );
+  }
+
+  GLuint &ibo = indexBuffers_[ name ];
+
+  glGenBuffers( 1, &ibo );
+  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
+  glBufferData(
+               GL_ELEMENT_ARRAY_BUFFER,
+               static_cast< GLsizeiptr >( numElements * sizeof( T ) ),
+               pData,
+               type
+               );
+
+  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+} // OpenGLWrapper::addIndexBuffer
 
 
 

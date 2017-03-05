@@ -1,70 +1,66 @@
-// CubeWorld.hpp
+// RotatingCube.hpp
 #pragma once
 
 
-#include "world/World.hpp"
-#include <memory>
-#include <deque>
+#include "glm/glm.hpp"
 
 
 namespace simple
 {
 
-class RotatingCube;
-
-typedef std::deque< std::unique_ptr< RotatingCube > > CubeVec;
-
 
 /////////////////////////////////////////////
-/// \brief The CubeWorld class
+/// \brief The RotatingCube class
 ///
 /// \author Logan Barnes
 /////////////////////////////////////////////
-class CubeWorld : public shared::World
+class RotatingCube
 {
 
 public:
 
   ///////////////////////////////////////////////////////////////
-  /// \brief CubeWorld
+  /// \brief RotatingCube
   ///////////////////////////////////////////////////////////////
-  CubeWorld( );
+  RotatingCube(
+               const glm::vec3 axis,
+               const float     rotateRate,
+               const unsigned  id
+               );
 
 
   ///////////////////////////////////////////////////////////////
-  /// \brief ~CubeWorld
+  /// \brief ~RotatingCube
   ///////////////////////////////////////////////////////////////
-  virtual
-  ~CubeWorld( );
+  ~RotatingCube( );
 
 
   ///////////////////////////////////////////////////////////////
   /// \brief update
   ///////////////////////////////////////////////////////////////
-  virtual
   void update (
                const double worldTime, ///< update to this time
                const double timestep   ///< interval since last update
-               ) final;
+               );
 
+  unsigned
+  getRotations( ) const { return rotations_; }
 
-  void addRandomCube( );
+  unsigned
+  id( ) const { return id_; }
 
-  void removeOldestCube( );
-
-  ///////////////////////////////////////////////////////////////
-  /// \brief getCube
-  /// \return
-  ///////////////////////////////////////////////////////////////
-  const CubeVec &getCubes() const { return cubes_; }
 
 private:
 
-  unsigned currentId_;
-  CubeVec  cubes_;
+  const glm::vec3 axis_;
+  const float rotateRate_;
+  const unsigned id_;
+
+  float angle_;
+  unsigned rotations_;
+
 
 };
 
 
 } // end namespace simple
-

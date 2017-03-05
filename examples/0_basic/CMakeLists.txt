@@ -1,5 +1,9 @@
 cmake_minimum_required ( VERSION 3.6.0 )
-project ( ExampleSim )
+project ( ExampleSimBasic )
+
+set( USE_GLFW  OFF CACHE BOOL "" FORCE )
+set( USE_GLM   OFF CACHE BOOL "" FORCE )
+set( USE_GUI   OFF CACHE BOOL "" FORCE )
 
 set( SHARED_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../.. )
 

@@ -461,22 +461,42 @@ OpenGLWrapper::setTextureUniform(
 
 
 
+
 void
 OpenGLWrapper::renderBuffer(
                             const std::string buffer,
                             const int         start,
                             const int         verts,
-                            GLenum            mode
+                            const GLenum      mode,
+                            const std::string ibo,
+                            const void       *pOffset,
+                            const GLenum      iboType
                             )
 {
+  const bool usingIBO = ibo.length( ) > 0;
+
   checkItemExists( buffer, buffers_, "buffer" );
 
   GLuint vao = _getVAO( buffers_[ buffer ] );
 
   glBindVertexArray( vao );
-  glDrawArrays( mode, start, verts );
+
+
+  if ( usingIBO )
+  {
+    checkItemExists( ibo, indexBuffers_, "indexBuffer" );
+
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, indexBuffers_[ ibo ] );
+    glDrawElements( mode, verts, iboType, pOffset );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+  }
+  else
+  {
+    glDrawArrays( mode, start, verts );
+  }
+
   glBindVertexArray( 0 );
-}
+} // OpenGLWrapper::renderBuffer
 
 
 
@@ -806,6 +826,7 @@ OpenGLWrapper::_loadShader(
 
   return program;
 } // OpenGLWrapper::_loadShader
+
 
 
 } // namespace graphics
