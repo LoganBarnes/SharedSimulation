@@ -209,24 +209,24 @@ if ( BUILD_TESTS AND TESTING_SOURCE )
 
   set( PROJECT_UNIT_TESTS test${PROJECT_NAME} )
 
-  add_executable( PROJECT_UNIT_TEST ${TESTING_SOURCE} )
+  add_executable( ${PROJECT_UNIT_TESTS} ${TESTING_SOURCE} )
 
-  target_include_directories( PROJECT_UNIT_TEST SYSTEM PUBLIC ${TESTING_SYSTEM_INCLUDE_DIRS} )
-  target_include_directories( PROJECT_UNIT_TEST        PUBLIC ${TESTING_INCLUDE_DIRS}        )
+  target_include_directories( ${PROJECT_UNIT_TESTS} SYSTEM PUBLIC ${TESTING_SYSTEM_INCLUDE_DIRS} )
+  target_include_directories( ${PROJECT_UNIT_TESTS}        PUBLIC ${TESTING_INCLUDE_DIRS}        )
 
-  target_link_libraries( PROJECT_UNIT_TEST ${TESTING_LINK_LIBS}   )
+  target_link_libraries( ${PROJECT_UNIT_TESTS} ${TESTING_LINK_LIBS}   )
 
-  target_compile_features( PROJECT_UNIT_TEST PRIVATE cxx_range_for )
+  target_compile_features( ${PROJECT_UNIT_TESTS} PRIVATE cxx_range_for )
 
   if ( ${DEP_TARGETS} )
 
-    add_dependencies ( PROJECT_UNIT_TEST ${TESTING_DEP_TARGETS} )
+    add_dependencies ( ${PROJECT_UNIT_TESTS} ${TESTING_DEP_TARGETS} )
 
   endif( )
 
   # Adds logic to INSTALL.vcproj to copy ${PROJECT_EXEC}.exe to destination directory
   install(
-          TARGETS PROJECT_UNIT_TEST
+          TARGETS ${PROJECT_UNIT_TESTS}
           RUNTIME DESTINATION testbin
           )
 
