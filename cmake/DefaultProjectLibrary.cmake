@@ -1,14 +1,4 @@
 
-if ( PROJECT_CONFIG_FILE )
-
-  configure_file (
-                  ${PROJECT_CONFIG_FILE}
-                  ${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.hpp
-                  )
-
-endif( ) # PROJECT_CONFIG_FILE
-
-
 # system header dirs
 set(
     PROJECT_SYSTEM_INCLUDE_DIRS
@@ -57,6 +47,36 @@ if ( PROJECT_CUDA_SOURCE )
 
   source_group( "" FILES ${PROJECT_CUDA_SOURCE} )
 
+  set(
+      PROJECT_CUDA_INCLUDE_DIRS
+      ${PROJECT_CUDA_INCLUDE_DIRS}
+
+      ${SHARED_INCLUDE_DIRS}
+      ${SHARED_CUDA_INCLUDE_DIRS}
+      ${SHARED_PATH}/src/cuda
+      )
+
+  set(
+      PROJECT_CUDA_SYSTEM_INCLUDE_DIRS
+      ${PROJECT_CUDA_SYSTEM_INCLUDE_DIRS}
+
+      ${SHARED_SYSTEM_INCLUDE_DIRS}
+      ${SHARED_CUDA_SYSTEM_INCLUDE_DIRS}
+      ${SHARED_PATH}/src/cuda/helpers
+      )
+
+  set(
+      PROJECT_CUDA_LINK_LIBS
+      ${PROJECT_CUDA_LINK_LIBS}
+      ${SHARED_CUDA_LINK_LIBS}
+      )
+
+  set(
+      PROJECT_CUDA_DEP_TARGETS
+      ${PROJECT_CUDA_DEP_TARGETS}
+      ${SHARED_CUDA_DEP_TARGETS}
+      )
+
   # create the cuda library
   find_package( CUDA REQUIRED )
 
@@ -64,9 +84,13 @@ if ( PROJECT_CUDA_SOURCE )
   if ( NOT MSVC )
     set( CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -O3 ${CUDA_COMPUTE_FLAGS} -Wno-deprecated-gpu-targets" )
     set( CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} --compiler-options -fno-strict-aliasing -use_fast_math" )
-  else()
+  else( )
     set( CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} ${CUDA_COMPUTE_FLAGS} -Wno-deprecated-gpu-targets" )
-  endif()
+  endif( )
+
+  if ( FORCE_CUDA_STANDARD )
+    set( CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} --std=c++${FORCE_CUDA_STANDARD}" )
+  endif( )
 
 
   include_directories( ${PROJECT_CUDA_INCLUDE_DIRS} ${PROJECT_BINARY_DIR} )
@@ -84,6 +108,13 @@ if ( PROJECT_CUDA_SOURCE )
 
   target_link_libraries( ${CUDA_LIB} ${PROJECT_CUDA_LINK_LIBS} )
 
+  if ( FORCE_CPP_STANDARD )
+    set_property( TARGET ${CUDA_LIB} PROPERTY CXX_STANDARD ${FORCE_CPP_STANDARD} )
+    set_property( TARGET ${CUDA_LIB} PROPERTY CXX_STANDARD_REQUIRED ON )
+  else()
+    target_compile_features( ${CUDA_LIB} PRIVATE cxx_range_for )
+  endif()
+
   set( PROJECT_LINK_LIBS           ${PROJECT_LINK_LIBS}           ${CUDA_LIB} )
   set( PROJECT_INSTALL_TARGETS     ${PROJECT_INSTALL_TARGETS}     ${CUDA_LIB} )
   set( PROJECT_SYSTEM_INCLUDE_DIRS ${PROJECT_SYSTEM_INCLUDE_DIRS} ${CUDA_INCLUDE_DIRS} )
@@ -99,8 +130,20 @@ if ( PROJECT_CUDA_SOURCE )
 
   endif( )
 
+  set( USE_CUDA ON )
+
 endif( PROJECT_CUDA_SOURCE )
 
+
+
+if ( PROJECT_CONFIG_FILE )
+
+  configure_file (
+                  ${PROJECT_CONFIG_FILE}
+                  ${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.hpp
+                  )
+
+endif( PROJECT_CONFIG_FILE )
 
 
 # compile flags

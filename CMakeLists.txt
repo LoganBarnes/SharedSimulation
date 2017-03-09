@@ -10,6 +10,8 @@ option( USE_OPTIX  "Use optix library"  OFF )
 option( USE_GUI    "Use imgui library"  OFF )
 option( USE_GMOCK  "Use gmock library"  OFF )
 
+option( NO_THIRDPARTY_DOWNLOAD "Assume thirdparty projects have already been downloaded" OFF )
+
 
 set( SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src )
 
@@ -32,7 +34,7 @@ include( cmake/DownloadProject.cmake )
 ################################################
 if ( USE_GLFW )
   # Download and unpack glfw at configure time
-  downloadProject( glfw )
+  downloadProject( glfw ${NO_THIRDPARTY_DOWNLOAD} )
 
   set( GLFW_BUILD_DOCS     OFF CACHE BOOL "" FORCE )
   set( GLFW_BUILD_TESTS    OFF CACHE BOOL "" FORCE )
@@ -195,7 +197,7 @@ endif( )
 ################################################
 if ( USE_GUI )
   # Download and unpack imgui at configure time
-  downloadProject( imgui )
+  downloadProject( imgui ${NO_THIRDPARTY_DOWNLOAD} )
 
   # create lib here before any
   # strict compile flags are set
@@ -261,7 +263,7 @@ endif( USE_GUI )
 ################################################
 if ( USE_GMOCK )
   # Download and unpack googletest at configure time
-  downloadProject( googletest )
+  downloadProject( googletest ${NO_THIRDPARTY_DOWNLOAD} )
 
   # Prevent overriding the parent project's compiler/linker
   # settings on Windows
