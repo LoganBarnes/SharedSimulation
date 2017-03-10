@@ -19,8 +19,7 @@ Driver::Driver(
                World     &world,
                IOHandler &ioHandler
                ) noexcept
-  :
-  world_     ( world )
+  : world_     ( world )
   , ioHandler_ ( ioHandler )
 {}
 
@@ -50,7 +49,6 @@ Driver::printProjectInfo(
 
   std::cout << borders << '\n' << info.str( ) << '\n' << borders << std::endl;
 }
-
 
 
 
