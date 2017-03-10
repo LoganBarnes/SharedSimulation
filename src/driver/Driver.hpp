@@ -71,6 +71,15 @@ public:
                          );
 
 
+
+  /////////////////////////////////////////////
+  /// \brief printProjectInfo
+  /// \param name
+  /////////////////////////////////////////////
+  static
+  void printProjectInfo ( const std::string name );
+
+
 protected:
 
   World     &world_;

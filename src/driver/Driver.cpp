@@ -33,13 +33,12 @@ Driver::Driver(
 /////////////////////////////////////////////
 void
 Driver::printProjectInfo(
-                         std::string name,         ///<
-                         std::string versionMajor, ///<
-                         std::string versionMinor, ///<
-                         std::string versionPatch  ///<
+                         const std::string name,         ///<
+                         const std::string versionMajor, ///<
+                         const std::string versionMinor, ///<
+                         const std::string versionPatch  ///<
                          )
 {
-
   std::stringstream info;
   info << "#  Running "
        << name << " v"
@@ -50,7 +49,25 @@ Driver::printProjectInfo(
   std::string borders( info.str( ).length( ), '#' );
 
   std::cout << borders << '\n' << info.str( ) << '\n' << borders << std::endl;
+}
 
+
+
+
+/////////////////////////////////////////////
+/// \brief Driver::printProjectInfo
+///
+/// \author Logan Barnes
+/////////////////////////////////////////////
+void
+Driver::printProjectInfo( const std::string name )
+{
+  std::stringstream info;
+  info << "#  Running " << name << "  #";
+
+  std::string borders( info.str( ).length( ), '#' );
+
+  std::cout << borders << '\n' << info.str( ) << '\n' << borders << std::endl;
 }
 
 
