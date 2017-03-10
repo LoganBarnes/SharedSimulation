@@ -146,18 +146,29 @@ if ( PROJECT_CONFIG_FILE )
 endif( PROJECT_CONFIG_FILE )
 
 
+## compile flags
+#if ( NOT MSVC AND STRICT_FLAGS )
+#  set( INTENSE_FLAGS "${INTENSE_FLAGS} -pedantic -Wall -Wextra -Wcast-align -Wcast-qual"            )
+#  set( INTENSE_FLAGS "${INTENSE_FLAGS} -Wctor-dtor-privacy -Wdisabled-optimization -Wformat=2"      )
+#  set( INTENSE_FLAGS "${INTENSE_FLAGS} -Winit-self -Wmissing-declarations -Wmissing-include-dirs"   )
+#  set( INTENSE_FLAGS "${INTENSE_FLAGS} -Wold-style-cast -Woverloaded-virtual -Wredundant-decls"     )
+#  set( INTENSE_FLAGS "${INTENSE_FLAGS} -Wshadow -Wsign-conversion -Wsign-promo -Wstrict-overflow=5" )
+#  set( INTENSE_FLAGS "${INTENSE_FLAGS} -Wswitch-default -Wundef -Werror -Wno-unused"                )
+#endif( )
+
+
 # compile flags
 if ( NOT MSVC AND STRICT_FLAGS )
-  set( INTENSE_FLAGS "${INTENSE_FLAGS} -pedantic -Wall -Wextra -Wcast-align -Wcast-qual"            )
-  set( INTENSE_FLAGS "${INTENSE_FLAGS} -Wctor-dtor-privacy -Wdisabled-optimization -Wformat=2"      )
-  set( INTENSE_FLAGS "${INTENSE_FLAGS} -Winit-self -Wmissing-declarations -Wmissing-include-dirs"   )
-  set( INTENSE_FLAGS "${INTENSE_FLAGS} -Wold-style-cast -Woverloaded-virtual -Wredundant-decls"     )
-  set( INTENSE_FLAGS "${INTENSE_FLAGS} -Wshadow -Wsign-conversion -Wsign-promo -Wstrict-overflow=5" )
-  set( INTENSE_FLAGS "${INTENSE_FLAGS} -Wswitch-default -Wundef -Werror -Wno-unused"                )
+  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic -Wall -Wextra -Wcast-align -Wcast-qual"            )
+  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wctor-dtor-privacy -Wdisabled-optimization -Wformat=2"      )
+  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Winit-self -Wmissing-declarations -Wmissing-include-dirs"   )
+  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wold-style-cast -Woverloaded-virtual -Wredundant-decls"     )
+  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wshadow -Wsign-conversion -Wsign-promo -Wstrict-overflow=5" )
+  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wswitch-default -Wundef -Werror -Wno-unused"                )
 endif( )
 
-set( STRICT_DEBUG_FLAGS "${INTENSE_FLAGS}" )
-set( STRICT_RELEASE_FLAGS "${INTENSE_FLAGS} -O3" )
+#set( STRICT_DEBUG_FLAGS "${INTENSE_FLAGS}" )
+#set( STRICT_RELEASE_FLAGS "${INTENSE_FLAGS} -O3" )
 
 
 # make project into library that can be used by multiple executables ( such as test classes )
@@ -175,8 +186,8 @@ if ( PROJECT_SOURCE )
     target_compile_features( ${PROJECT_LIB} PRIVATE cxx_range_for )
   endif()
 
-  target_compile_options ( ${PROJECT_LIB} PUBLIC "$<$<CONFIG:DEBUG>:${INTENSE_DEBUG_FLAGS}>")
-  target_compile_options ( ${PROJECT_LIB} PUBLIC "$<$<CONFIG:RELEASE>:${INTENSE_RELEASE_FLAGS}>")
+#  target_compile_options ( ${PROJECT_LIB} PUBLIC "$<$<CONFIG:DEBUG>:${INTENSE_DEBUG_FLAGS}>")
+#  target_compile_options ( ${PROJECT_LIB} PUBLIC "$<$<CONFIG:RELEASE>:${INTENSE_RELEASE_FLAGS}>")
 
 
   if ( ${DEP_TARGETS} )
@@ -209,8 +220,8 @@ if ( PROJECT_MAIN )
     target_compile_features( ${PROJECT_EXEC} PRIVATE cxx_range_for )
   endif()
 
-  target_compile_options ( ${PROJECT_EXEC} PUBLIC "$<$<CONFIG:DEBUG>:${INTENSE_DEBUG_FLAGS}>")
-  target_compile_options ( ${PROJECT_EXEC} PUBLIC "$<$<CONFIG:RELEASE>:${INTENSE_RELEASE_FLAGS}>")
+#  target_compile_options ( ${PROJECT_EXEC} PUBLIC "$<$<CONFIG:DEBUG>:${INTENSE_DEBUG_FLAGS}>")
+#  target_compile_options ( ${PROJECT_EXEC} PUBLIC "$<$<CONFIG:RELEASE>:${INTENSE_RELEASE_FLAGS}>")
 
   target_include_directories( ${PROJECT_EXEC} PUBLIC
                               ${PROJECT_INCLUDE_DIRS}

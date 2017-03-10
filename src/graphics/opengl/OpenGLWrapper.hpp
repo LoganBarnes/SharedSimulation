@@ -134,6 +134,14 @@ public:
                        const bool        forceOverride = false
                        );
 
+  template< typename T >
+  void updateBuffer (
+                     const std::string bufferName,
+                     const size_t      elementOffset,
+                     const size_t      numElements,
+                     const float      *pDataStart
+                     );
+
 
   void addFramebuffer (
                        const std::string buffer,
@@ -141,7 +149,7 @@ public:
                        GLsizei           height,
                        const std::string texture
                        );
-  void bindFramebuffer ( const std::string name );
+  void bindFramebuffer ( const std::string name = "" );
   void swapFramebuffers (
                          const std::string fbo1,
                          const std::string fbo2
@@ -198,12 +206,6 @@ public:
                          const int         count = 1
                          );
 
-  void setBuffer (
-                  const std::string bufferName,
-                  float            *data,
-                  GLuint            size
-                  );
-
   void swapTextures (
                      const std::string tex1,
                      const std::string tex2
@@ -258,6 +260,14 @@ private:
                           const GLuint       vbo,
                           const VAOSettings &settings
                           ) const;
+
+  template< typename Map >
+  static
+  void _checkItemExists (
+                         const std::string &key,
+                         const Map         &map,
+                         const std::string &mapDiscription = ""
+                         );
 
 
   std::unordered_map< std::string, GLuint > programs_;
@@ -362,6 +372,50 @@ OpenGLWrapper::addIndexBuffer(
 
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 } // OpenGLWrapper::addIndexBuffer
+
+
+
+template< typename T >
+void
+OpenGLWrapper::updateBuffer(
+                            const std::string bufferName,
+                            const size_t      elementOffset,
+                            const size_t      numElements,
+                            const float      *pDataStart
+                            )
+{
+  _checkItemExists( bufferName, buffers_, "buffer" );
+
+  Buffer &buffer = buffers_[ bufferName ];
+  GLuint vao     = _getVAO( buffer );
+
+  glBindBuffer( GL_ARRAY_BUFFER, buffer.vbo );
+  glBindVertexArray( vao );
+  glBufferSubData(
+                  GL_ARRAY_BUFFER,
+                  static_cast< GLintptr >( elementOffset ),
+                  static_cast< GLsizeiptr >( numElements * sizeof( float ) ),
+                  pDataStart
+                  );
+} // OpenGLWrapper::updateBuffer
+
+
+
+template< typename Map >
+void
+OpenGLWrapper::_checkItemExists(
+                                const std::string &key,
+                                const Map         &map,
+                                const std::string &mapDiscription
+                                )
+{
+  if ( map.find( key ) == map.end( ) )
+  {
+    std::stringstream msg;
+    msg << "Item '" << key << "' not found in " << mapDiscription << " map.";
+    throw std::runtime_error( msg.str( ) );
+  }
+}
 
 
 

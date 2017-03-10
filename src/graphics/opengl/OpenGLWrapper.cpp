@@ -15,30 +15,6 @@ namespace graphics
 {
 
 
-namespace
-{
-
-template< typename Map >
-void
-checkItemExists(
-                const std::string &key,
-                const Map         &map,
-                const std::string &mapDiscription = ""
-                )
-{
-  if ( map.find( key ) == map.end( ) )
-  {
-    std::stringstream msg;
-    msg << "Item '" << key << "' not found in " << mapDiscription << " map.";
-    throw std::runtime_error( msg.str( ) );
-  }
-}
-
-
-
-}
-
-
 ///
 /// \brief OpenGLWrapper::OpenGLWrapper
 ///
@@ -130,7 +106,7 @@ OpenGLWrapper::initContext(
 GLuint
 OpenGLWrapper::getTexture( const std::string name )
 {
-  checkItemExists( name, textures_, "texture" );
+  _checkItemExists( name, textures_, "texture" );
   return textures_[ name ];
 }
 
@@ -139,7 +115,7 @@ OpenGLWrapper::getTexture( const std::string name )
 GLuint
 OpenGLWrapper::getBuffer( const std::string name )
 {
-  checkItemExists( name, buffers_, "buffer" );
+  _checkItemExists( name, buffers_, "buffer" );
   return buffers_[ name ].vbo;
 }
 
@@ -250,7 +226,7 @@ OpenGLWrapper::_addVAOToBuffer(
   glGenVertexArrays( 1, &vao );
   glBindVertexArray( vao );
 
-  checkItemExists( settings.program, programs_, "programs" );
+  _checkItemExists( settings.program, programs_, "programs" );
 
   const GLuint &program = programs_.at( settings.program );
 
@@ -318,7 +294,7 @@ OpenGLWrapper::addFramebuffer(
                               )
 
 {
-  checkItemExists( texture, textures_, "textures" );
+  _checkItemExists( texture, textures_, "textures" );
 
   if ( framebuffers_.find( buffer ) != framebuffers_.end( ) )
   {
@@ -374,8 +350,8 @@ OpenGLWrapper::swapFramebuffers(
                                 const std::string fbo2
                                 )
 {
-  checkItemExists( fbo1, framebuffers_, "framebuffer" );
-  checkItemExists( fbo2, framebuffers_, "framebuffer" );
+  _checkItemExists( fbo1, framebuffers_, "framebuffer" );
+  _checkItemExists( fbo2, framebuffers_, "framebuffer" );
 
   FrameBuffer temp = framebuffers_[ fbo1 ];
 
@@ -419,7 +395,7 @@ OpenGLWrapper::clearWindow(
 void
 OpenGLWrapper::useProgram( const std::string program )
 {
-  checkItemExists( program, programs_, "programs" );
+  _checkItemExists( program, programs_, "programs" );
   glUseProgram( programs_[ program ] );
 }
 
@@ -433,8 +409,8 @@ OpenGLWrapper::setTextureUniform(
                                  int               activeTex
                                  )
 {
-  checkItemExists( program, programs_, "programs" );
-  checkItemExists( texture, textures_, "textures" );
+  _checkItemExists( program, programs_, "programs" );
+  _checkItemExists( texture, textures_, "textures" );
 
   switch ( activeTex )
   {
@@ -461,7 +437,6 @@ OpenGLWrapper::setTextureUniform(
 
 
 
-
 void
 OpenGLWrapper::renderBuffer(
                             const std::string buffer,
@@ -475,7 +450,7 @@ OpenGLWrapper::renderBuffer(
 {
   const bool usingIBO = ibo.length( ) > 0;
 
-  checkItemExists( buffer, buffers_, "buffer" );
+  _checkItemExists( buffer, buffers_, "buffer" );
 
   GLuint vao = _getVAO( buffers_[ buffer ] );
 
@@ -484,7 +459,7 @@ OpenGLWrapper::renderBuffer(
 
   if ( usingIBO )
   {
-    checkItemExists( ibo, indexBuffers_, "indexBuffer" );
+    _checkItemExists( ibo, indexBuffers_, "indexBuffer" );
 
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, indexBuffers_[ ibo ] );
     glDrawElements( mode, verts, iboType, pOffset );
@@ -501,37 +476,13 @@ OpenGLWrapper::renderBuffer(
 
 
 void
-OpenGLWrapper::setBuffer(
-                         const std::string bufferName,
-                         float            *data,
-                         GLuint            size
-                         )
-{
-  checkItemExists( bufferName, buffers_, "buffer" );
-
-  Buffer &buffer = buffers_[ bufferName ];
-  GLuint vao     = _getVAO( buffer );
-
-  glBindBuffer( GL_ARRAY_BUFFER, buffer.vbo );
-  glBindVertexArray( vao );
-  glBufferSubData(
-                  GL_ARRAY_BUFFER,
-                  0,
-                  static_cast< GLsizeiptr >( size * sizeof( float ) ),
-                  data
-                  );
-}
-
-
-
-void
 OpenGLWrapper::setBoolUniform(
                               const std::string program,
                               const std::string uniform,
                               bool              var
                               )
 {
-  checkItemExists( program, programs_, "programs" );
+  _checkItemExists( program, programs_, "programs" );
   glUniform1i( glGetUniformLocation( programs_[ program ], uniform.c_str( ) ), var );
 }
 
@@ -544,7 +495,7 @@ OpenGLWrapper::setIntUniform(
                              int               value
                              )
 {
-  checkItemExists( program, programs_, "programs" );
+  _checkItemExists( program, programs_, "programs" );
   glUniform1i( glGetUniformLocation( programs_[ program ], uniform.c_str( ) ), value );
 }
 
@@ -559,7 +510,7 @@ OpenGLWrapper::setFloatUniform(
                                const int         count
                                )
 {
-  checkItemExists( program, programs_, "programs" );
+  _checkItemExists( program, programs_, "programs" );
 
   switch ( size )
   {
@@ -601,7 +552,7 @@ OpenGLWrapper::setMatrixUniform(
                                 const int         count
                                 )
 {
-  checkItemExists( program, programs_, "programs" );
+  _checkItemExists( program, programs_, "programs" );
 
   switch ( size )
   {
@@ -650,8 +601,8 @@ OpenGLWrapper::swapTextures(
                             const std::string tex2
                             )
 {
-  checkItemExists( tex1, textures_, "textures" );
-  checkItemExists( tex2, textures_, "textures" );
+  _checkItemExists( tex1, textures_, "textures" );
+  _checkItemExists( tex2, textures_, "textures" );
 
   GLuint temp = textures_[ tex1 ];
 
