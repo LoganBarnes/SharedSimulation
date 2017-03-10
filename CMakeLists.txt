@@ -63,10 +63,16 @@ if ( USE_GLFW )
       ADDITIONAL_SOURCE
       ${ADDITIONAL_SOURCE}
 
+      ${SRC_DIR}/graphics/glfw/Callback.hpp
+      ${SRC_DIR}/graphics/glfw/CallbackSingleton.hpp
       ${SRC_DIR}/graphics/glfw/CallbackSingleton.cpp
+      ${SRC_DIR}/graphics/glfw/GlfwWrapper.hpp
       ${SRC_DIR}/graphics/glfw/GlfwWrapper.cpp
+      ${SRC_DIR}/graphics/opengl/OpenGLWrapper.hpp
       ${SRC_DIR}/graphics/opengl/OpenGLWrapper.cpp
+      ${SRC_DIR}/io/OpenGLIOHandler.hpp
       ${SRC_DIR}/io/OpenGLIOHandler.cpp
+      ${SRC_DIR}/io/SharedCallback.hpp
       ${SRC_DIR}/io/SharedCallback.cpp
       ${THIRDPARTY}/glad/src/glad.c
       )
@@ -97,7 +103,9 @@ if ( USE_VULKAN )
       ADDITIONAL_SOURCE
       ${ADDITIONAL_SOURCE}
 
+      ${SRC_DIR}/graphics/vulkan/VulkanGlfwWrapper.hpp
       ${SRC_DIR}/graphics/vulkan/VulkanGlfwWrapper.cpp
+      ${SRC_DIR}/io/VulkanIOHandler.hpp
       ${SRC_DIR}/io/VulkanIOHandler.cpp
       )
 
@@ -247,7 +255,9 @@ if ( USE_GUI )
       ADDITIONAL_SOURCE
       ${ADDITIONAL_SOURCE}
 
+      ${SRC_DIR}/io/ImguiOpenGLIOHandler.hpp
       ${SRC_DIR}/io/ImguiOpenGLIOHandler.cpp
+      ${SRC_DIR}/io/ImguiCallback.hpp
       ${SRC_DIR}/io/ImguiCallback.cpp
       )
 
@@ -323,17 +333,24 @@ set(
     ${ADDITIONAL_SOURCE}
 
     # driver
+    ${SRC_DIR}/driver/Driver.hpp
     ${SRC_DIR}/driver/Driver.cpp
+    ${SRC_DIR}/driver/ContinuousDriver.hpp
     ${SRC_DIR}/driver/ContinuousDriver.cpp
+    ${SRC_DIR}/driver/EventDriver.hpp
     ${SRC_DIR}/driver/EventDriver.cpp
 
     # rendering
+    ${SRC_DIR}/io/IOHandler.hpp
     ${SRC_DIR}/io/IOHandler.cpp
 
     # graphics
+    ${SRC_DIR}/graphics/GraphicsForwardDeclarations.hpp
+    ${SRC_DIR}/graphics/Camera.hpp
     ${SRC_DIR}/graphics/Camera.cpp
 
     # world
+    ${SRC_DIR}/world/World.hpp
     ${SRC_DIR}/world/World.cpp
     )
 

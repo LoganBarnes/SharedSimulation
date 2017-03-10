@@ -5,17 +5,7 @@
 #include <memory>
 #include "io/IOHandler.hpp"
 
-
-namespace graphics
-{
-
-class GlfwWrapper;
-class OpenGLWrapper;
-
-template< typename T >
-class Camera;
-
-}
+#include "graphics/GraphicsForwardDeclarations.hpp"
 
 
 namespace shared

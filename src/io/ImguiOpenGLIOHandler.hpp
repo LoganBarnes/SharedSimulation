@@ -6,17 +6,6 @@
 #include "io/OpenGLIOHandler.hpp"
 
 
-namespace graphics
-{
-
-class GlfwWrapper;
-class OpenGLWrapper;
-
-template< typename T >
-class Camera;
-
-}
-
 
 namespace shared
 {
