@@ -32,21 +32,15 @@ ImguiCallback::~ImguiCallback( )
 void
 ImguiCallback::setCallback( std::unique_ptr< graphics::Callback > upCallback )
 {
-
   if ( upCallback )
   {
-
     if ( upCallback_ )
     {
-
       upCallback_.release( );
-
     }
 
     upCallback_ = std::move( upCallback );
-
   }
-
 } // ImguiCallback::setCallback
 
 
@@ -58,9 +52,7 @@ ImguiCallback::setCallback( std::unique_ptr< graphics::Callback > upCallback )
 void
 ImguiCallback::setEventHandler( IOHandler *pEventDrivenIO )
 {
-
   pEventDrivenIO_ = pEventDrivenIO;
-
 }
 
 
@@ -78,22 +70,16 @@ ImguiCallback::handleWindowSize(
                                 int         height
                                 )
 {
-
   if ( upCallback_ )
   {
-
     upCallback_->handleWindowSize( pWindow, width, height );
-
   }
 
   if ( pEventDrivenIO_ )
   {
-
     pEventDrivenIO_->showWorld( );
-
   }
-
-}
+} // ImguiCallback::handleWindowSize
 
 
 
@@ -112,34 +98,25 @@ ImguiCallback::handleMouseButton(
                                  int         mods
                                  )
 {
-
   ImGuiIO &io = ImGui::GetIO( );
 
   if ( !io.WantCaptureMouse && upCallback_ )
   {
-
     upCallback_->handleMouseButton( pWindow, button, action, mods );
-
   }
-  else if ( io.WantCaptureMouse )
+  else
+  if ( io.WantCaptureMouse )
   {
-
     if ( action == GLFW_PRESS && button >= 0 && button < 3 )
     {
-
       io.MouseDown[ button ] = true;
-
     }
-
   }
 
   if ( pEventDrivenIO_ )
   {
-
     pEventDrivenIO_->showWorld( );
-
   }
-
 } // ImguiCallback::handleMouseButton
 
 
@@ -161,47 +138,35 @@ ImguiCallback::handleKey(
                          int         mods
                          )
 {
-
   ImGuiIO &io = ImGui::GetIO( );
 
   if ( !io.WantCaptureKeyboard && upCallback_ )
   {
-
     upCallback_->handleKey( pWindow, key, scancode, action, mods );
-
   }
   else
   if ( io.WantCaptureKeyboard )
   {
-
     if ( action == GLFW_PRESS )
     {
-
       io.KeysDown[ key ] = true;
-
     }
     else
     if ( action == GLFW_RELEASE )
     {
-
       io.KeysDown[ key ] = false;
-
     }
 
     io.KeyCtrl  = io.KeysDown[ GLFW_KEY_LEFT_CONTROL ] || io.KeysDown[ GLFW_KEY_RIGHT_CONTROL ];
     io.KeyShift = io.KeysDown[ GLFW_KEY_LEFT_SHIFT   ] || io.KeysDown[ GLFW_KEY_RIGHT_SHIFT   ];
     io.KeyAlt   = io.KeysDown[ GLFW_KEY_LEFT_ALT     ] || io.KeysDown[ GLFW_KEY_RIGHT_ALT     ];
     io.KeySuper = io.KeysDown[ GLFW_KEY_LEFT_SUPER   ] || io.KeysDown[ GLFW_KEY_RIGHT_SUPER   ];
-
   }
 
   if ( pEventDrivenIO_ )
   {
-
     pEventDrivenIO_->showWorld( );
-
   }
-
 } // ImguiCallback::handleKey
 
 
@@ -219,24 +184,18 @@ ImguiCallback::handleCursorPosition(
                                     double      ypos
                                     )
 {
-
   ImGuiIO &io = ImGui::GetIO( );
 
   if ( !io.WantCaptureMouse && upCallback_ )
   {
-
     upCallback_->handleCursorPosition( pWindow, xpos, ypos );
-
   }
 
   if ( pEventDrivenIO_ )
   {
-
     pEventDrivenIO_->showWorld( );
-
   }
-
-}
+} // ImguiCallback::handleCursorPosition
 
 
 
@@ -253,30 +212,22 @@ ImguiCallback::handleScroll(
                             double      yoffset
                             )
 {
-
   ImGuiIO &io = ImGui::GetIO( );
 
   if ( !io.WantCaptureMouse && upCallback_ )
   {
-
     upCallback_->handleScroll( pWindow, xoffset, yoffset );
-
   }
   else
   if ( io.WantCaptureMouse )
   {
-
     io.MouseWheel += static_cast< float >( yoffset ); // the fractional mouse wheel. 1.0 unit 5 lines
-
   }
 
   if ( pEventDrivenIO_ )
   {
-
     pEventDrivenIO_->showWorld( );
-
   }
-
 } // ImguiCallback::handleScroll
 
 
@@ -292,24 +243,18 @@ ImguiCallback::handleChar(
                           unsigned codepoint
                           )
 {
-
   ImGuiIO &io = ImGui::GetIO( );
 
   if ( io.WantCaptureKeyboard && codepoint > 0 && codepoint < 0x10000 )
   {
-
     io.AddInputCharacter( static_cast< unsigned short >( codepoint ) );
-
   }
 
   if ( pEventDrivenIO_ )
   {
-
     pEventDrivenIO_->showWorld( );
-
   }
-
-}
+} // ImguiCallback::handleChar
 
 
 

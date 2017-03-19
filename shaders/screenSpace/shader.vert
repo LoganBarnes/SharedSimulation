@@ -16,9 +16,7 @@ out gl_PerVertex
 
 void main( void )
 {
-
   screenPos = inScreenPos;
 
   gl_Position = vec4( screenPos, 1.0 );
-
 }

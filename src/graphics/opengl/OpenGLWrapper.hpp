@@ -139,7 +139,8 @@ public:
                      const std::string bufferName,
                      const size_t      elementOffset,
                      const size_t      numElements,
-                     const float      *pDataStart
+                     const float      *pDataStart,
+                     const GLenum      bufferType = GL_ARRAY_BUFFER
                      );
 
 
@@ -381,18 +382,17 @@ OpenGLWrapper::updateBuffer(
                             const std::string bufferName,
                             const size_t      elementOffset,
                             const size_t      numElements,
-                            const float      *pDataStart
+                            const float      *pDataStart,
+                            const GLenum      bufferType
                             )
 {
   _checkItemExists( bufferName, buffers_, "buffer" );
 
   Buffer &buffer = buffers_[ bufferName ];
-  GLuint vao     = _getVAO( buffer );
 
-  glBindBuffer( GL_ARRAY_BUFFER, buffer.vbo );
-  glBindVertexArray( vao );
+  glBindBuffer( bufferType, buffer.vbo );
   glBufferSubData(
-                  GL_ARRAY_BUFFER,
+                  bufferType,
                   static_cast< GLintptr >( elementOffset ),
                   static_cast< GLsizeiptr >( numElements * sizeof( float ) ),
                   pDataStart
