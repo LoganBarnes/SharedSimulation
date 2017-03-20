@@ -389,11 +389,9 @@ OpenGLWrapper::updateBuffer(
   _checkItemExists( bufferName, buffers_, "buffer" );
 
   Buffer &buffer = buffers_[ bufferName ];
-  GLuint vao     = _getVAO( buffer );
 
   constexpr auto floatSize = sizeof( float );
 
-  glBindVertexArray( vao );
   glBindBuffer( bufferType, buffer.vbo );
   glBufferSubData(
                   bufferType,
@@ -402,7 +400,6 @@ OpenGLWrapper::updateBuffer(
                   pData
                   );
 
-  glBindVertexArray( 0 );
   glBindBuffer( bufferType, 0 );
 } // OpenGLWrapper::updateBuffer
 
