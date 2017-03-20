@@ -139,7 +139,7 @@ public:
                      const std::string bufferName,
                      const size_t      elementOffset,
                      const size_t      numElements,
-                     const float      *pDataStart,
+                     const float      *pData,
                      const GLenum      bufferType = GL_ARRAY_BUFFER
                      );
 
@@ -315,7 +315,8 @@ OpenGLWrapper::addBuffer(
     }
 
     Buffer &buffer = buffers_[ name ];
-    glDeleteBuffers( 1, &( buffer.vbo ) );
+    vaoMap_.erase( buffer.vbo );
+    glDeleteBuffers( 1, &buffer.vbo );
   }
 
   Buffer &buffer = buffers_[ name ];
@@ -332,7 +333,6 @@ OpenGLWrapper::addBuffer(
   glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
   buffer.settings = settings;
-
 } // OpenGLWrapper::addBuffer
 
 
@@ -357,7 +357,7 @@ OpenGLWrapper::addIndexBuffer(
     }
 
     GLuint &ibo = indexBuffers_[ name ];
-    glDeleteBuffers( 1, &( ibo ) );
+    glDeleteBuffers( 1, &ibo );
   }
 
   GLuint &ibo = indexBuffers_[ name ];
@@ -382,21 +382,28 @@ OpenGLWrapper::updateBuffer(
                             const std::string bufferName,
                             const size_t      elementOffset,
                             const size_t      numElements,
-                            const float      *pDataStart,
+                            const float      *pData,
                             const GLenum      bufferType
                             )
 {
   _checkItemExists( bufferName, buffers_, "buffer" );
 
   Buffer &buffer = buffers_[ bufferName ];
+  GLuint vao     = _getVAO( buffer );
 
+  constexpr auto floatSize = sizeof( float );
+
+  glBindVertexArray( vao );
   glBindBuffer( bufferType, buffer.vbo );
   glBufferSubData(
                   bufferType,
-                  static_cast< GLintptr >( elementOffset ),
-                  static_cast< GLsizeiptr >( numElements * sizeof( float ) ),
-                  pDataStart
+                  static_cast< GLintptr >( elementOffset * floatSize ),
+                  static_cast< GLsizeiptr >( numElements * floatSize ),
+                  pData
                   );
+
+  glBindVertexArray( 0 );
+  glBindBuffer( bufferType, 0 );
 } // OpenGLWrapper::updateBuffer
 
 
