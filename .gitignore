@@ -11,6 +11,7 @@
 # Compiled Source #
 ###################
 *.o
+_build/
 build/
 # cuda
 *.ptx

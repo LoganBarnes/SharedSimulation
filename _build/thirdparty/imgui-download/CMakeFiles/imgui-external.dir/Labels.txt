@@ -1,0 +1,14 @@
+# Target labels
+ imgui-external
+# Source files and their labels
+/Users/Logan/Documents/projects/cpp/playground/shared/_build/thirdparty/imgui-download/CMakeFiles/imgui-external
+/Users/Logan/Documents/projects/cpp/playground/shared/_build/thirdparty/imgui-download/CMakeFiles/imgui-external.rule
+/Users/Logan/Documents/projects/cpp/playground/shared/_build/thirdparty/imgui-download/CMakeFiles/imgui-external-complete.rule
+/Users/Logan/Documents/projects/cpp/playground/shared/_build/thirdparty/imgui-download/imgui-external-prefix/src/imgui-external-stamp/imgui-external-install.rule
+/Users/Logan/Documents/projects/cpp/playground/shared/_build/thirdparty/imgui-download/imgui-external-prefix/src/imgui-external-stamp/imgui-external-mkdir.rule
+/Users/Logan/Documents/projects/cpp/playground/shared/_build/thirdparty/imgui-download/imgui-external-prefix/src/imgui-external-stamp/imgui-external-download.rule
+/Users/Logan/Documents/projects/cpp/playground/shared/_build/thirdparty/imgui-download/imgui-external-prefix/src/imgui-external-stamp/imgui-external-update.rule
+/Users/Logan/Documents/projects/cpp/playground/shared/_build/thirdparty/imgui-download/imgui-external-prefix/src/imgui-external-stamp/imgui-external-patch.rule
+/Users/Logan/Documents/projects/cpp/playground/shared/_build/thirdparty/imgui-download/imgui-external-prefix/src/imgui-external-stamp/imgui-external-configure.rule
+/Users/Logan/Documents/projects/cpp/playground/shared/_build/thirdparty/imgui-download/imgui-external-prefix/src/imgui-external-stamp/imgui-external-build.rule
+/Users/Logan/Documents/projects/cpp/playground/shared/_build/thirdparty/imgui-download/imgui-external-prefix/src/imgui-external-stamp/imgui-external-test.rule

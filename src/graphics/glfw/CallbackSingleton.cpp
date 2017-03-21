@@ -1,6 +1,6 @@
 #include "CallbackSingleton.hpp"
 #include <istream>
-#include "Callback.hpp"
+#include "shared/Callback.hpp"
 #include "GLFW/glfw3.h"
 
 

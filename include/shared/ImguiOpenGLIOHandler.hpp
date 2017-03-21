@@ -3,7 +3,7 @@
 
 
 #include <memory>
-#include "io/OpenGLIOHandler.hpp"
+#include "shared/OpenGLIOHandler.hpp"
 
 
 

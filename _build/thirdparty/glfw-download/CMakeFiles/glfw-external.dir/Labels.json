@@ -1,0 +1,55 @@
+
+{
+	"sources" : 
+	[
+		
+		{
+			"file" : "/Users/Logan/Documents/projects/cpp/playground/shared/_build/thirdparty/glfw-download/CMakeFiles/glfw-external"
+		},
+		
+		{
+			"file" : "/Users/Logan/Documents/projects/cpp/playground/shared/_build/thirdparty/glfw-download/CMakeFiles/glfw-external.rule"
+		},
+		
+		{
+			"file" : "/Users/Logan/Documents/projects/cpp/playground/shared/_build/thirdparty/glfw-download/CMakeFiles/glfw-external-complete.rule"
+		},
+		
+		{
+			"file" : "/Users/Logan/Documents/projects/cpp/playground/shared/_build/thirdparty/glfw-download/glfw-external-prefix/src/glfw-external-stamp/glfw-external-install.rule"
+		},
+		
+		{
+			"file" : "/Users/Logan/Documents/projects/cpp/playground/shared/_build/thirdparty/glfw-download/glfw-external-prefix/src/glfw-external-stamp/glfw-external-mkdir.rule"
+		},
+		
+		{
+			"file" : "/Users/Logan/Documents/projects/cpp/playground/shared/_build/thirdparty/glfw-download/glfw-external-prefix/src/glfw-external-stamp/glfw-external-download.rule"
+		},
+		
+		{
+			"file" : "/Users/Logan/Documents/projects/cpp/playground/shared/_build/thirdparty/glfw-download/glfw-external-prefix/src/glfw-external-stamp/glfw-external-update.rule"
+		},
+		
+		{
+			"file" : "/Users/Logan/Documents/projects/cpp/playground/shared/_build/thirdparty/glfw-download/glfw-external-prefix/src/glfw-external-stamp/glfw-external-patch.rule"
+		},
+		
+		{
+			"file" : "/Users/Logan/Documents/projects/cpp/playground/shared/_build/thirdparty/glfw-download/glfw-external-prefix/src/glfw-external-stamp/glfw-external-configure.rule"
+		},
+		
+		{
+			"file" : "/Users/Logan/Documents/projects/cpp/playground/shared/_build/thirdparty/glfw-download/glfw-external-prefix/src/glfw-external-stamp/glfw-external-build.rule"
+		},
+		
+		{
+			"file" : "/Users/Logan/Documents/projects/cpp/playground/shared/_build/thirdparty/glfw-download/glfw-external-prefix/src/glfw-external-stamp/glfw-external-test.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : [ "glfw-external" ],
+		"name" : "glfw-external"
+	}
+}

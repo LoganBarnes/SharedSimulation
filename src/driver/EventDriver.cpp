@@ -1,9 +1,9 @@
-#include "EventDriver.hpp"
+#include "shared/EventDriver.hpp"
 
 #include <iostream>
 
-#include "world/World.hpp"
-#include "io/IOHandler.hpp"
+#include "shared/World.hpp"
+#include "shared/IOHandler.hpp"
 
 
 namespace shared

@@ -1,4 +1,4 @@
-#include "GlfwWrapper.hpp"
+#include "shared/GlfwWrapper.hpp"
 
 #include <iostream>
 
@@ -8,7 +8,7 @@
 #include "GLFW/glfw3.h"
 
 #include "CallbackSingleton.hpp"
-#include "Callback.hpp"
+#include "shared/Callback.hpp"
 
 
 namespace graphics

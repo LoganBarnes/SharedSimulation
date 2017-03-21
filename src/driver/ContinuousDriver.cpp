@@ -1,9 +1,9 @@
-#include "ContinuousDriver.hpp"
+#include "shared/ContinuousDriver.hpp"
 
 #include <iostream>
 
-#include "world/World.hpp"
-#include "io/IOHandler.hpp"
+#include "shared/World.hpp"
+#include "shared/IOHandler.hpp"
 
 
 

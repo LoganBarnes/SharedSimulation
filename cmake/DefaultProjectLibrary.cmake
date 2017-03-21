@@ -27,13 +27,6 @@ set(
     ${SHARED_INCLUDE_DIRS}
     )
 
-# cpp files
-set(
-    PROJECT_SOURCE
-    ${PROJECT_SOURCE}
-    ${SHARED_SOURCE}
-    )
-
 
 set ( PROJECT_INCLUDE_DIRS ${PROJECT_INCLUDE_DIRS} ${PROJECT_BINARY_DIR} )
 
@@ -146,25 +139,14 @@ if ( PROJECT_CONFIG_FILE )
 endif( PROJECT_CONFIG_FILE )
 
 
-## compile flags
-#if ( NOT MSVC AND STRICT_FLAGS )
-#  set( INTENSE_FLAGS "${INTENSE_FLAGS} -pedantic -Wall -Wextra -Wcast-align -Wcast-qual"            )
-#  set( INTENSE_FLAGS "${INTENSE_FLAGS} -Wctor-dtor-privacy -Wdisabled-optimization -Wformat=2"      )
-#  set( INTENSE_FLAGS "${INTENSE_FLAGS} -Winit-self -Wmissing-declarations -Wmissing-include-dirs"   )
-#  set( INTENSE_FLAGS "${INTENSE_FLAGS} -Wold-style-cast -Woverloaded-virtual -Wredundant-decls"     )
-#  set( INTENSE_FLAGS "${INTENSE_FLAGS} -Wshadow -Wsign-conversion -Wsign-promo -Wstrict-overflow=5" )
-#  set( INTENSE_FLAGS "${INTENSE_FLAGS} -Wswitch-default -Wundef -Werror -Wno-unused"                )
-#endif( )
-
-
 # compile flags
 if ( NOT MSVC AND STRICT_FLAGS )
-  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic -Wall -Wextra -Wcast-align -Wcast-qual"            )
-  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wctor-dtor-privacy -Wdisabled-optimization -Wformat=2"      )
-  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Winit-self -Wmissing-declarations -Wmissing-include-dirs"   )
-  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wold-style-cast -Woverloaded-virtual -Wredundant-decls"     )
-  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wshadow -Wsign-conversion -Wsign-promo -Wstrict-overflow=5" )
-  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wswitch-default -Wundef -Werror -Wno-unused"                )
+  set( INTENSE_FLAGS "${INTENSE_FLAGS} -pedantic -Wall -Wextra -Wcast-align -Wcast-qual"            )
+  set( INTENSE_FLAGS "${INTENSE_FLAGS} -Wctor-dtor-privacy -Wdisabled-optimization -Wformat=2"      )
+  set( INTENSE_FLAGS "${INTENSE_FLAGS} -Winit-self -Wmissing-declarations -Wmissing-include-dirs"   )
+  set( INTENSE_FLAGS "${INTENSE_FLAGS} -Wold-style-cast -Woverloaded-virtual -Wredundant-decls"     )
+  set( INTENSE_FLAGS "${INTENSE_FLAGS} -Wshadow -Wsign-conversion -Wsign-promo -Wstrict-overflow=5" )
+  set( INTENSE_FLAGS "${INTENSE_FLAGS} -Wswitch-default -Wundef -Werror -Wno-unused"                )
 endif( )
 
 #set( STRICT_DEBUG_FLAGS "${INTENSE_FLAGS}" )
@@ -186,9 +168,9 @@ if ( PROJECT_SOURCE )
     target_compile_features( ${PROJECT_LIB} PRIVATE cxx_range_for )
   endif()
 
-#  target_compile_options ( ${PROJECT_LIB} PUBLIC "$<$<CONFIG:DEBUG>:${INTENSE_DEBUG_FLAGS}>")
-#  target_compile_options ( ${PROJECT_LIB} PUBLIC "$<$<CONFIG:RELEASE>:${INTENSE_RELEASE_FLAGS}>")
-
+  if ( INTENSE_FLAGS )
+    set_target_properties( ${PROJECT_LIB} PROPERTIES COMPILE_FLAGS ${INTENSE_FLAGS} )
+  endif( )
 
   if ( ${DEP_TARGETS} )
     add_dependencies ( ${PROJECT_LIB} ${DEP_TARGETS} )
@@ -220,8 +202,9 @@ if ( PROJECT_MAIN )
     target_compile_features( ${PROJECT_EXEC} PRIVATE cxx_range_for )
   endif()
 
-#  target_compile_options ( ${PROJECT_EXEC} PUBLIC "$<$<CONFIG:DEBUG>:${INTENSE_DEBUG_FLAGS}>")
-#  target_compile_options ( ${PROJECT_EXEC} PUBLIC "$<$<CONFIG:RELEASE>:${INTENSE_RELEASE_FLAGS}>")
+  if ( INTENSE_FLAGS )
+    set_target_properties( ${PROJECT_EXEC} PROPERTIES COMPILE_FLAGS ${INTENSE_FLAGS} )
+  endif( )
 
   target_include_directories( ${PROJECT_EXEC} PUBLIC
                               ${PROJECT_INCLUDE_DIRS}
@@ -259,7 +242,7 @@ endif()
 # testing
 if ( BUILD_TESTS AND TESTING_SOURCE )
 
-  include_directories( ${GTEST_INCLUDE_DIRS} )
+  # include_directories( ${GTEST_INCLUDE_DIRS} )
 
   set( PROJECT_UNIT_TESTS test${PROJECT_NAME} )
 
@@ -268,15 +251,24 @@ if ( BUILD_TESTS AND TESTING_SOURCE )
   target_include_directories( ${PROJECT_UNIT_TESTS} SYSTEM PUBLIC ${TESTING_SYSTEM_INCLUDE_DIRS} )
   target_include_directories( ${PROJECT_UNIT_TESTS}        PUBLIC ${TESTING_INCLUDE_DIRS}        )
 
-  target_link_libraries( ${PROJECT_UNIT_TESTS} ${TESTING_LINK_LIBS}   )
+  target_link_libraries( ${PROJECT_UNIT_TESTS} ${TESTING_LINK_LIBS} gmock gmock_main ${PROJECT_LIB} )
 
-  target_compile_features( ${PROJECT_UNIT_TESTS} PRIVATE cxx_range_for )
+  if ( FORCE_CPP_STANDARD )
+    set_property( TARGET ${PROJECT_UNIT_TESTS} PROPERTY CXX_STANDARD ${FORCE_CPP_STANDARD} )
+    set_property( TARGET ${PROJECT_UNIT_TESTS} PROPERTY CXX_STANDARD_REQUIRED ON )
+  else()
+    target_compile_features( ${PROJECT_UNIT_TESTS} PRIVATE cxx_range_for )
+  endif()
+
+  if ( INTENSE_FLAGS )
+    set_target_properties( ${PROJECT_UNIT_TESTS} PROPERTIES COMPILE_FLAGS ${INTENSE_FLAGS} )
+  endif( )
 
   if ( ${DEP_TARGETS} )
-
-    add_dependencies ( ${PROJECT_UNIT_TESTS} ${TESTING_DEP_TARGETS} )
-
+    add_dependencies ( ${PROJECT_UNIT_TESTS} ${TESTING_DEP_TARGETS} gmock gmock_main ${PROJECT_LIB} )
   endif( )
+
+  # set_property( TARGET ${PROJECT_UNIT_TESTS} PROPERTY INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/lib )
 
   # Adds logic to INSTALL.vcproj to copy ${PROJECT_EXEC}.exe to destination directory
   install(

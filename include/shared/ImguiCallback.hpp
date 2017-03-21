@@ -3,7 +3,7 @@
 
 
 #include <memory>
-#include "graphics/glfw/Callback.hpp"
+#include "shared/Callback.hpp"
 
 
 namespace shared

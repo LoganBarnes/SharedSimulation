@@ -1,4 +1,4 @@
-#include "graphics/Camera.hpp"
+#include "shared/Camera.hpp"
 
 #define GLFORCE_RADIANS_
 #include "glm/gtx/rotate_vector.hpp"

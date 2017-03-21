@@ -2,7 +2,7 @@
 #pragma once
 
 
-#include "graphics/glfw/Callback.hpp"
+#include "shared/Callback.hpp"
 
 
 namespace shared

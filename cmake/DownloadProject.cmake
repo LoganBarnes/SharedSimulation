@@ -1,11 +1,12 @@
-
-
-function( DownloadProject projectName noDownload )
+#
+#
+#
+function( DownloadProject cmakeFile projectName noDownload )
 
   if ( NOT ${noDownload} )
 
     # Download and unpack ${projectName} at configure time
-    configure_file( cmake/CMakeLists.txt.${projectName} ${CMAKE_CURRENT_BINARY_DIR}/${projectName}-download/CMakeLists.txt )
+    configure_file( ${cmakeFile} ${CMAKE_CURRENT_BINARY_DIR}/${projectName}-download/CMakeLists.txt )
     execute_process( COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
                      RESULT_VARIABLE result
                      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${projectName}-download )

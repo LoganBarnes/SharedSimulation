@@ -13,71 +13,45 @@ option( USE_GMOCK  "Use gmock library"  OFF )
 option( NO_THIRDPARTY_DOWNLOAD "Assume thirdparty projects have already been downloaded" OFF )
 
 
-set( SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src )
+set( SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src     )
+set( INC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include )
 
 # other paths
 set( THIRDPARTY ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty )
 
+add_subdirectory( ${THIRDPARTY} )
 
 configure_file (
                 ${SRC_DIR}/common/SharedSimulationConfig.hpp.in
                 ${PROJECT_BINARY_DIR}/SharedSimulationConfig.hpp
                 )
 
-
 set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
 
-include( cmake/DownloadProject.cmake )
 
 ################################################
 # add glfw3 functionality
 ################################################
 if ( USE_GLFW )
-  # Download and unpack glfw at configure time
-  downloadProject( glfw ${NO_THIRDPARTY_DOWNLOAD} )
-
-  set( GLFW_BUILD_DOCS     OFF CACHE BOOL "" FORCE )
-  set( GLFW_BUILD_TESTS    OFF CACHE BOOL "" FORCE )
-  set( GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE )
-
-  add_subdirectory( ${CMAKE_BINARY_DIR}/glfw-src
-                    ${CMAKE_BINARY_DIR}/glfw-build )
-
-  # glfw and glad header dir
-  set(
-      SYSTEM_INCLUDE_DIRS
-      ${SYSTEM_INCLUDE_DIRS}
-
-      ${CMAKE_BINARY_DIR}/glfw-src/include
-      ${THIRDPARTY}/include
-      )
-
-  # glfw lib
-  set( LINK_LIBS ${LINK_LIBS} glfw )
-
-  # must be built before project lib
-  set( DEP_TARGETS glfw )
 
   # common wrapper functions
   set(
       ADDITIONAL_SOURCE
       ${ADDITIONAL_SOURCE}
 
-      ${SRC_DIR}/graphics/glfw/Callback.hpp
+      ${INC_DIR}/shared/Callback.hpp
+      ${INC_DIR}/shared/GlfwWrapper.hpp
+      ${INC_DIR}/shared/OpenGLWrapper.hpp
+      ${INC_DIR}/shared/OpenGLIOHandler.hpp
+      ${INC_DIR}/shared/SharedCallback.hpp
+
       ${SRC_DIR}/graphics/glfw/CallbackSingleton.hpp
       ${SRC_DIR}/graphics/glfw/CallbackSingleton.cpp
-      ${SRC_DIR}/graphics/glfw/GlfwWrapper.hpp
       ${SRC_DIR}/graphics/glfw/GlfwWrapper.cpp
-      ${SRC_DIR}/graphics/opengl/OpenGLWrapper.hpp
       ${SRC_DIR}/graphics/opengl/OpenGLWrapper.cpp
-      ${SRC_DIR}/io/OpenGLIOHandler.hpp
       ${SRC_DIR}/io/OpenGLIOHandler.cpp
-      ${SRC_DIR}/io/SharedCallback.hpp
       ${SRC_DIR}/io/SharedCallback.cpp
-      ${THIRDPARTY}/glad/src/glad.c
       )
-
-  message( "USING GLFW" )
 
 endif( USE_GLFW )
 
@@ -88,115 +62,19 @@ endif( USE_GLFW )
 ################################################
 if ( USE_VULKAN )
 
-  set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_BINARY_DIR}/glfw-src/CMake/modules )
-
-  find_package( Vulkan REQUIRED )
-
-  # vulkan header dirs
-  set( SYSTEM_INCLUDE_DIRS ${SYSTEM_INCLUDE_DIRS} ${VULKAN_INCLUDE_DIR} )
-
-  # vulkan lib
-  set( LINK_LIBS ${LINK_LIBS} ${VULKAN_LIBRARY} )
-
   # common wrapper functions
   set(
       ADDITIONAL_SOURCE
       ${ADDITIONAL_SOURCE}
 
-      ${SRC_DIR}/graphics/vulkan/VulkanGlfwWrapper.hpp
+      ${INC_DIR}/shared/VulkanGlfwWrapper.hpp
+      ${INC_DIR}/shared/VulkanIOHandler.hpp
+
       ${SRC_DIR}/graphics/vulkan/VulkanGlfwWrapper.cpp
-      ${SRC_DIR}/io/VulkanIOHandler.hpp
       ${SRC_DIR}/io/VulkanIOHandler.cpp
       )
 
-  message( "USING VULKAN" )
-
 endif ( USE_VULKAN )
-
-
-
-################################################
-# add optix functionality
-################################################
-if ( USE_OPTIX )
-
-  find_package( CUDA  REQUIRED )
-  find_package( OptiX REQUIRED )
-
-  set( CUDA_SYSTEM_INCLUDE_DIRS ${CUDA_SYSTEM_INCLUDE_DIRS} ${OptiX_INCLUDE} ${THIRDPARTY}/include )
-  set(
-      CUDA_LINK_LIBS
-      ${CUDA_LINK_LIBS}
-
-      ${optix_LIBRARY}
-      ${optixu_LIBRARY}
-      )
-
-  set( SYSTEM_INCLUDE_DIRS ${SYSTEM_INCLUDE_DIRS} ${OptiX_INCLUDE} ${THIRDPARTY}/include )
-  set(
-      LINK_LIBS
-      ${LINK_LIBS}
-
-      ${optix_LIBRARY}
-      ${optixu_LIBRARY}
-      )
-
-  # windows defines for exports and warnings
-  add_definitions( -Dsutil_sdk_EXPORTS -D_CRT_SECURE_NO_DEPRECATE )
-
-  # model loading utils taken from the SDK samples
-  add_library(
-              optixUtil
-
-              ${THIRDPARTY}/glad/src/glad.c
-              ${THIRDPARTY}/optixUtil/HDRLoader.cpp
-              ${THIRDPARTY}/optixUtil/PPMLoader.cpp
-              ${THIRDPARTY}/optixUtil/tinyobjloader/tiny_obj_loader.cc
-              ${THIRDPARTY}/optixUtil/rply-1.01/rply.c
-              ${THIRDPARTY}/optixUtil/Mesh.cpp
-              ${THIRDPARTY}/optixUtil/OptiXMesh.cpp
-              )
-
-  target_link_libraries     ( optixUtil ${optix_LIBRARY} ${optixu_LIBRARY} )
-  target_include_directories(
-                             optixUtil SYSTEM PUBLIC
-
-                             ${OptiX_INCLUDE}
-                             ${CUDA_INCLUDE_DIRS}
-                             ${THIRDPARTY}/optixUtil
-                             ${THIRDPARTY}/include
-                             )
-
-  set_target_properties(
-                        optixUtil PROPERTIES
-                        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
-                        )
-
-  # imgui header dirs
-  set(
-      SYSTEM_INCLUDE_DIRS
-      ${SYSTEM_INCLUDE_DIRS}
-
-      ${THIRDPARTY}/optixUtil
-      )
-
-
-  # optixUtil lib
-  set( LINK_LIBS ${LINK_LIBS} optixUtil )
-
-  # must be built before project lib
-  set( DEP_TARGETS optixUtil )
-
-  install(
-          TARGETS optixUtil
-          RUNTIME DESTINATION bin
-          LIBRARY DESTINATION lib
-          ARCHIVE DESTINATION lib
-          )
-
-  message( "USING OPTIX" )
-
-endif( )
 
 
 
@@ -204,172 +82,97 @@ endif( )
 # add imgui functionality
 ################################################
 if ( USE_GUI )
-  # Download and unpack imgui at configure time
-  downloadProject( imgui ${NO_THIRDPARTY_DOWNLOAD} )
-
-  # create lib here before any
-  # strict compile flags are set
-  add_library(
-              imgui
-
-              ${CMAKE_BINARY_DIR}/imgui-src/imgui.cpp
-              ${CMAKE_BINARY_DIR}/imgui-src/imgui.h
-              ${CMAKE_BINARY_DIR}/imgui-src/imgui_demo.cpp
-              ${CMAKE_BINARY_DIR}/imgui-src/imgui_draw.cpp
-              ${CMAKE_BINARY_DIR}/imgui-src/imgui_internal.h
-              ${CMAKE_BINARY_DIR}/imgui-src/imconfig.h
-              ${CMAKE_BINARY_DIR}/imgui-src/stb_rect_pack.h
-              ${CMAKE_BINARY_DIR}/imgui-src/stb_textedit.h
-              ${CMAKE_BINARY_DIR}/imgui-src/stb_truetype.h
-
-              ${SRC_DIR}/gui/imgui_impl_glfw_gl3.h
-              ${SRC_DIR}/gui/imgui_impl_glfw_gl3.cpp
-              )
-
-  target_include_directories(
-                             imgui SYSTEM PUBLIC
-                             ${CMAKE_BINARY_DIR}/glfw-src/include
-                             ${THIRDPARTY}/include
-                             ${CMAKE_BINARY_DIR}/imgui-src
-                             ${SRC_DIR}/gui
-                             )
-
-   # imgui header dirs
-  set(
-      SYSTEM_INCLUDE_DIRS
-      ${SYSTEM_INCLUDE_DIRS}
-
-      ${CMAKE_BINARY_DIR}/imgui-src
-      ${SRC_DIR}/gui
-      )
-
-
-  # imgui lib
-  set( LINK_LIBS ${LINK_LIBS} imgui )
-
-  # must be built before project lib
-  set( DEP_TARGETS imgui )
 
   # imgui IOhandler class
   set(
       ADDITIONAL_SOURCE
       ${ADDITIONAL_SOURCE}
 
-      ${SRC_DIR}/io/ImguiOpenGLIOHandler.hpp
+      ${INC_DIR}/shared/ImguiOpenGLIOHandler.hpp
+      ${INC_DIR}/shared/ImguiCallback.hpp
+
       ${SRC_DIR}/io/ImguiOpenGLIOHandler.cpp
-      ${SRC_DIR}/io/ImguiCallback.hpp
       ${SRC_DIR}/io/ImguiCallback.cpp
       )
 
-  message( "USING GUI" )
-
 endif( USE_GUI )
-
-
-
-
-################################################
-# add gmock functionality
-################################################
-if ( USE_GMOCK )
-  # Download and unpack googletest at configure time
-  downloadProject( googletest ${NO_THIRDPARTY_DOWNLOAD} )
-
-  # Prevent overriding the parent project's compiler/linker
-  # settings on Windows
-  set( gtest_force_shared_crt ON CACHE BOOL "" FORCE )
-
-  # Add googletest directly to our build. This defines
-  # the gtest and gtest_main targets.
-  add_subdirectory( ${CMAKE_BINARY_DIR}/googletest-src/googlemock
-                    ${CMAKE_BINARY_DIR}/googletest-build )
-
-  # gmock and gtest header dir
-  set(
-      GMOCK_INCLUDE_DIRS
-      ${CMAKE_BINARY_DIR}/googletest-src/googletest/include
-      ${CMAKE_BINARY_DIR}/googletest-src/googlemock/include
-      )
-
-  # gmock lib
-  set( GMOCK_LIB       gmock            )
-  set( GMOCK_MAIN_LIB  gmock_main       )
-  set( GMOCK_BOTH_LIBS gmock gmock_main )
-
-  if ( hasParent )
-
-    # gmock and gtest header dir
-    set( GMOCK_INCLUDE_DIRS ${GMOCK_INCLUDE_DIRS} PARENT_SCOPE )
-
-    # gmock lib
-    set( GMOCK_LIB       ${GMOCK_LIB}       PARENT_SCOPE )
-    set( GMOCK_MAIN_LIB  ${GMOCK_MAIN_LIB}  PARENT_SCOPE )
-    set( GMOCK_BOTH_LIBS ${GMOCK_BOTH_LIBS} PARENT_SCOPE )
-
-  endif( hasParent )
-
-  message( "USING GMOCK" )
-
-endif( USE_GMOCK )
 
 
 
 ################################################
 # add glm functionality
 ################################################
-set( SYSTEM_INCLUDE_DIRS ${SYSTEM_INCLUDE_DIRS} ${THIRDPARTY}/include )
+set( SHARED_SYSTEM_INCLUDE_DIRS ${SHARED_SYSTEM_INCLUDE_DIRS} ${THIRDPARTY}/include )
 
 
 ################################################
 # add shared source
 ################################################
 # header dirs
-set( SHARED_INCLUDE_DIRS ${SHARED_INCLUDE_DIRS} ${SRC_DIR} ${PROJECT_BINARY_DIR} )
+set( SHARED_INCLUDE_DIRS ${SHARED_INCLUDE_DIRS} ${INC_DIR} ${SRC_DIR} ${PROJECT_BINARY_DIR} )
 
 # cpp files
 set(
-    SHARED_SOURCE
+    PROJECT_SOURCE
 
     ${ADDITIONAL_SOURCE}
 
     # driver
-    ${SRC_DIR}/driver/Driver.hpp
+    ${INC_DIR}/shared/Driver.hpp
+    ${INC_DIR}/shared/ContinuousDriver.hpp
+    ${INC_DIR}/shared/EventDriver.hpp
+
     ${SRC_DIR}/driver/Driver.cpp
-    ${SRC_DIR}/driver/ContinuousDriver.hpp
     ${SRC_DIR}/driver/ContinuousDriver.cpp
-    ${SRC_DIR}/driver/EventDriver.hpp
     ${SRC_DIR}/driver/EventDriver.cpp
 
     # rendering
-    ${SRC_DIR}/io/IOHandler.hpp
+    ${INC_DIR}/shared/IOHandler.hpp
+
     ${SRC_DIR}/io/IOHandler.cpp
 
     # graphics
-    ${SRC_DIR}/graphics/GraphicsForwardDeclarations.hpp
-    ${SRC_DIR}/graphics/Camera.hpp
+    ${INC_DIR}/shared/GraphicsForwardDeclarations.hpp
+    ${INC_DIR}/shared/Camera.hpp
+
     ${SRC_DIR}/graphics/Camera.cpp
 
     # world
-    ${SRC_DIR}/world/World.hpp
+    ${INC_DIR}/shared/World.hpp
+
     ${SRC_DIR}/world/World.cpp
     )
+
+set( SHARED_SYSTEM_INCLUDE_DIRS ${THIRDPARTY_SYSTEM_INCLUDE_DIRS} )
+set( SHARED_LINK_LIBS           ${THIRDPARTY_LINK_LIBS}           )
+set( SHARED_DEP_TARGETS         ${THIRDPARTY_DEP_TARGETS}         )
+
+
+set( SHARED_CUDA_SYSTEM_INCLUDE_DIRS ${THIRDPARTY_CUDA_SYSTEM_INCLUDE_DIRS} )
+set( SHARED_CUDA_LINK_LIBS           ${THIRDPARTY_CUDA_LINK_LIBS}           )
+set( SHARED_CUDA_DEP_TARGETS         ${THIRDPARTY_CUDA_DEP_TARGETS}         )
+
+set( SHARED_UNCRUSTIFY_FILE ${CMAKE_CURRENT_SOURCE_DIR}/formatting/uncrustify.cfg )
+
+set ( FORCE_CUDA_STANDARD 11 )
+set ( FORCE_CPP_STANDARD  14 )
+include( ${CMAKE_CURRENT_SOURCE_DIR}/cmake/DefaultProjectLibrary.cmake )
 
 
 if( hasParent )
 
-  set( SHARED_SYSTEM_INCLUDE_DIRS ${SYSTEM_INCLUDE_DIRS} PARENT_SCOPE )
-  set( SHARED_LINK_LIBS           ${LINK_LIBS}           PARENT_SCOPE )
-  set( SHARED_DEP_TARGETS         ${DEP_TARGETS}         PARENT_SCOPE )
+  set( SHARED_SYSTEM_INCLUDE_DIRS ${SHARED_SYSTEM_INCLUDE_DIRS}         PARENT_SCOPE )
+  set( SHARED_LINK_LIBS           ${SHARED_LINK_LIBS}   ${PROJECT_NAME} PARENT_SCOPE )
+  set( SHARED_DEP_TARGETS         ${SHARED_DEP_TARGETS} ${PROJECT_NAME} PARENT_SCOPE )
 
 
-  set( SHARED_CUDA_SYSTEM_INCLUDE_DIRS ${CUDA_SYSTEM_INCLUDE_DIRS} PARENT_SCOPE )
-  set( SHARED_CUDA_LINK_LIBS           ${CUDA_LINK_LIBS}           PARENT_SCOPE )
-  set( SHARED_CUDA_DEP_TARGETS         ${CUDA_DEP_TARGETS}         PARENT_SCOPE )
+  set( SHARED_CUDA_SYSTEM_INCLUDE_DIRS ${SHARED_CUDA_SYSTEM_INCLUDE_DIRS} PARENT_SCOPE )
+  set( SHARED_CUDA_LINK_LIBS           ${SHARED_CUDA_LINK_LIBS}           PARENT_SCOPE )
+  set( SHARED_CUDA_DEP_TARGETS         ${SHARED_CUDA_DEP_TARGETS}         PARENT_SCOPE )
 
-  set( SHARED_UNCRUSTIFY_FILE ${CMAKE_CURRENT_SOURCE_DIR}/formatting/uncrustify.cfg  PARENT_SCOPE )
+  set( SHARED_UNCRUSTIFY_FILE ${SHARED_UNCRUSTIFY_FILE} PARENT_SCOPE )
 
-  set( SHARED_INCLUDE_DIRS ${SHARED_INCLUDE_DIRS} PARENT_SCOPE )
-  set( SHARED_SOURCE       ${SHARED_SOURCE}       PARENT_SCOPE )
+  set( SHARED_INCLUDE_DIRS ${INC_DIR} PARENT_SCOPE )
 
 endif( hasParent )
 
