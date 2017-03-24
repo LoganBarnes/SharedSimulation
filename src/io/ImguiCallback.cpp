@@ -1,7 +1,7 @@
-#include "shared/ImguiCallback.hpp"
+#include "shared/graphics/ImguiCallback.hpp"
 #include "GLFW/glfw3.h"
 #include "imgui.h"
-#include "shared/IOHandler.hpp"
+#include "shared/core/IOHandler.hpp"
 
 
 namespace shared

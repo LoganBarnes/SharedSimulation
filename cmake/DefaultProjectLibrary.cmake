@@ -158,8 +158,8 @@ if ( PROJECT_SOURCE )
 
   set( PROJECT_LIB ${PROJECT_NAME} )
 
-  add_library            ( ${PROJECT_LIB} ${PROJECT_SOURCE}                   )
-  target_link_libraries  ( ${PROJECT_LIB} ${PROJECT_LINK_LIBS} ${DEP_TARGETS} )
+  add_library            ( ${PROJECT_LIB} ${PROJECT_SOURCE}    )
+  target_link_libraries  ( ${PROJECT_LIB} ${PROJECT_LINK_LIBS} )
 
   if ( FORCE_CPP_STANDARD )
     set_property( TARGET ${PROJECT_LIB} PROPERTY CXX_STANDARD ${FORCE_CPP_STANDARD} )
@@ -172,8 +172,8 @@ if ( PROJECT_SOURCE )
     set_target_properties( ${PROJECT_LIB} PROPERTIES COMPILE_FLAGS ${INTENSE_FLAGS} )
   endif( )
 
-  if ( ${DEP_TARGETS} )
-    add_dependencies ( ${PROJECT_LIB} ${DEP_TARGETS} )
+  if ( PROJECT_DEP_TARGETS )
+    add_dependencies ( ${PROJECT_LIB} ${PROJECT_DEP_TARGETS} )
   endif( )
 
   target_include_directories( ${PROJECT_LIB} SYSTEM PUBLIC ${PROJECT_SYSTEM_INCLUDE_DIRS} )
@@ -191,8 +191,13 @@ if ( PROJECT_MAIN )
   add_executable ( ${PROJECT_EXEC} ${PROJECT_MAIN} )
 
   if ( PROJECT_LIB )
-    target_link_libraries ( ${PROJECT_EXEC} ${PROJECT_LIB} )
+    target_link_libraries ( ${PROJECT_EXEC} ${PROJECT_LIB} ${PROJECT_LINK_LIBS} )
     add_dependencies      ( ${PROJECT_EXEC} ${PROJECT_LIB} )
+  else( )
+    target_link_libraries ( ${PROJECT_EXEC} ${PROJECT_LINK_LIBS} )
+    if ( PROJECT_DEP_TARGETS )
+      add_dependencies ( ${PROJECT_EXEC} ${PROJECT_DEP_TARGETS} )
+    endif()
   endif( )
 
   if ( FORCE_CPP_STANDARD )

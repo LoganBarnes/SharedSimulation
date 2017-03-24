@@ -1,14 +1,14 @@
-#include "shared/ImguiOpenGLIOHandler.hpp"
+#include "shared/core/ImguiOpenGLIOHandler.hpp"
 
 // system
 #include <iostream>
 
 // shared
 #include "glad/glad.h"
-#include "shared/GlfwWrapper.hpp"
-#include "shared/OpenGLWrapper.hpp"
-#include "shared/ImguiCallback.hpp"
-#include "shared/SharedCallback.hpp"
+#include "shared/graphics/GlfwWrapper.hpp"
+#include "shared/graphics/OpenGLWrapper.hpp"
+#include "shared/graphics/ImguiCallback.hpp"
+#include "shared/graphics/SharedCallback.hpp"
 #include "imgui.h"
 #include "imgui_impl_glfw_gl3.h"
 

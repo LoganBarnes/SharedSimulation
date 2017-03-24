@@ -1,23 +1,21 @@
 cmake_minimum_required ( VERSION 3.6.0 )
 project ( Examples )
 
+include( ExternalProject )
+
 function( BuildExample example )
 
-  make_directory( ${CMAKE_BINARY_DIR}/${example}-build )
-
-  execute_process(
-                  COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" ${CMAKE_CURRENT_SOURCE_DIR}/${example}
-                  RESULT_VARIABLE result
-                  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/${example}-build
-                  )
-  if( result )
-    message( FATAL_ERROR "CMake step for ${example} failed: ${result}" )
-  endif( )
-
-  add_subdirectory( ${CMAKE_CURRENT_SOURCE_DIR}/${example} ${CMAKE_BINARY_DIR}/${example}-build )
+  ExternalProject_Add( ${example}-external
+    DOWNLOAD_COMMAND   ""
+    SOURCE_DIR         ${CMAKE_CURRENT_SOURCE_DIR}/${example}
+    BINARY_DIR         ${PROJECT_BINARY_DIR}/${example}-build
+    BUILD_ALWAYS       1
+    INSTALL_DIR        ${PROJECT_BINARY_DIR}
+    CMAKE_ARGS         -DCMAKE_INSTALL_PREFIX:STRING=<INSTALL_DIR>
+                       -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS}
+  )
 
 endfunction( BuildExample )
-
 
 BuildExample( 0_basic     )
 BuildExample( 1_simple    )

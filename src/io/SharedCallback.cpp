@@ -1,4 +1,4 @@
-#include "shared/SharedCallback.hpp"
+#include "shared/graphics/SharedCallback.hpp"
 #include "GLFW/glfw3.h"
 
 

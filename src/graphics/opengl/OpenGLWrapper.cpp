@@ -1,4 +1,4 @@
-#include "shared/OpenGLWrapper.hpp"
+#include "shared/graphics/OpenGLWrapper.hpp"
 
 #include <string>
 #include <iostream>

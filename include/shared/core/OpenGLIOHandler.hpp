@@ -3,9 +3,9 @@
 
 
 #include <memory>
-#include "shared/IOHandler.hpp"
+#include "shared/core/IOHandler.hpp"
 
-#include "shared/GraphicsForwardDeclarations.hpp"
+#include "shared/graphics/GraphicsForwardDeclarations.hpp"
 
 
 namespace shared

@@ -3,9 +3,9 @@
 #include <stdexcept>
 #include <cstdlib>
 
-#include "driver/ContinuousDriver.hpp"
-#include "world/World.hpp"
-#include "io/IOHandler.hpp"
+#include "shared/core/ContinuousDriver.hpp"
+#include "shared/core/World.hpp"
+#include "shared/core/IOHandler.hpp"
 
 
 int main( const int argc, const char **argv )

@@ -22,7 +22,7 @@ CMAKE_AR:FILEPATH=/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDef
 
 //Choose the type of build, options are: None(CMAKE_CXX_FLAGS or
 // CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.
-CMAKE_BUILD_TYPE:STRING=
+CMAKE_BUILD_TYPE:STRING=Release
 
 //Enable/Disable color output during build.
 CMAKE_COLOR_MAKEFILE:BOOL=ON
@@ -216,6 +216,9 @@ LIB_SUFFIX:STRING=
 //Assume thirdparty projects have already been downloaded
 NO_THIRDPARTY_DOWNLOAD:BOOL=OFF
 
+//No help, variable specified on the command line.
+OFFLINE:UNINITIALIZED=OFF
+
 //Value Computed by CMake
 SharedSimulation_BINARY_DIR:STATIC=/Users/Logan/Documents/projects/cpp/playground/shared/_build
 
@@ -241,7 +244,7 @@ USE_GLFW:BOOL=ON
 USE_GMOCK:BOOL=OFF
 
 //Use imgui library
-USE_GUI:BOOL=ON
+USE_GUI:BOOL=OFF
 
 //Use optix library
 USE_OPTIX:BOOL=OFF
@@ -358,7 +361,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=4
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=2
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP

@@ -3,7 +3,7 @@
 
 
 #include <memory>
-#include "shared/Callback.hpp"
+#include "shared/graphics/Callback.hpp"
 
 
 namespace shared

@@ -1,7 +1,7 @@
 // CubeIoHandler.hpp
 #pragma once
 
-#include "io/IOHandler.hpp"
+#include "shared/core/IOHandler.hpp"
 
 
 namespace simple

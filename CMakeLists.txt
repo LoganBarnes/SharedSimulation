@@ -39,11 +39,11 @@ if ( USE_GLFW )
       ADDITIONAL_SOURCE
       ${ADDITIONAL_SOURCE}
 
-      ${INC_DIR}/shared/Callback.hpp
-      ${INC_DIR}/shared/GlfwWrapper.hpp
-      ${INC_DIR}/shared/OpenGLWrapper.hpp
-      ${INC_DIR}/shared/OpenGLIOHandler.hpp
-      ${INC_DIR}/shared/SharedCallback.hpp
+      ${INC_DIR}/shared/graphics/Callback.hpp
+      ${INC_DIR}/shared/graphics/GlfwWrapper.hpp
+      ${INC_DIR}/shared/graphics/OpenGLWrapper.hpp
+      ${INC_DIR}/shared/core/OpenGLIOHandler.hpp
+      ${INC_DIR}/shared/graphics/SharedCallback.hpp
 
       ${SRC_DIR}/graphics/glfw/CallbackSingleton.hpp
       ${SRC_DIR}/graphics/glfw/CallbackSingleton.cpp
@@ -67,8 +67,8 @@ if ( USE_VULKAN )
       ADDITIONAL_SOURCE
       ${ADDITIONAL_SOURCE}
 
-      ${INC_DIR}/shared/VulkanGlfwWrapper.hpp
-      ${INC_DIR}/shared/VulkanIOHandler.hpp
+      ${INC_DIR}/shared/graphics/VulkanGlfwWrapper.hpp
+      ${INC_DIR}/shared/core/VulkanIOHandler.hpp
 
       ${SRC_DIR}/graphics/vulkan/VulkanGlfwWrapper.cpp
       ${SRC_DIR}/io/VulkanIOHandler.cpp
@@ -88,8 +88,8 @@ if ( USE_GUI )
       ADDITIONAL_SOURCE
       ${ADDITIONAL_SOURCE}
 
-      ${INC_DIR}/shared/ImguiOpenGLIOHandler.hpp
-      ${INC_DIR}/shared/ImguiCallback.hpp
+      ${INC_DIR}/shared/graphics/ImguiCallback.hpp
+      ${INC_DIR}/shared/core/ImguiOpenGLIOHandler.hpp
 
       ${SRC_DIR}/io/ImguiOpenGLIOHandler.cpp
       ${SRC_DIR}/io/ImguiCallback.cpp
@@ -118,27 +118,27 @@ set(
     ${ADDITIONAL_SOURCE}
 
     # driver
-    ${INC_DIR}/shared/Driver.hpp
-    ${INC_DIR}/shared/ContinuousDriver.hpp
-    ${INC_DIR}/shared/EventDriver.hpp
+    ${INC_DIR}/shared/core/Driver.hpp
+    ${INC_DIR}/shared/core/ContinuousDriver.hpp
+    ${INC_DIR}/shared/core/EventDriver.hpp
 
     ${SRC_DIR}/driver/Driver.cpp
     ${SRC_DIR}/driver/ContinuousDriver.cpp
     ${SRC_DIR}/driver/EventDriver.cpp
 
     # rendering
-    ${INC_DIR}/shared/IOHandler.hpp
+    ${INC_DIR}/shared/core/IOHandler.hpp
 
     ${SRC_DIR}/io/IOHandler.cpp
 
     # graphics
-    ${INC_DIR}/shared/GraphicsForwardDeclarations.hpp
-    ${INC_DIR}/shared/Camera.hpp
+    ${INC_DIR}/shared/graphics/GraphicsForwardDeclarations.hpp
+    ${INC_DIR}/shared/graphics/Camera.hpp
 
     ${SRC_DIR}/graphics/Camera.cpp
 
     # world
-    ${INC_DIR}/shared/World.hpp
+    ${INC_DIR}/shared/core/World.hpp
 
     ${SRC_DIR}/world/World.cpp
     )

@@ -1,14 +1,14 @@
-#include "shared/OpenGLIOHandler.hpp"
+#include "shared/core/OpenGLIOHandler.hpp"
 
 // system
 #include <iostream>
 
 // shared
 #include "glad/glad.h"
-#include "shared/GlfwWrapper.hpp"
-#include "shared/OpenGLWrapper.hpp"
-#include "shared/Camera.hpp"
-#include "shared/SharedCallback.hpp"
+#include "shared/graphics/GlfwWrapper.hpp"
+#include "shared/graphics/OpenGLWrapper.hpp"
+#include "shared/graphics/Camera.hpp"
+#include "shared/graphics/SharedCallback.hpp"
 
 
 namespace shared
