@@ -1,5 +1,5 @@
-#ifndef GlfwWrapper_hpp
-#define GlfwWrapper_hpp
+// GlfwWrapper.hpp
+#pragma once
 
 
 #include <memory>
@@ -159,6 +159,3 @@ private:
 
 
 } // namespace graphics
-
-
-#endif // GlfwWrapper_hpp

@@ -332,14 +332,14 @@ OpenGLWrapper::addFramebuffer(
 void
 OpenGLWrapper::bindFramebuffer( const std::string name )
 {
-  if ( framebuffers_.find( name ) != framebuffers_.end( ) )
-  {
-    glBindFramebuffer( GL_FRAMEBUFFER, framebuffers_[ name ].fbo );
-  }
-  else
+  if ( name.length( ) == 0 )
   {
     glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+    return;
   }
+
+  _checkItemExists( name, framebuffers_, "framebuffers" );
+  glBindFramebuffer( GL_FRAMEBUFFER, framebuffers_.at( name ).fbo );
 }
 
 
@@ -682,6 +682,30 @@ OpenGLWrapper::setClearColor(
                              )
 {
   glClearColor( r, g, b, a );
+}
+
+
+
+void
+OpenGLWrapper::destroyTexture( const std::string name )
+{
+  _checkItemExists( name, textures_, "textures" );
+  glDeleteTextures( 1, &( textures_.at( name ) ) );
+  textures_.erase( name );
+}
+
+
+
+void
+OpenGLWrapper::destroyFramebuffer( const std::string name )
+{
+  _checkItemExists( name, framebuffers_, "framebuffers" );
+
+  const FrameBuffer &buffer = framebuffers_.at( name );
+  glDeleteFramebuffers( 1, &( buffer.fbo ) );
+  glDeleteRenderbuffers( 1, &( buffer.rbo ) );
+
+  framebuffers_.erase( name );
 }
 
 

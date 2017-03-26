@@ -1,5 +1,5 @@
-#ifndef Camera_hpp
-#define Camera_hpp
+// Camera.hpp
+#pragma once
 
 
 #include "glm/glm.hpp"
@@ -85,6 +85,3 @@ protected:
 
 
 } // namespace graphics
-
-
-#endif // Camera_hpp

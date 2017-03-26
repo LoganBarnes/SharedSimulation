@@ -7,6 +7,9 @@ namespace graphics
 template< typename T >
 class Camera;
 
+template< typename T >
+class GlmCamera;
+
 struct VAOElement;
 struct VAOSettings;
 

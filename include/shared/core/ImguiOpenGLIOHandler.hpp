@@ -3,7 +3,30 @@
 
 
 #include <memory>
+#include <functional>
 #include "shared/core/OpenGLIOHandler.hpp"
+
+
+///
+/// \brief imguiVarChange
+/// \param var
+/// \param imguiFunc
+/// \param args
+/// \return
+///
+template< typename varType, typename Func, typename ... Ts >
+bool
+imguiVarChange(
+               varType &var,
+               Func     imguiFunc,
+               Ts&& ... args
+               )
+{
+  varType oldVar = var;
+
+  imguiFunc( std::forward< Ts >( args ) ... );
+  return oldVar != var;
+}
 
 
 
@@ -15,6 +38,7 @@ class World;
 class ImguiCallback;
 
 typedef ImguiCallback*ImguiCallback_t;
+
 
 
 /////////////////////////////////////////////
@@ -72,4 +96,3 @@ private:
 
 
 } // namespace shared
-

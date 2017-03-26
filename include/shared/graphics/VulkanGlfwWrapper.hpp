@@ -1,5 +1,5 @@
-#ifndef VulkanGlfwWrapper_hpp
-#define VulkanGlfwWrapper_hpp
+// VulkanGlfwWrapper.hpp
+#pragma once
 
 
 #include <string>
@@ -271,6 +271,3 @@ protected:
 
 
 } // namespace graphics
-
-
-#endif // VulkanGlfwWrapper_hpp

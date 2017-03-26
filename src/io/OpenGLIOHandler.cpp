@@ -8,6 +8,7 @@
 #include "shared/graphics/GlfwWrapper.hpp"
 #include "shared/graphics/OpenGLWrapper.hpp"
 #include "shared/graphics/Camera.hpp"
+#include "shared/graphics/GlmCamera.hpp"
 #include "shared/graphics/SharedCallback.hpp"
 
 
@@ -33,6 +34,7 @@ OpenGLIOHandler::OpenGLIOHandler(
   , upGlfwWrapper_( new graphics::GlfwWrapper( ) )
   , upGLWrapper_  ( new graphics::OpenGLWrapper( ) )
   , upCamera_     ( new graphics::Camera< float >( ) )
+  , upGlmCamera_  ( new graphics::GlmCamera< float >( ) )
 {
 
   if ( printInfo )
@@ -49,6 +51,7 @@ OpenGLIOHandler::OpenGLIOHandler(
   upGLWrapper_->initContext( width, height );
 
   upCamera_->setAspectRatio( width * 1.0f / height );
+  upGlmCamera_->setAspectRatio( width * 1.0f / height );
 }
 
 
@@ -129,6 +132,7 @@ OpenGLIOHandler::resize(
                         )
 {
   upCamera_->setAspectRatio( width * 1.0f / height );
+  upGlmCamera_->setAspectRatio( width * 1.0 / height );
   upGLWrapper_->setViewportSize( width, height );
 }
 

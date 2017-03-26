@@ -134,8 +134,10 @@ set(
     # graphics
     ${INC_DIR}/shared/graphics/GraphicsForwardDeclarations.hpp
     ${INC_DIR}/shared/graphics/Camera.hpp
+    ${INC_DIR}/shared/graphics/GlmCamera.hpp
 
     ${SRC_DIR}/graphics/Camera.cpp
+    ${SRC_DIR}/graphics/GlmCamera.cpp
 
     # world
     ${INC_DIR}/shared/core/World.hpp

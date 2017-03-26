@@ -1,5 +1,5 @@
-#ifndef OpenGLWrapper_hpp
-#define OpenGLWrapper_hpp
+// OpenGLWrapper.hpp
+#pragma once
 
 #include <string>
 #include <sstream>
@@ -240,6 +240,10 @@ public:
                       const float a
                       );
 
+  void destroyTexture ( const std::string name );
+  void destroyFramebuffer ( const std::string name );
+
+
   void
   setCurrentContext( void *pContext ) { pContext_ = pContext; }
 
@@ -424,6 +428,3 @@ OpenGLWrapper::_checkItemExists(
 
 
 } // namespace graphics
-
-
-#endif // OpenGLWrapper_hpp

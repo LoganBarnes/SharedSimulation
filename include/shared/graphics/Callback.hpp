@@ -1,5 +1,5 @@
-#ifndef Callback_hpp
-#define Callback_hpp
+// Callback.hpp
+#pragma once
 
 
 #include <iostream>
@@ -136,6 +136,3 @@ public:
 
 
 } // namespace graphics
-
-
-#endif // Callback_hpp

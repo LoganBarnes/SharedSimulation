@@ -1,0 +1,49 @@
+// OpenGLWrapper.cpp
+
+#include "shared/graphics/OpenGLWrapper.hpp"
+
+#include "gmock/gmock.h"
+
+
+namespace
+{
+
+
+///
+/// \brief The OpenGLWrapperUnitTests class
+///
+class OpenGLWrapperUnitTests : public ::testing::Test
+{
+
+protected:
+
+  /////////////////////////////////////////////////////////////////
+  /// \brief OpenGLWrapperUnitTests
+  /////////////////////////////////////////////////////////////////
+  OpenGLWrapperUnitTests( )
+  {}
+
+
+  /////////////////////////////////////////////////////////////////
+  /// \brief ~OpenGLWrapperUnitTests
+  /////////////////////////////////////////////////////////////////
+  virtual
+  ~OpenGLWrapperUnitTests( )
+  {}
+
+};
+
+
+/////////////////////////////////////////////////////////////////
+/// \brief TemplatesCompile
+/////////////////////////////////////////////////////////////////
+TEST_F( OpenGLWrapperUnitTests, WrongNameThrows )
+{
+
+  ///\todo: test difference between custom throw and .at throw
+
+}
+
+
+
+} // namespace

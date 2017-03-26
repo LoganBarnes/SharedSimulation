@@ -95,6 +95,7 @@ protected:
   std::unique_ptr< graphics::GlfwWrapper >     upGlfwWrapper_;
   std::unique_ptr< graphics::OpenGLWrapper >   upGLWrapper_;
   std::unique_ptr< graphics::Camera< float > > upCamera_;
+  std::unique_ptr< graphics::GlmCamera< float > > upGlmCamera_;
 
 
 private:
