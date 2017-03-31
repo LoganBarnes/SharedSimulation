@@ -98,7 +98,7 @@ ImguiOpenGLIOHandler::_onGuiRender ( )
 {
   bool alwaysOpen = true;
 
-  ImGui::SetNextWindowSize( ImVec2( 0, 0 ), ImGuiSetCond_FirstUseEver ); // auto scale size?
+  ImGui::SetNextWindowSize( ImVec2( 0, 0 ), ImGuiSetCond_FirstUseEver ); // auto scale size
   ImGui::SetNextWindowPos ( ImVec2( 0, 0 ), ImGuiSetCond_FirstUseEver );
 
   ImGui::Begin( "Example Window", &alwaysOpen );

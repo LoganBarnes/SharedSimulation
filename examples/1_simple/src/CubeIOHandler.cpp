@@ -34,7 +34,10 @@ CubeIOHandler::CubeIOHandler( CubeWorld &cubeWorld )
 /// \author Logan Barnes
 /////////////////////////////////////////////
 CubeIOHandler::~CubeIOHandler( )
-{}
+{
+  // final new line
+  std::cout << std::endl;
+}
 
 
 

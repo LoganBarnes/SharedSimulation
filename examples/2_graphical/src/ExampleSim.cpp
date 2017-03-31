@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <cstdlib>
 
-#include "driver/ContinuousDriver.hpp"
+#include "shared/core/ContinuousDriver.hpp"
 #include "CubeWorld.hpp"
 #include "CubeImguiOpenGLIOHandler.hpp"
 

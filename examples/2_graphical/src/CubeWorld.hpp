@@ -2,7 +2,7 @@
 #pragma once
 
 
-#include "world/World.hpp"
+#include "shared/core/World.hpp"
 #include <memory>
 #include <deque>
 

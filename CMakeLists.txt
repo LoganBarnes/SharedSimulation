@@ -1,8 +1,6 @@
 cmake_minimum_required ( VERSION 3.6.0 )
 project ( SharedSimulation )
 
-get_directory_property( hasParent PARENT_DIRECTORY )
-
 option( USE_GLFW   "Use GLFW library"   OFF )
 option( USE_VULKAN "Use Vulkan library" OFF )
 option( USE_GLAD   "Use glad library"   OFF )
@@ -10,23 +8,23 @@ option( USE_OPTIX  "Use optix library"  OFF )
 option( USE_GUI    "Use imgui library"  OFF )
 option( USE_GMOCK  "Use gmock library"  OFF )
 
-option( NO_THIRDPARTY_DOWNLOAD "Assume thirdparty projects have already been downloaded" OFF )
+option( BUILD_SHARED_TESTS  "Build unit tests for the shared simulation lib"  OFF )
+option( NO_THIRDPARTY_DOWNLOAD "Attempt to build without downloading/updating thirdparty repositories" OFF )
 
 
-set( SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src     )
-set( INC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include )
-
-# other paths
+# common directory paths
+set( SRC_DIR    ${CMAKE_CURRENT_SOURCE_DIR}/src        )
+set( INC_DIR    ${CMAKE_CURRENT_SOURCE_DIR}/include    )
 set( THIRDPARTY ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty )
 
+# configure and build necessary thirdparty libs
 add_subdirectory( ${THIRDPARTY} )
 
+# creates an hpp file with defines for each USE_<lib> setting
 configure_file (
                 ${SRC_DIR}/common/SharedSimulationConfig.hpp.in
                 ${PROJECT_BINARY_DIR}/SharedSimulationConfig.hpp
                 )
-
-set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
 
 
 ################################################
@@ -34,7 +32,7 @@ set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
 ################################################
 if ( USE_GLFW )
 
-  # common wrapper functions
+  # glfw/opengl wrapper functions and input handling
   set(
       ADDITIONAL_SOURCE
       ${ADDITIONAL_SOURCE}
@@ -62,7 +60,7 @@ endif( USE_GLFW )
 ################################################
 if ( USE_VULKAN )
 
-  # common wrapper functions
+  # vulkan wrapper functions
   set(
       ADDITIONAL_SOURCE
       ${ADDITIONAL_SOURCE}
@@ -83,7 +81,7 @@ endif ( USE_VULKAN )
 ################################################
 if ( USE_GUI )
 
-  # imgui IOhandler class
+  # imgui callbacks
   set(
       ADDITIONAL_SOURCE
       ${ADDITIONAL_SOURCE}
@@ -100,16 +98,17 @@ endif( USE_GUI )
 
 
 ################################################
-# add glm functionality
-################################################
-set( SHARED_SYSTEM_INCLUDE_DIRS ${SHARED_SYSTEM_INCLUDE_DIRS} ${THIRDPARTY}/include )
-
-
-################################################
-# add shared source
+# add shared simulation files
 ################################################
 # header dirs
-set( SHARED_INCLUDE_DIRS ${SHARED_INCLUDE_DIRS} ${INC_DIR} ${SRC_DIR} ${PROJECT_BINARY_DIR} )
+set(
+    SHARED_INCLUDE_DIRS
+    ${SHARED_INCLUDE_DIRS}
+
+    ${INC_DIR}
+    ${SRC_DIR}
+    ${PROJECT_BINARY_DIR}
+    )
 
 # cpp files
 set(
@@ -126,7 +125,7 @@ set(
     ${SRC_DIR}/driver/ContinuousDriver.cpp
     ${SRC_DIR}/driver/EventDriver.cpp
 
-    # rendering
+    # io
     ${INC_DIR}/shared/core/IOHandler.hpp
 
     ${SRC_DIR}/io/IOHandler.cpp
@@ -145,10 +144,11 @@ set(
     ${SRC_DIR}/world/World.cpp
     )
 
-set( SHARED_SYSTEM_INCLUDE_DIRS ${THIRDPARTY_SYSTEM_INCLUDE_DIRS} )
-set( SHARED_LINK_LIBS           ${THIRDPARTY_LINK_LIBS}           )
-set( SHARED_DEP_TARGETS         ${THIRDPARTY_DEP_TARGETS}         )
 
+# append thirdparty variables
+set( SHARED_SYSTEM_INCLUDE_DIRS ${THIRDPARTY_SYSTEM_INCLUDE_DIRS} ${THIRDPARTY}/include )
+set( SHARED_LINK_LIBS           ${THIRDPARTY_LINK_LIBS}                                 )
+set( SHARED_DEP_TARGETS         ${THIRDPARTY_DEP_TARGETS}                               )
 
 set( SHARED_CUDA_SYSTEM_INCLUDE_DIRS ${THIRDPARTY_CUDA_SYSTEM_INCLUDE_DIRS} )
 set( SHARED_CUDA_LINK_LIBS           ${THIRDPARTY_CUDA_LINK_LIBS}           )
@@ -156,10 +156,14 @@ set( SHARED_CUDA_DEP_TARGETS         ${THIRDPARTY_CUDA_DEP_TARGETS}         )
 
 set( SHARED_UNCRUSTIFY_FILE ${CMAKE_CURRENT_SOURCE_DIR}/formatting/uncrustify.cfg )
 
+# build the simulation library
 set ( FORCE_CUDA_STANDARD 11 )
 set ( FORCE_CPP_STANDARD  14 )
 include( ${CMAKE_CURRENT_SOURCE_DIR}/cmake/DefaultProjectLibrary.cmake )
 
+
+# set variables for the parent project if there is one
+get_directory_property( hasParent PARENT_DIRECTORY )
 
 if( hasParent )
 

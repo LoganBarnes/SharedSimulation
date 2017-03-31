@@ -1,19 +1,23 @@
 #include "CubeImguiOpenGLIOHandler.hpp"
 
+// system
 #include <iostream>
 #include <deque>
 #include <memory>
 
+// shared
 #include "glm/gtc/type_ptr.hpp"
+#include "imgui.h"
+#include "imgui_impl_glfw_gl3.h"
+#include "shared/graphics/OpenGLWrapper.hpp"
+#include "shared/graphics/Camera.hpp"
 
-#include "graphics/opengl/OpenGLWrapper.hpp"
-#include "graphics/Camera.hpp"
-
+// project
 #include "CubeWorld.hpp"
 #include "RotatingCube.hpp"
 #include "ExampleSimGraphicalConfig.hpp"
 #include "CubeCallback.hpp"
-#include "io/ImguiCallback.hpp"
+#include "shared/graphics/ImguiCallback.hpp"
 
 
 namespace example
@@ -89,6 +93,23 @@ CubeImguiOpenGLIOHandler::~CubeImguiOpenGLIOHandler( )
 {}
 
 
+
+void
+CubeImguiOpenGLIOHandler::addRandomCube()
+{
+  cubeWorld_.addRandomCube();
+}
+
+
+
+void
+CubeImguiOpenGLIOHandler::removeOldestCube()
+{
+  cubeWorld_.removeOldestCube();
+}
+
+
+
 void
 CubeImguiOpenGLIOHandler::_onRender( const double )
 {
@@ -130,18 +151,22 @@ CubeImguiOpenGLIOHandler::_onRender( const double )
 
 
 void
-CubeImguiOpenGLIOHandler::addRandomCube()
+CubeImguiOpenGLIOHandler::_onGuiRender ( )
 {
-  cubeWorld_.addRandomCube();
-}
+  bool alwaysOpen = true;
 
+  ImGui::SetNextWindowSize( ImVec2( 0, 0 ), ImGuiSetCond_FirstUseEver ); // auto scale size
+  ImGui::SetNextWindowPos ( ImVec2( 0, 0 ), ImGuiSetCond_FirstUseEver );
 
+  ImGui::Begin( "Cube Simulation", &alwaysOpen );
 
-void
-CubeImguiOpenGLIOHandler::removeOldestCube()
-{
-  cubeWorld_.removeOldestCube();
-}
+  if ( ImGui::CollapsingHeader( "Controls", "controls", false, true ) )
+  {
+    ImGui::Text( "ESC - exit\n\n A  - add random cube\n R  - remove oldest cube\n" );
+  }
+
+  ImGui::End( );
+};
 
 
 } // namespace example

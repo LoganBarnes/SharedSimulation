@@ -1,8 +1,6 @@
 cmake_minimum_required ( VERSION 3.6.0 )
 project ( SimulationThirdparty )
 
-get_directory_property( hasParent PARENT_DIRECTORY )
-
 option( USE_GLFW   "Use GLFW library"   OFF )
 option( USE_VULKAN "Use Vulkan library" OFF )
 option( USE_GLAD   "Use glad library"   OFF )
@@ -13,18 +11,21 @@ option( USE_GMOCK  "Use gmock library"  OFF )
 option( NO_THIRDPARTY_DOWNLOAD "Assume thirdparty projects have already been downloaded" OFF )
 
 
-# other paths
+# for readability
 set( THIRDPARTY ${CMAKE_CURRENT_SOURCE_DIR} )
 
-
+# append non-standard Find<Lib>.cmake files
 set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
 
+# allows for downloading of thirdparty libs at configure time
 include( ../cmake/DownloadProject.cmake )
+
 
 ################################################
 # add glfw3 functionality
 ################################################
 if ( USE_GLFW )
+
   # Download and unpack glfw at configure time
   downloadProject( cmake/CMakeLists.txt.glfw glfw ${NO_THIRDPARTY_DOWNLOAD} )
 
@@ -32,6 +33,7 @@ if ( USE_GLFW )
   set( GLFW_BUILD_TESTS    OFF CACHE BOOL "" FORCE )
   set( GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE )
 
+  # compile glfw with current project
   add_subdirectory( ${CMAKE_BINARY_DIR}/glfw-src
                     ${CMAKE_BINARY_DIR}/glfw-build )
 
@@ -44,14 +46,14 @@ if ( USE_GLFW )
       ${THIRDPARTY}/include
       )
 
-  # to avoid problems with strict compile flags
+  # build glad as its own library to avoid problems with strict compile flags
   add_library               ( glad ${THIRDPARTY}/glad/src/glad.c       )
   target_include_directories( glad SYSTEM PUBLIC ${THIRDPARTY}/include )
 
   # glfw lib
   set( THIRDPARTY_LINK_LIBS ${THIRDPARTY_LINK_LIBS} glfw glad )
 
-  # must be built before project lib
+  # glfw must be built before project lib
   set( THIRDPARTY_DEP_TARGETS ${THIRDPARTY_DEP_TARGETS} glfw glad )
 
   message( "USING GLFW" )
@@ -65,6 +67,7 @@ endif( USE_GLFW )
 ################################################
 if ( USE_VULKAN )
 
+  # append FindVulkan.cmake file
   set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_BINARY_DIR}/glfw-src/CMake/modules )
 
   find_package( Vulkan REQUIRED )
@@ -89,7 +92,13 @@ if ( USE_OPTIX )
   find_package( CUDA  REQUIRED )
   find_package( OptiX REQUIRED )
 
-  set( THIRDPARTY_CUDA_SYSTEM_INCLUDE_DIRS ${THIRDPARTY_CUDA_SYSTEM_INCLUDE_DIRS} ${OptiX_INCLUDE} ${THIRDPARTY}/include )
+  set(
+      THIRDPARTY_CUDA_SYSTEM_INCLUDE_DIRS
+      ${THIRDPARTY_CUDA_SYSTEM_INCLUDE_DIRS}
+
+      ${OptiX_INCLUDE}
+      ${THIRDPARTY}/include
+      )
   set(
       THIRDPARTY_CUDA_LINK_LIBS
       ${THIRDPARTY_CUDA_LINK_LIBS}
@@ -98,7 +107,13 @@ if ( USE_OPTIX )
       ${optixu_LIBRARY}
       )
 
-  set( THIRDPARTY_SYSTEM_INCLUDE_DIRS ${THIRDPARTY_SYSTEM_INCLUDE_DIRS} ${OptiX_INCLUDE} ${THIRDPARTY}/include )
+  set(
+      THIRDPARTY_SYSTEM_INCLUDE_DIRS
+      ${THIRDPARTY_SYSTEM_INCLUDE_DIRS}
+
+      ${OptiX_INCLUDE}
+      ${THIRDPARTY}/include
+      )
   set(
       THIRDPARTY_LINK_LIBS
       ${THIRDPARTY_LINK_LIBS}
@@ -138,7 +153,7 @@ if ( USE_OPTIX )
                         RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
                         )
 
-  # imgui header dirs
+  # optixUtil header dirs
   set(
       THIRDPARTY_SYSTEM_INCLUDE_DIRS
       ${THIRDPARTY_SYSTEM_INCLUDE_DIRS}
@@ -150,7 +165,7 @@ if ( USE_OPTIX )
   # optixUtil lib
   set( THIRDPARTY_LINK_LIBS ${THIRDPARTY_LINK_LIBS} optixUtil )
 
-  # must be built before project lib
+  # optixUtil must be built before project lib
   set( THIRDPARTY_DEP_TARGETS ${THIRDPARTY_DEP_TARGETS} optixUtil )
 
   install(
@@ -170,6 +185,7 @@ endif( )
 # add imgui functionality
 ################################################
 if ( USE_GUI )
+
   # Download and unpack imgui at configure time
   downloadProject( cmake/CMakeLists.txt.imgui imgui ${NO_THIRDPARTY_DOWNLOAD} )
 
@@ -216,7 +232,7 @@ if ( USE_GUI )
   # imgui lib
   set( THIRDPARTY_LINK_LIBS ${THIRDPARTY_LINK_LIBS} imgui )
 
-  # must be built before project lib
+  # imgui must be built before project lib
   set( THIRDPARTY_DEP_TARGETS ${THIRDPARTY_DEP_TARGETS} imgui )
 
   message( "USING GUI" )
@@ -230,19 +246,18 @@ endif( USE_GUI )
 # add gmock functionality
 ################################################
 if ( USE_GMOCK )
+
   # Download and unpack googletest at configure time
   downloadProject( cmake/CMakeLists.txt.googletest googletest ${NO_THIRDPARTY_DOWNLOAD} )
 
-  # Prevent overriding the parent project's compiler/linker
-  # settings on Windows
+  # Prevent overriding the parent project's compiler/linker settings on Windows
   set( gtest_force_THIRDPARTY_crt ON CACHE BOOL "" FORCE )
 
-  # Add googletest directly to our build. This defines
-  # the gtest and gtest_main targets.
+  # Add googlemock directly to the project build
   add_subdirectory( ${CMAKE_BINARY_DIR}/googletest-src/googlemock
                     ${CMAKE_BINARY_DIR}/googletest-build )
 
-  # gmock and gtest header dir
+  # gmock and gtest header dirs
   set(
       THIRDPARTY_SYSTEM_INCLUDE_DIRS
       ${THIRDPARTY_SYSTEM_INCLUDE_DIRS}
@@ -257,11 +272,8 @@ endif( USE_GMOCK )
 
 
 
-################################################
-# add glm functionality
-################################################
-set( THIRDPARTY_SYSTEM_INCLUDE_DIRS ${THIRDPARTY_SYSTEM_INCLUDE_DIRS} ${THIRDPARTY}/include )
-
+# set variables for the parent project if there is one
+get_directory_property( hasParent PARENT_DIRECTORY )
 
 if( hasParent )
 

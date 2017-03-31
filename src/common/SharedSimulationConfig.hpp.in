@@ -1,5 +1,5 @@
 // SharedSimulationConfig.hpp
-// the configured options and settings for Project
+// the project configure options set via cmake
 #pragma once
 
 

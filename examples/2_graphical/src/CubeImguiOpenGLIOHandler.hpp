@@ -1,7 +1,7 @@
 // CubeImguiOpenGLIoHandler.hpp
 #pragma once
 
-#include "io/ImguiOpenGLIOHandler.hpp"
+#include "shared/core/ImguiOpenGLIOHandler.hpp"
 
 
 namespace example
@@ -45,7 +45,10 @@ public:
 private:
 
   virtual
-  void _onRender ( const double alpha );
+  void _onRender ( const double alpha ) final;
+
+  virtual
+  void _onGuiRender ( ) final;
 
   CubeWorld &cubeWorld_;
 
