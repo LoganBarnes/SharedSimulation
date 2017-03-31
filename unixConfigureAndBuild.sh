@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# example usage:
+# ./unixConfigureAndBuild.sh -sf -gl -x -i -m -t
+
 # toggleable variables
 BUILD_MODE=Release
 STRICT_FLAGS=OFF
@@ -97,6 +100,7 @@ if [[ "$CLEAN" == true ]]
   then
 
   cmake -E remove_directory _build
+  echo "Project clean."
   exit;
 fi;
 

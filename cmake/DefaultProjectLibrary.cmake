@@ -1,4 +1,19 @@
 
+# Optional variables that can be set before including this file:
+#
+# PROJECT_CUDA_SOURCE           - string: list of cuda source files to build with nvcc
+# USE_CURAND                    - bool:   link the cuRAND cuda library
+#
+# PROJECT_CONFIG_FILE           - string: hpp file to be filled in by cmake variables
+# STRICT_FLAGS                  - bool:   compile using strict gcc/clang compile flags
+# PROJECT_SOURCE                - string: list of source files to build with C++ compiler
+# PROJECT_MAIN                  - string: file with main() function
+# PROJECT_INSTALL_HEADER_DIRS   - string: directories to install in 'include' folder
+# BUILD_TESTS                   - bool:   build unit tests
+# TESTING_SOURCE                - string: list of unit test source files
+#
+
+
 # system header dirs
 set(
     PROJECT_SYSTEM_INCLUDE_DIRS
@@ -13,7 +28,7 @@ set(
     ${SHARED_LINK_LIBS}
     )
 
-# must be built before project lib
+# targets that must be built before project lib
 set(
     PROJECT_DEP_TARGETS
     ${PROJECT_DEP_TARGETS}
@@ -28,14 +43,12 @@ set(
     )
 
 
-set ( PROJECT_INCLUDE_DIRS ${PROJECT_INCLUDE_DIRS} ${PROJECT_BINARY_DIR} )
-
 # Create named folders for the sources within the .vcproj
 # Empty name lists them directly under the .vcproj
 source_group( "" FILES ${PROJECT_SOURCE}      )
 
 
-# create a cude lib if necessary
+# create a cuda lib if necessary
 if ( PROJECT_CUDA_SOURCE )
 
   source_group( "" FILES ${PROJECT_CUDA_SOURCE} )
@@ -131,6 +144,8 @@ endif( PROJECT_CUDA_SOURCE )
 
 if ( PROJECT_CONFIG_FILE )
 
+  set ( PROJECT_INCLUDE_DIRS ${PROJECT_INCLUDE_DIRS} ${PROJECT_BINARY_DIR} )
+
   configure_file (
                   ${PROJECT_CONFIG_FILE}
                   ${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.hpp
@@ -148,9 +163,6 @@ if ( NOT MSVC AND STRICT_FLAGS )
   set( INTENSE_FLAGS "${INTENSE_FLAGS} -Wshadow -Wsign-conversion -Wsign-promo -Wstrict-overflow=5" )
   set( INTENSE_FLAGS "${INTENSE_FLAGS} -Wswitch-default -Wundef -Werror -Wno-unused"                )
 endif( )
-
-#set( STRICT_DEBUG_FLAGS "${INTENSE_FLAGS}" )
-#set( STRICT_RELEASE_FLAGS "${INTENSE_FLAGS} -O3" )
 
 
 # make project into library that can be used by multiple executables ( such as test classes )
@@ -232,11 +244,11 @@ install(
         ARCHIVE DESTINATION lib
         )
 
-if ( PROJECT_INSTALL_HEADERS )
+if ( PROJECT_INSTALL_HEADER_DIRS )
 
   install(
-          FILES ${PROJECT_INSTALL_HEADERS}
-          DESTINATION include/${PROJECT_NAME}
+          DIRECTORY ${PROJECT_INSTALL_HEADER_DIRS}
+          DESTINATION include
           )
 
 endif()
@@ -246,8 +258,6 @@ endif()
 
 # testing
 if ( BUILD_TESTS AND TESTING_SOURCE )
-
-  # include_directories( ${GTEST_INCLUDE_DIRS} )
 
   set( PROJECT_UNIT_TESTS test${PROJECT_NAME} )
 
