@@ -36,7 +36,6 @@ OpenGLIOHandler::OpenGLIOHandler(
   , upCamera_     ( new graphics::Camera< float >( ) )
   , upGlmCamera_  ( new graphics::GlmCamera< float >( ) )
 {
-
   if ( printInfo )
   {
     std::cout << "Press 'ESC' to exit" << std::endl;
@@ -75,11 +74,8 @@ OpenGLIOHandler::~OpenGLIOHandler( )
 void
 OpenGLIOHandler::showWorld( const double alpha )
 {
-
   _onRender( alpha );
-
   upGlfwWrapper_->swapBuffers( );
-
 } // OpenGLIOHandler::showWorld
 
 
@@ -92,11 +88,8 @@ OpenGLIOHandler::showWorld( const double alpha )
 void
 OpenGLIOHandler::updateIO( )
 {
-
   upGlfwWrapper_->pollEvents( );
-
   exitRequested_ |= ( upGlfwWrapper_->windowShouldClose( ) != 0 );
-
 }
 
 
@@ -109,11 +102,8 @@ OpenGLIOHandler::updateIO( )
 void
 OpenGLIOHandler::waitForIO( )
 {
-
   upGlfwWrapper_->waitEvents( );
-
   exitRequested_ |= ( upGlfwWrapper_->windowShouldClose( ) != 0 );
-
 }
 
 
@@ -132,7 +122,7 @@ OpenGLIOHandler::resize(
                         )
 {
   upCamera_->setAspectRatio( width * 1.0f / height );
-  upGlmCamera_->setAspectRatio( width * 1.0 / height );
+  upGlmCamera_->setAspectRatio( width * 1.0f / height );
   upGLWrapper_->setViewportSize( width, height );
 }
 
