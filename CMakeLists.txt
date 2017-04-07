@@ -3,7 +3,6 @@ project ( SharedSimulation )
 
 option( USE_GLFW   "Use GLFW library"   OFF )
 option( USE_VULKAN "Use Vulkan library" OFF )
-option( USE_GLAD   "Use glad library"   OFF )
 option( USE_OPTIX  "Use optix library"  OFF )
 option( USE_GUI    "Use imgui library"  OFF )
 option( USE_GMOCK  "Use gmock library"  OFF )
