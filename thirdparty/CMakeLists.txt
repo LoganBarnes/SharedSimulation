@@ -1,11 +1,12 @@
 cmake_minimum_required ( VERSION 3.6.0 )
 project ( SimulationThirdparty )
 
-option( USE_GLFW   "Use GLFW library"   OFF )
-option( USE_VULKAN "Use Vulkan library" OFF )
-option( USE_OPTIX  "Use optix library"  OFF )
-option( USE_GUI    "Use imgui library"  OFF )
-option( USE_GMOCK  "Use gmock library"  OFF )
+option( USE_GLM    "Download and compile the glm library"    OFF )
+option( USE_GLFW   "Download and compile the GLFW library"   OFF )
+option( USE_VULKAN "Download and compile the Vulkan library" OFF )
+option( USE_OPTIX  "Download and compile the optix library"  OFF )
+option( USE_GUI    "Download and compile the imgui library"  OFF )
+option( USE_GMOCK  "Download and compile the gmock library"  OFF )
 
 option( NO_THIRDPARTY_DOWNLOAD "Assume thirdparty projects have already been downloaded" OFF )
 
@@ -23,25 +24,47 @@ include( ../cmake/DownloadProject.cmake )
 ################################################
 # add glfw3 functionality
 ################################################
+if ( USE_GLM )
+
+  # # Download and unpack glm at configure time
+  # download_project(
+  #                  PROJ                glm
+  #                  GIT_REPOSITORY      https://github.com/g-truc/glm.git
+  #                  GIT_TAG             master
+  #                  UPDATE_DISCONNECTED 1
+  #                  QUIET
+  #                  )
+
+endif( )
+
+
+################################################
+# add glfw3 functionality
+################################################
 if ( USE_GLFW )
 
   # Download and unpack glfw at configure time
-  downloadProject( cmake/CMakeLists.txt.glfw glfw ${NO_THIRDPARTY_DOWNLOAD} )
+  download_project(
+                   PROJ                glfw
+                   GIT_REPOSITORY      https://github.com/glfw/glfw.git
+                   GIT_TAG             master
+                   UPDATE_DISCONNECTED 1
+                   QUIET
+                   )
 
   set( GLFW_BUILD_DOCS     OFF CACHE BOOL "" FORCE )
   set( GLFW_BUILD_TESTS    OFF CACHE BOOL "" FORCE )
   set( GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE )
 
   # compile glfw with current project
-  add_subdirectory( ${CMAKE_BINARY_DIR}/glfw-src
-                    ${CMAKE_BINARY_DIR}/glfw-build )
+  add_subdirectory( ${glfw_SOURCE_DIR} ${glfw_BINARY_DIR} )
 
   # glfw and glad header dir
   set(
       THIRDPARTY_SYSTEM_INCLUDE_DIRS
       ${THIRDPARTY_SYSTEM_INCLUDE_DIRS}
 
-      ${CMAKE_BINARY_DIR}/glfw-src/include
+      ${glfw_SOURCE_DIR}/include
       ${THIRDPARTY}/include
       )
 
@@ -67,7 +90,7 @@ endif( USE_GLFW )
 if ( USE_VULKAN )
 
   # append FindVulkan.cmake file
-  set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_BINARY_DIR}/glfw-src/CMake/modules )
+  set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${glfw_SOURCE_DIR}/CMake/modules )
 
   find_package( Vulkan REQUIRED )
 
@@ -186,7 +209,13 @@ endif( )
 if ( USE_GUI )
 
   # Download and unpack imgui at configure time
-  downloadProject( cmake/CMakeLists.txt.imgui imgui ${NO_THIRDPARTY_DOWNLOAD} )
+  download_project(
+                   PROJ                imgui
+                   GIT_REPOSITORY      https://github.com/ocornut/imgui.git
+                   GIT_TAG             master
+                   UPDATE_DISCONNECTED 1
+                   QUIET
+                   )
 
   # create lib here before any
   # strict compile flags are set
@@ -209,7 +238,7 @@ if ( USE_GUI )
 
   target_include_directories(
                              imgui SYSTEM PUBLIC
-                             ${CMAKE_BINARY_DIR}/glfw-src/include
+                             ${glfw_SOURCE_DIR}/include
                              ${THIRDPARTY}/include
                              ${CMAKE_BINARY_DIR}/imgui-src
                              ${SRC_DIR}/gui
@@ -247,22 +276,27 @@ endif( USE_GUI )
 if ( USE_GMOCK )
 
   # Download and unpack googletest at configure time
-  downloadProject( cmake/CMakeLists.txt.googletest googletest ${NO_THIRDPARTY_DOWNLOAD} )
+  download_project(
+                   PROJ                googletest
+                   GIT_REPOSITORY      https://github.com/google/googletest.git
+                   GIT_TAG             master
+                   UPDATE_DISCONNECTED 1
+                   QUIET
+                   )
 
   # Prevent overriding the parent project's compiler/linker settings on Windows
   set( gtest_force_THIRDPARTY_crt ON CACHE BOOL "" FORCE )
 
   # Add googlemock directly to the project build
-  add_subdirectory( ${CMAKE_BINARY_DIR}/googletest-src/googlemock
-                    ${CMAKE_BINARY_DIR}/googletest-build )
+  add_subdirectory( ${googletest_SOURCE_DIR} ${googletest_BINARY_DIR} )
 
   # gmock and gtest header dirs
   set(
       THIRDPARTY_SYSTEM_INCLUDE_DIRS
       ${THIRDPARTY_SYSTEM_INCLUDE_DIRS}
 
-      ${CMAKE_BINARY_DIR}/googletest-src/googletest/include
-      ${CMAKE_BINARY_DIR}/googletest-src/googlemock/include
+      ${gtest_SOURCE_DIR}/include
+      ${gmock_SOURCE_DIR}/include
       )
 
   message( "USING GMOCK" )
