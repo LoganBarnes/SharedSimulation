@@ -1,11 +1,12 @@
 cmake_minimum_required ( VERSION 3.6.0 )
 project ( SharedSimulation )
 
-option( USE_GLFW   "Use GLFW library"   OFF )
-option( USE_VULKAN "Use Vulkan library" OFF )
-option( USE_OPTIX  "Use optix library"  OFF )
-option( USE_GUI    "Use imgui library"  OFF )
-option( USE_GMOCK  "Use gmock library"  OFF )
+option( USE_GLM    "Use the glm library"    OFF )
+option( USE_GLFW   "Use the GLFW library"   OFF )
+option( USE_VULKAN "Use the Vulkan library" OFF )
+option( USE_OPTIX  "Use the optix library"  OFF )
+option( USE_GUI    "Use the imgui library"  OFF )
+option( USE_GMOCK  "Use the gmock library"  OFF )
 
 option( BUILD_SHARED_TESTS  "Build unit tests for the shared simulation lib"  OFF )
 option( NO_THIRDPARTY_DOWNLOAD "Attempt to build without downloading/updating thirdparty repositories" OFF )

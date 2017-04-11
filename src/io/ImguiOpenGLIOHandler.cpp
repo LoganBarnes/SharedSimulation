@@ -55,9 +55,7 @@ ImguiOpenGLIOHandler::ImguiOpenGLIOHandler(
 /////////////////////////////////////////////
 ImguiOpenGLIOHandler::~ImguiOpenGLIOHandler( )
 {
-
   ImGui_ImplGlfwGL3_Shutdown( );
-
 }
 
 
@@ -71,7 +69,6 @@ ImguiOpenGLIOHandler::~ImguiOpenGLIOHandler( )
 void
 ImguiOpenGLIOHandler::showWorld( const double alpha )
 {
-
   ImGui_ImplGlfwGL3_NewFrame( );
 
   _onGuiRender( );
@@ -81,7 +78,6 @@ ImguiOpenGLIOHandler::showWorld( const double alpha )
   ImGui::Render( );
 
   upGlfwWrapper_->swapBuffers( );
-
 } // ImguiOpenGLIOHandler::showWorld
 
 

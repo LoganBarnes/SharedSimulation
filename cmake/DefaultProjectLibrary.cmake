@@ -87,16 +87,22 @@ if ( PROJECT_CUDA_SOURCE )
   find_package( CUDA REQUIRED )
 
   # set nvcc options
-  if ( NOT MSVC )
-    set( CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -O3 ${CUDA_COMPUTE_FLAGS} -Wno-deprecated-gpu-targets" )
-    set( CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} --compiler-options -fno-strict-aliasing -use_fast_math" )
-  else( )
-    set( CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} ${CUDA_COMPUTE_FLAGS} -Wno-deprecated-gpu-targets" )
+  if( UNIX OR APPLE )
+    list( APPEND CUDA_NVCC_FLAGS
+         -Xcompiler -fPIC -O3 --compiler-options -fno-strict-aliasing -use_fast_math )
   endif( )
 
-  if ( FORCE_CUDA_STANDARD )
-    set( CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} --std=c++${FORCE_CUDA_STANDARD}" )
+  if( APPLE )
+    list( APPEND CUDA_NVCC_FLAGS -Xcompiler -Wno-unused-function)
   endif( )
+
+  # Auto detect compute architecture
+  if ( NOT ${CMAKE_VERSION} VERSION_LESS 3.7.1 AND NOT CUDA_ARCH_FLAGS )
+    cuda_select_nvcc_arch_flags( CUDA_ARCH_FLAGS Auto )
+    set( CUDA_ARCH_FLAGS ${CUDA_ARCH_FLAGS} CACHE STRING "gencode architecture flags for nvcc" )
+  endif( )
+
+  list( APPEND CUDA_NVCC_FLAGS ${CUDA_ARCH_FLAGS} --std=c++${FORCE_CUDA_STANDARD} )
 
 
   include_directories( ${PROJECT_CUDA_INCLUDE_DIRS} ${PROJECT_BINARY_DIR} )
@@ -290,5 +296,19 @@ if ( BUILD_TESTS AND TESTING_SOURCE )
           TARGETS ${PROJECT_UNIT_TESTS}
           RUNTIME DESTINATION testbin
           )
+
+  # Set up cmake testing
+  enable_testing()
+  include( CTest )
+
+  foreach( testFile ${TESTING_SOURCE} )
+
+    # remove '.cpp' and full path from test name
+    string( REPLACE ".cpp" "" testName ${testFile} )
+    string( REPLACE "${SRC_DIR}/testing/" "" testName ${testName} )
+
+    add_test( NAME ${testName} COMMAND ${PROJECT_UNIT_TESTS} "--gtest_filter=${testName}*" )
+
+  endforeach( )
 
 endif ( BUILD_TESTS AND TESTING_SOURCE )

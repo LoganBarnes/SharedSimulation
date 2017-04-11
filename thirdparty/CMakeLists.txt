@@ -41,6 +41,8 @@ if ( USE_GLM )
       ${glm_SOURCE_DIR}
       )
 
+  message( "USING GLM" )
+
 endif( )
 
 

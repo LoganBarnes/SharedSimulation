@@ -25,9 +25,9 @@ const double MAX_TIMESTEP_NFTR_LOOP = 0.05;
 /// \author Logan Barnes
 /////////////////////////////////////////////
 EventDriver::EventDriver(
-               World     &world,
-               IOHandler &ioHandler
-               ) noexcept
+                         World     &world,
+                         IOHandler &ioHandler
+                         ) noexcept
   :
   Driver( world, ioHandler )
 {}
@@ -42,22 +42,22 @@ EventDriver::EventDriver(
 /////////////////////////////////////////////
 int
 EventDriver::exec(
-             int          argc, ///< number of arguments
-             const char **argv  ///< array of argument strings
-             )
+                  int          argc, ///< number of arguments
+                  const char **argv ///< array of argument strings
+                  )
 {
 
   for ( int i = 1; i < argc; ++i )
   {
-
     {
-
       std::cerr << "WARNING: Unknown argument given: " << argv[ i ] << std::endl;
-
     }
-
   }
 
+
+  ///\todo: determine why this should be called
+  ///       once before event loop starts
+  ioHandler_.showWorld( 1.0 );
 
   _runEventLoop( );
 
@@ -80,19 +80,14 @@ EventDriver::exec(
 void
 EventDriver::_runEventLoop( )
 {
-
   ioHandler_.showWorld( 1.0 );
 
   while ( !ioHandler_.isExitRequested( ) )
   {
-
     // check for input
     ioHandler_.waitForIO( );
-
   }
-
 } // EventDriver::_runEventLoop
-
 
 
 } // namespace shared
