@@ -26,14 +26,20 @@ include( ../cmake/DownloadProject.cmake )
 ################################################
 if ( USE_GLM )
 
-  # # Download and unpack glm at configure time
-  # download_project(
-  #                  PROJ                glm
-  #                  GIT_REPOSITORY      https://github.com/g-truc/glm.git
-  #                  GIT_TAG             master
-  #                  UPDATE_DISCONNECTED 1
-  #                  QUIET
-  #                  )
+  # Download and unpack glm at configure time
+  download_project(
+                   PROJ                glm
+                   GIT_REPOSITORY      https://github.com/g-truc/glm.git
+                   GIT_TAG             master
+                   UPDATE_DISCONNECTED 1
+                   QUIET
+                   )
+
+  set(
+      THIRDPARTY_SYSTEM_INCLUDE_DIRS
+      ${THIRDPARTY_SYSTEM_INCLUDE_DIRS}
+      ${glm_SOURCE_DIR}
+      )
 
 endif( )
 
