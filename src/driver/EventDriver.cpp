@@ -54,13 +54,7 @@ EventDriver::exec(
     }
   }
 
-
-  ///\todo: determine why this should be called
-  ///       once before event loop starts
-  ioHandler_.showWorld( 1.0 );
-
   _runEventLoop( );
-
 
   ioHandler_.onLoopExit( );
 
@@ -80,6 +74,9 @@ EventDriver::exec(
 void
 EventDriver::_runEventLoop( )
 {
+  ///\todo: determine why this should be called
+  ///       twice before event loop starts
+  ioHandler_.showWorld( 1.0 );
   ioHandler_.showWorld( 1.0 );
 
   while ( !ioHandler_.isExitRequested( ) )
