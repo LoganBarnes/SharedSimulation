@@ -8,8 +8,6 @@ option( USE_OPTIX  "Download and compile the optix library"  OFF )
 option( USE_GUI    "Download and compile the imgui library"  OFF )
 option( USE_GMOCK  "Download and compile the gmock library"  OFF )
 
-option( NO_THIRDPARTY_DOWNLOAD "Assume thirdparty projects have already been downloaded" OFF )
-
 
 # for readability
 set( THIRDPARTY ${CMAKE_CURRENT_SOURCE_DIR} )

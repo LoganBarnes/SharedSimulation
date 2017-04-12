@@ -9,7 +9,6 @@ option( USE_GUI    "Use the imgui library"  OFF )
 option( USE_GMOCK  "Use the gmock library"  OFF )
 
 option( BUILD_SHARED_TESTS  "Build unit tests for the shared simulation lib"  OFF )
-option( NO_THIRDPARTY_DOWNLOAD "Attempt to build without downloading/updating thirdparty repositories" OFF )
 
 
 # common directory paths
