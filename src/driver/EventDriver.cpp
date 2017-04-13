@@ -30,7 +30,9 @@ EventDriver::EventDriver(
                          ) noexcept
   :
   Driver( world, ioHandler )
-{}
+{
+  ioHandler_.setEventDriven( true );
+}
 
 
 

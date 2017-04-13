@@ -124,4 +124,16 @@ IOHandler::onLoopExit( )
 
 
 
+/////////////////////////////////////////////
+/// \brief IOHandler::setEventDriven
+/// \param eventDriven
+///
+/// \author Logan Barnes
+/////////////////////////////////////////////
+void
+IOHandler::setEventDriven( const bool )
+{}
+
+
+
 } // namespace shared

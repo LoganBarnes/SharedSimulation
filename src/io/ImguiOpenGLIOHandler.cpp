@@ -84,14 +84,30 @@ ImguiOpenGLIOHandler::showWorld( const double alpha )
 
 
 void
-ImguiOpenGLIOHandler::_onRender ( const double )
+ImguiOpenGLIOHandler::setEventDriven( const bool eventDriven )
 {
-  upGLWrapper_->clearWindow( );
-};
+  if ( eventDriven )
+  {
+    imguiCallback_->setEventHandler( this );
+  }
+  else
+  {
+    imguiCallback_->setEventHandler( nullptr );
+  }
+}
+
 
 
 void
-ImguiOpenGLIOHandler::_onGuiRender ( )
+ImguiOpenGLIOHandler::_onRender( const double )
+{
+  upGLWrapper_->clearWindow( );
+}
+
+
+
+void
+ImguiOpenGLIOHandler::_onGuiRender( )
 {
   bool alwaysOpen = true;
 
@@ -106,7 +122,8 @@ ImguiOpenGLIOHandler::_onGuiRender ( )
   }
 
   ImGui::End( );
-};
+}
+
 
 
 } // namespace shared

@@ -78,6 +78,10 @@ public:
   void onLoopExit ( );
 
 
+  virtual
+  void setEventDriven( const bool eventDriven );
+
+
   ///////////////////////////////////////////////////////////////
   /// \brief isExitRequested
   /// \return true if the user requested to exit the program
