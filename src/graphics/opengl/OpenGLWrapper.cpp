@@ -33,30 +33,30 @@ OpenGLWrapper::OpenGLWrapper( )
 ///
 OpenGLWrapper::~OpenGLWrapper( )
 {
-  for ( auto & it : programs_ )
+  for ( auto &it : programs_ )
   {
     glDeleteProgram( it.second );
   }
 
-  for ( auto & it : textures_ )
+  for ( auto &it : textures_ )
   {
     glDeleteTextures( 1, &( it.second ) );
   }
 
-  for ( auto & it : buffers_ )
+  for ( auto &it : buffers_ )
   {
     glDeleteBuffers( 1, &( it.second.vbo ) );
   }
 
-  for ( auto & vaos : vaoMap_ )
+  for ( auto &vaos : vaoMap_ )
   {
-    for ( auto & it : vaos.second )
+    for ( auto &it : vaos.second )
     {
       glDeleteVertexArrays( 1, &it.second );
     }
   }
 
-  for ( auto & it : framebuffers_ )
+  for ( auto &it : framebuffers_ )
   {
     const FrameBuffer &buffer = it.second;
     glDeleteFramebuffers( 1, &( buffer.fbo ) );
@@ -72,7 +72,7 @@ OpenGLWrapper::~OpenGLWrapper( )
 /// \param height
 ///
 void
-OpenGLWrapper::initContext(
+OpenGLWrapper::setDefaults(
                            GLsizei width,
                            GLsizei height
                            )
@@ -108,6 +108,28 @@ OpenGLWrapper::getTexture( const std::string name )
 {
   _checkItemExists( name, textures_, "texture" );
   return textures_[ name ];
+}
+
+
+
+void
+OpenGLWrapper::setTexture(
+                          const std::string name,
+                          const GLuint      id,
+                          const bool        forceOverride
+                          )
+{
+  _replaceItemId(
+                 name,
+                 textures_,
+                 id,
+                 "texture",
+                 forceOverride,
+                 [ this, &name ]( )
+    {
+      glDeleteTextures( 1, &( this->textures_[ name ] ) );
+    }
+                 );
 }
 
 
@@ -372,16 +394,12 @@ OpenGLWrapper::clearWindow(
 
   if ( width > 0 )
   {
-
     w = width;
-
   }
 
   if ( height > 0 )
   {
-
     h = height;
-
   }
 
   glViewport( 0, 0, w, h );
@@ -687,10 +705,18 @@ OpenGLWrapper::setClearColor(
 
 
 void
-OpenGLWrapper::destroyTexture( const std::string name )
+OpenGLWrapper::destroyTexture(
+                              const std::string name,
+                              const bool        glDelete
+                              )
 {
   _checkItemExists( name, textures_, "textures" );
-  glDeleteTextures( 1, &( textures_.at( name ) ) );
+
+  if ( glDelete )
+  {
+    glDeleteTextures( 1, &( textures_.at( name ) ) );
+  }
+
   textures_.erase( name );
 }
 

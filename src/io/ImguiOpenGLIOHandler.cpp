@@ -78,6 +78,7 @@ ImguiOpenGLIOHandler::showWorld( const double alpha )
   ImGui::Render( );
 
   upGlfwWrapper_->swapBuffers( );
+
 } // ImguiOpenGLIOHandler::showWorld
 
 

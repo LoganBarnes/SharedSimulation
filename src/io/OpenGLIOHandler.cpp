@@ -47,7 +47,7 @@ OpenGLIOHandler::OpenGLIOHandler(
   upGlfwWrapper_->setCallback( std::move( upCallback ) );
 
   upGLWrapper_->setCurrentContext( upGlfwWrapper_->getWindow( ) ); // optional with only one window
-  upGLWrapper_->initContext( width, height );
+  upGLWrapper_->setDefaults( width, height );
 
   upCamera_->setAspectRatio( width * 1.0f / height );
   upGlmCamera_->setAspectRatio( width * 1.0f / height );

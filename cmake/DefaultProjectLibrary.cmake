@@ -162,12 +162,13 @@ endif( PROJECT_CONFIG_FILE )
 
 # compile flags
 if ( NOT MSVC AND STRICT_FLAGS )
-  set( INTENSE_FLAGS "${INTENSE_FLAGS} -pedantic -Wall -Wextra -Wcast-align -Wcast-qual"            )
-  set( INTENSE_FLAGS "${INTENSE_FLAGS} -Wctor-dtor-privacy -Wdisabled-optimization -Wformat=2"      )
-  set( INTENSE_FLAGS "${INTENSE_FLAGS} -Winit-self -Wmissing-declarations -Wmissing-include-dirs"   )
-  set( INTENSE_FLAGS "${INTENSE_FLAGS} -Wold-style-cast -Woverloaded-virtual -Wredundant-decls"     )
-  set( INTENSE_FLAGS "${INTENSE_FLAGS} -Wshadow -Wsign-conversion -Wsign-promo -Wstrict-overflow=5" )
-  set( INTENSE_FLAGS "${INTENSE_FLAGS} -Wswitch-default -Wundef -Werror -Wno-unused"                )
+  list(
+       APPEND INTENSE_FLAGS
+       -pedantic -Wall -Wextra -Wcast-align -Wcast-qual -fPIC -Wctor-dtor-privacy
+       -Wdisabled-optimization -Wformat=2 -Winit-self -Wmissing-declarations -Wundef -Werror
+       -Wmissing-include-dirs -Wold-style-cast -Woverloaded-virtual -Wredundant-decls
+       -Wshadow -Wsign-conversion -Wsign-promo -Wstrict-overflow=5 -Wswitch-default -Wno-unused
+       )
 endif( )
 
 

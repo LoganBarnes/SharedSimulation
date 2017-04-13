@@ -77,13 +77,18 @@ public:
 
   ~OpenGLWrapper( );
 
-  void initContext (
+  void setDefaults (
                     GLsizei width  = 640,
                     GLsizei height = 480
                     );
 
-  // getters
+  // getters and setters
   GLuint getTexture ( const std::string name );
+  void setTexture (
+                   const std::string name,
+                   const GLuint      id,
+                   const bool        forceOverride = false
+                   );
 
   GLuint getBuffer ( const std::string name );
 
@@ -240,7 +245,10 @@ public:
                       const float a
                       );
 
-  void destroyTexture ( const std::string name );
+  void destroyTexture (
+                       const std::string name,
+                       const bool        glDelete = true
+                       );
   void destroyFramebuffer ( const std::string name );
 
 
@@ -266,6 +274,7 @@ private:
                           const VAOSettings &settings
                           ) const;
 
+
   template< typename Map >
   static
   void _checkItemExists (
@@ -273,6 +282,18 @@ private:
                          const Map         &map,
                          const std::string &mapDiscription = ""
                          );
+
+
+  template< typename Map, typename Val, typename DeleteFunction >
+  static
+  void _replaceItemId (
+                       const std::string &key,
+                       Map               &map,
+                       const Val          val,
+                       const std::string &mapDiscription = "",
+                       const bool         forceOverride = false,
+                       DeleteFunction     delFunc = [ ]( ){}
+                       );
 
 
   std::unordered_map< std::string, GLuint > programs_;
@@ -423,6 +444,35 @@ OpenGLWrapper::_checkItemExists(
     msg << "Item '" << key << "' not found in " << mapDiscription << " map.";
     throw std::runtime_error( msg.str( ) );
   }
+}
+
+
+
+template< typename Map, typename Val, typename DeleteFunction >
+void
+OpenGLWrapper::_replaceItemId(
+                              const std::string &key,
+                              Map               &map,
+                              const Val          val,
+                              const std::string &mapDiscription,
+                              const bool         forceOverride,
+                              DeleteFunction     delFunc
+                              )
+{
+  if ( map.find( key ) != map.end( ) && map.at( key ) != val )
+  {
+    if ( !forceOverride )
+    {
+      std::stringstream msg;
+      msg << "Item '" << key << "' already exists in "
+          << mapDiscription << " map and 'forceOverride' is false.";
+      throw std::runtime_error( msg.str( ) );
+    }
+
+    delFunc( );
+  }
+
+  map[ key ] = val;
 }
 
 
