@@ -781,7 +781,7 @@ OpenGLWrapper::_loadShader(
   int logLength;
 
   // Compile vertex shader
-  std::cout << "Compiling vertex shader." << std::endl;
+//  std::cout << "Compiling vertex shader." << std::endl;
   glShaderSource( vertShader, 1, &vertShaderSrc, NULL );
   glCompileShader( vertShader );
 
@@ -789,13 +789,18 @@ OpenGLWrapper::_loadShader(
   glGetShaderiv( vertShader, GL_COMPILE_STATUS,  &result );
   glGetShaderiv( vertShader, GL_INFO_LOG_LENGTH, &logLength );
   std::vector< char > vertShaderError(
-                                      ( logLength >
-                                       1 ) ? static_cast< unsigned long >( logLength ) : 1 );
+                                      ( logLength > 1 ) ?
+                                      static_cast< unsigned long >( logLength ) : 1
+                                      );
   glGetShaderInfoLog( vertShader, logLength, NULL, &vertShaderError[ 0 ] );
-  std::cout << &vertShaderError[ 0 ] << std::endl;
+
+  if ( vertShaderError[ 0 ] != '\0' )
+  {
+    std::cout << "(Vertex Shader) " << &vertShaderError[ 0 ] << std::endl;
+  }
 
   // Compile fragment shader
-  std::cout << "Compiling fragment shader." << std::endl;
+//  std::cout << "Compiling fragment shader." << std::endl;
   glShaderSource( fragShader, 1, &fragShaderSrc, NULL );
   glCompileShader( fragShader );
 
@@ -803,12 +808,17 @@ OpenGLWrapper::_loadShader(
   glGetShaderiv( fragShader, GL_COMPILE_STATUS,  &result );
   glGetShaderiv( fragShader, GL_INFO_LOG_LENGTH, &logLength );
   std::vector< char > fragShaderError(
-                                      ( logLength >
-                                       1 ) ? static_cast< unsigned long >( logLength ) : 1 );
+                                      ( logLength > 1 ) ?
+                                      static_cast< unsigned long >( logLength ) : 1
+                                      );
   glGetShaderInfoLog( fragShader, logLength, NULL, &fragShaderError[ 0 ] );
-  std::cout << &fragShaderError[ 0 ] << std::endl;
 
-  std::cout << "Linking program" << std::endl;
+  if ( fragShaderError[ 0 ] != '\0' )
+  {
+    std::cout << "(Fragment Shader) " << &fragShaderError[ 0 ] << std::endl;
+  }
+
+//  std::cout << "Linking program" << std::endl;
   GLuint program = glCreateProgram( );
   glAttachShader( program, vertShader );
   glAttachShader( program, fragShader );
@@ -817,10 +827,15 @@ OpenGLWrapper::_loadShader(
   glGetProgramiv( program, GL_LINK_STATUS,     &result );
   glGetProgramiv( program, GL_INFO_LOG_LENGTH, &logLength );
   std::vector< char > programError(
-                                   ( logLength >
-                                    1 ) ? static_cast< unsigned long >( logLength ) : 1 );
+                                   ( logLength > 1 ) ?
+                                   static_cast< unsigned long >( logLength ) : 1
+                                   );
   glGetProgramInfoLog( program, logLength, NULL, &programError[ 0 ] );
-  std::cout << &programError[ 0 ] << std::endl;
+
+  if ( programError[ 0 ] != '\0' )
+  {
+    std::cout << "(Shader Program) " << &programError[ 0 ] << std::endl;
+  }
 
   glDeleteShader( vertShader );
   glDeleteShader( fragShader );
