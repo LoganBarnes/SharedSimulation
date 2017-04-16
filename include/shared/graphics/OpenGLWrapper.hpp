@@ -8,6 +8,7 @@
 
 #include "glad/glad.h"
 
+#include "shared/graphics/OpenGLHelper.hpp"
 
 
 namespace graphics
@@ -316,12 +317,7 @@ private:
 
   GLsizei viewportWidth_, viewportHeight_;
 
-  CallbackSingleton *input_;
-
   void *pContext_;
-
-  bool initialized_;
-
 };
 
 

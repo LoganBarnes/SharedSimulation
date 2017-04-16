@@ -39,6 +39,7 @@ if ( USE_GLFW )
       ${INC_DIR}/shared/graphics/Callback.hpp
       ${INC_DIR}/shared/graphics/GlfwWrapper.hpp
       ${INC_DIR}/shared/graphics/OpenGLWrapper.hpp
+      ${INC_DIR}/shared/graphics/OpenGLHelper.hpp
       ${INC_DIR}/shared/core/OpenGLIOHandler.hpp
       ${INC_DIR}/shared/graphics/SharedCallback.hpp
 
@@ -46,6 +47,7 @@ if ( USE_GLFW )
       ${SRC_DIR}/graphics/glfw/CallbackSingleton.cpp
       ${SRC_DIR}/graphics/glfw/GlfwWrapper.cpp
       ${SRC_DIR}/graphics/opengl/OpenGLWrapper.cpp
+      ${SRC_DIR}/graphics/opengl/OpenGLHelper.cpp
       ${SRC_DIR}/io/OpenGLIOHandler.cpp
       ${SRC_DIR}/io/SharedCallback.cpp
       )

@@ -8,7 +8,7 @@
 #include <sstream>
 #include <stdexcept>
 
-#include "graphics/glfw/CallbackSingleton.hpp"
+//#include "graphics/glfw/CallbackSingleton.hpp"
 
 
 namespace graphics
@@ -21,9 +21,7 @@ namespace graphics
 OpenGLWrapper::OpenGLWrapper( )
   : viewportWidth_( 0 )
   , viewportHeight_( 0 )
-  , input_( &CallbackSingleton::getInstance( ) )
   , pContext_( nullptr )
-  , initialized_( false )
 {}
 
 
