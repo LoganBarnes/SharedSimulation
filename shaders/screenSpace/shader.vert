@@ -5,7 +5,7 @@
 layout( location = 0 ) in vec3 inScreenPos;
 
 
-layout( location = 0 ) out vec3 screenPos;
+// layout( location = 0 ) out vec3 screenPos;
 
 
 out gl_PerVertex
@@ -16,7 +16,7 @@ out gl_PerVertex
 
 void main( void )
 {
-  screenPos = inScreenPos;
+  // screenPos = inScreenPos;
 
-  gl_Position = vec4( screenPos, 1.0 );
+  gl_Position = vec4( inScreenPos, 1.0 );
 }

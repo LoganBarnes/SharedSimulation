@@ -809,7 +809,8 @@ OpenGLWrapper::_loadShader(
 
   if ( vertShaderError[ 0 ] != '\0' )
   {
-    std::cout << "(Vertex Shader) " << &vertShaderError[ 0 ] << std::endl;
+    std::cout << "(Vertex Shader) " << &vertShaderError[ 0 ];
+    std::cout << vertex_path << std::endl;
   }
 
   // Compile fragment shader
@@ -828,7 +829,8 @@ OpenGLWrapper::_loadShader(
 
   if ( fragShaderError[ 0 ] != '\0' )
   {
-    std::cout << "(Fragment Shader) " << &fragShaderError[ 0 ] << std::endl;
+    std::cout << "(Fragment Shader) " << &fragShaderError[ 0 ];
+    std::cout << fragment_path << std::endl;
   }
 
 //  std::cout << "Linking program" << std::endl;
@@ -847,7 +849,8 @@ OpenGLWrapper::_loadShader(
 
   if ( programError[ 0 ] != '\0' )
   {
-    std::cout << "(Shader Program) " << &programError[ 0 ] << std::endl;
+    std::cout << "(Shader Program) " << &programError[ 0 ];
+    std::cout << vertex_path << "\n" << fragment_path << std::endl;
   }
 
   glDeleteShader( vertShader );
