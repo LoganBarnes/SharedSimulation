@@ -162,8 +162,15 @@ public:
                          );
 
   void clearWindow (
-                    GLsizei width = 0,
+                    GLsizei width  = 0,
                     GLsizei height = 0
+                    );
+
+  void clearWindow (
+                    GLint   x,
+                    GLint   y,
+                    GLsizei width,
+                    GLsizei height
                     );
 
   void useProgram ( const std::string program );

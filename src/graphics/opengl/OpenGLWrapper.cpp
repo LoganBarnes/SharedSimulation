@@ -389,6 +389,19 @@ OpenGLWrapper::clearWindow(
                            GLsizei height
                            )
 {
+  clearWindow( 0, 0, width, height );
+}
+
+
+
+void
+OpenGLWrapper::clearWindow(
+                           GLint   x,
+                           GLint   y,
+                           GLsizei width,
+                           GLsizei height
+                           )
+{
   GLsizei w = viewportWidth_;
   GLsizei h = viewportHeight_;
 
@@ -402,7 +415,7 @@ OpenGLWrapper::clearWindow(
     h = height;
   }
 
-  glViewport( 0, 0, w, h );
+  glViewport( x, y, w, h );
 
   glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
