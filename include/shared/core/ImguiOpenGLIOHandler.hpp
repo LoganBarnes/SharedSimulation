@@ -79,6 +79,10 @@ public:
   void showWorld ( const double alpha = 1.0 );
 
 
+  virtual
+  void setEventDriven( const bool eventDriven );
+
+
 protected:
 
   ImguiCallback_t imguiCallback_;
