@@ -33,11 +33,7 @@ if ( USE_GLM )
                    QUIET
                    )
 
-  set(
-      THIRDPARTY_SYSTEM_INCLUDE_DIRS
-      ${THIRDPARTY_SYSTEM_INCLUDE_DIRS}
-      ${glm_SOURCE_DIR}
-      )
+  list( APPEND THIRDPARTY_SYSTEM_INCLUDE_DIRS ${glm_SOURCE_DIR} )
 
   message( "USING GLM" )
 
@@ -66,23 +62,23 @@ if ( USE_GLFW )
   add_subdirectory( ${glfw_SOURCE_DIR} ${glfw_BINARY_DIR} )
 
   # glfw and glad header dir
-  set(
-      THIRDPARTY_SYSTEM_INCLUDE_DIRS
-      ${THIRDPARTY_SYSTEM_INCLUDE_DIRS}
+  list(
+       APPEND
+       THIRDPARTY_SYSTEM_INCLUDE_DIRS
 
-      ${glfw_SOURCE_DIR}/include
-      ${THIRDPARTY}/include
-      )
+       ${glfw_SOURCE_DIR}/include
+       ${THIRDPARTY}/include
+       )
 
   # build glad as its own library to avoid problems with strict compile flags
   add_library               ( glad ${THIRDPARTY}/glad/src/glad.c       )
   target_include_directories( glad SYSTEM PUBLIC ${THIRDPARTY}/include )
 
   # glfw lib
-  set( THIRDPARTY_LINK_LIBS ${THIRDPARTY_LINK_LIBS} glfw glad )
+  list( APPEND THIRDPARTY_LINK_LIBS glfw glad )
 
   # glfw must be built before project lib
-  set( THIRDPARTY_DEP_TARGETS ${THIRDPARTY_DEP_TARGETS} glfw glad )
+  list( APPEND THIRDPARTY_DEP_TARGETS glfw glad )
 
   message( "USING GLFW" )
 
@@ -101,10 +97,10 @@ if ( USE_VULKAN )
   find_package( Vulkan REQUIRED )
 
   # vulkan header dirs
-  set( THIRDPARTY_SYSTEM_INCLUDE_DIRS ${THIRDPARTY_SYSTEM_INCLUDE_DIRS} ${VULKAN_INCLUDE_DIR} )
+  list( APPEND THIRDPARTY_SYSTEM_INCLUDE_DIRS ${VULKAN_INCLUDE_DIR} )
 
   # vulkan lib
-  set( THIRDPARTY_LINK_LIBS ${THIRDPARTY_LINK_LIBS} ${VULKAN_LIBRARY} )
+  list( APPEND THIRDPARTY_LINK_LIBS ${VULKAN_LIBRARY} )
 
   message( "USING VULKAN" )
 
@@ -120,35 +116,37 @@ if ( USE_OPTIX )
   find_package( CUDA  REQUIRED )
   find_package( OptiX REQUIRED )
 
-  set(
-      THIRDPARTY_CUDA_SYSTEM_INCLUDE_DIRS
-      ${THIRDPARTY_CUDA_SYSTEM_INCLUDE_DIRS}
+  list(
+       APPEND
+       THIRDPARTY_CUDA_SYSTEM_INCLUDE_DIRS
 
-      ${OptiX_INCLUDE}
-      ${THIRDPARTY}/include
-      )
-  set(
-      THIRDPARTY_CUDA_LINK_LIBS
-      ${THIRDPARTY_CUDA_LINK_LIBS}
+       ${OptiX_INCLUDE}
+       ${THIRDPARTY}/include
+       )
 
-      ${optix_LIBRARY}
-      ${optixu_LIBRARY}
-      )
+   list(
+       APPEND
+       THIRDPARTY_CUDA_LINK_LIBS
 
-  set(
-      THIRDPARTY_SYSTEM_INCLUDE_DIRS
-      ${THIRDPARTY_SYSTEM_INCLUDE_DIRS}
+       ${optix_LIBRARY}
+       ${optixu_LIBRARY}
+       )
 
-      ${OptiX_INCLUDE}
-      ${THIRDPARTY}/include
-      )
-  set(
-      THIRDPARTY_LINK_LIBS
-      ${THIRDPARTY_LINK_LIBS}
+   list(
+        APPEND
+        THIRDPARTY_SYSTEM_INCLUDE_DIRS
 
-      ${optix_LIBRARY}
-      ${optixu_LIBRARY}
-      )
+        ${OptiX_INCLUDE}
+        ${THIRDPARTY}/include
+        )
+
+  list(
+       APPEND
+       THIRDPARTY_LINK_LIBS
+
+       ${optix_LIBRARY}
+       ${optixu_LIBRARY}
+       )
 
   # windows defines for exports and warnings
   add_definitions( -Dsutil_sdk_EXPORTS -D_CRT_SECURE_NO_DEPRECATE )
@@ -182,19 +180,13 @@ if ( USE_OPTIX )
                         )
 
   # optixUtil header dirs
-  set(
-      THIRDPARTY_SYSTEM_INCLUDE_DIRS
-      ${THIRDPARTY_SYSTEM_INCLUDE_DIRS}
-
-      ${THIRDPARTY}/optixUtil
-      )
-
+  list( APPEND THIRDPARTY_SYSTEM_INCLUDE_DIRS ${THIRDPARTY}/optixUtil )
 
   # optixUtil lib
-  set( THIRDPARTY_LINK_LIBS ${THIRDPARTY_LINK_LIBS} optixUtil )
+  list( APPEND THIRDPARTY_LINK_LIBS optixUtil )
 
   # optixUtil must be built before project lib
-  set( THIRDPARTY_DEP_TARGETS ${THIRDPARTY_DEP_TARGETS} optixUtil )
+  list( APPEND THIRDPARTY_DEP_TARGETS optixUtil )
 
   install(
           TARGETS optixUtil
@@ -254,20 +246,19 @@ if ( USE_GUI )
   set_property( TARGET imgui PROPERTY CXX_STANDARD_REQUIRED ON )
 
    # imgui header dirs
-  set(
-      THIRDPARTY_SYSTEM_INCLUDE_DIRS
-      ${THIRDPARTY_SYSTEM_INCLUDE_DIRS}
+  list(
+       APPEND
+       THIRDPARTY_SYSTEM_INCLUDE_DIRS
 
-      ${CMAKE_BINARY_DIR}/imgui-src
-      ${SRC_DIR}/gui
-      )
-
+       ${CMAKE_BINARY_DIR}/imgui-src
+       ${SRC_DIR}/gui
+       )
 
   # imgui lib
-  set( THIRDPARTY_LINK_LIBS ${THIRDPARTY_LINK_LIBS} imgui )
+  list( APPEND THIRDPARTY_LINK_LIBS imgui )
 
   # imgui must be built before project lib
-  set( THIRDPARTY_DEP_TARGETS ${THIRDPARTY_DEP_TARGETS} imgui )
+  list( APPEND THIRDPARTY_DEP_TARGETS imgui )
 
   message( "USING GUI" )
 
@@ -297,13 +288,13 @@ if ( USE_GMOCK )
   add_subdirectory( ${googletest_SOURCE_DIR} ${googletest_BINARY_DIR} )
 
   # gmock and gtest header dirs
-  set(
-      THIRDPARTY_SYSTEM_INCLUDE_DIRS
-      ${THIRDPARTY_SYSTEM_INCLUDE_DIRS}
+  list(
+       APPEND
+       THIRDPARTY_SYSTEM_INCLUDE_DIRS
 
-      ${gtest_SOURCE_DIR}/include
-      ${gmock_SOURCE_DIR}/include
-      )
+       ${gtest_SOURCE_DIR}/include
+       ${gmock_SOURCE_DIR}/include
+       )
 
   message( "USING GMOCK" )
 
