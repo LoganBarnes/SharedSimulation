@@ -160,6 +160,13 @@ CubeImguiOpenGLIOHandler::_onGuiRender ( )
 
   ImGui::Begin( "Cube Simulation", &alwaysOpen );
 
+  // FPS
+  ImGui::Text(
+              "Application average %.3f ms/frame (%.1f FPS)",
+              1000.0f / ImGui::GetIO( ).Framerate,
+              ImGui::GetIO( ).Framerate
+              );
+
   if ( ImGui::CollapsingHeader( "Controls", "controls", false, true ) )
   {
     ImGui::Text( "ESC - exit\n\n A  - add random cube\n R  - remove oldest cube\n" );
