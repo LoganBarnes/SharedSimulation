@@ -1,4 +1,4 @@
-cmake_minimum_required ( VERSION 3.6.0 )
+cmake_minimum_required ( VERSION 3.2.0 )
 project ( ExampleSimBasic )
 
 set( USE_GLFW  OFF CACHE BOOL "" FORCE )

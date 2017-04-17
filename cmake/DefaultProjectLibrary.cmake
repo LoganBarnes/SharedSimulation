@@ -96,7 +96,9 @@ if ( PROJECT_CUDA_SOURCE )
     list( APPEND CUDA_NVCC_FLAGS -Xcompiler -Wno-unused-function)
   endif( )
 
+  #
   # Auto detect compute architecture
+  #
   if ( NOT ${CMAKE_VERSION} VERSION_LESS 3.7.1 AND NOT CUDA_ARCH_FLAGS )
     cuda_select_nvcc_arch_flags( CUDA_ARCH_FLAGS Auto )
     set( CUDA_ARCH_FLAGS ${CUDA_ARCH_FLAGS} CACHE STRING "gencode architecture flags for nvcc" )

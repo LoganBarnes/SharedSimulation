@@ -1,4 +1,4 @@
-cmake_minimum_required ( VERSION 3.6.0 )
+cmake_minimum_required ( VERSION 3.2.0 )
 project ( SimulationThirdparty )
 
 option( USE_GLM    "Download and compile the glm library"    OFF )

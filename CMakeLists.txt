@@ -1,7 +1,7 @@
-cmake_minimum_required ( VERSION 3.6.0 )
+cmake_minimum_required ( VERSION 3.2.0 )
 project ( SharedSimulation )
 
-option( USE_GLM    "Use the glm library"    OFF )
+option( USE_GLM    "Use the GLM library"    OFF )
 option( USE_GLFW   "Use the GLFW library"   OFF )
 option( USE_VULKAN "Use the Vulkan library" OFF )
 option( USE_OPTIX  "Use the optix library"  OFF )
@@ -25,6 +25,23 @@ configure_file (
                 ${PROJECT_BINARY_DIR}/SharedSimulationConfig.hpp
                 )
 
+
+################################################
+# add classes using glm
+################################################
+if ( USE_GLM )
+
+  list(
+       APPEND ADDITIONAL_SOURCE
+
+       ${INC_DIR}/shared/graphics/Camera.hpp
+       ${INC_DIR}/shared/graphics/GlmCamera.hpp
+
+       ${SRC_DIR}/graphics/Camera.cpp
+       ${SRC_DIR}/graphics/GlmCamera.cpp
+       )
+
+endif( USE_GLM )
 
 ################################################
 # add glfw3 functionality
@@ -133,11 +150,6 @@ set(
 
     # graphics
     ${INC_DIR}/shared/graphics/GraphicsForwardDeclarations.hpp
-    ${INC_DIR}/shared/graphics/Camera.hpp
-    ${INC_DIR}/shared/graphics/GlmCamera.hpp
-
-    ${SRC_DIR}/graphics/Camera.cpp
-    ${SRC_DIR}/graphics/GlmCamera.cpp
 
     # world
     ${INC_DIR}/shared/core/World.hpp
