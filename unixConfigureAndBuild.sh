@@ -8,12 +8,11 @@ BUILD_MODE=Release
 STRICT_FLAGS=OFF
 USE_GLFW=OFF
 USE_VULKAN=OFF
-USE_GLAD=OFF
+USE_GLM=OFF
 USE_OPTIX=OFF
 USE_GUI=OFF
 USE_GMOCK=OFF
 TESTING=OFF
-OFFLINE=OFF
 
 CLEAN=false
 
@@ -24,12 +23,11 @@ function printUsage() {
   echo "        -sf or --strict-flags -> enable strict compile flags";
   echo "        -gl or --glfw         -> download and build the glfw library";
   echo "        -v  or --vulkan       -> download and build the vulkan library";
-  echo "        -gl or --glad         -> download and build the glad library";
+  echo "        -m  or --glm          -> download and build the glm library";
   echo "        -x  or --optix        -> download and build the optix library";
   echo "        -i  or --imgui        -> download and build the imgui library";
   echo "        -m  or --gmock        -> download and build the gmock library";
   echo "        -t  or --test         -> compile unit tests";
-  echo "        -o  or --offline      -> compile without updating thirdparty repositories";
   echo "        -d  or --debug        -> compile in debug mode";
   echo "        -c  or --clean        -> clean project (delete _build folder)";
   echo "        -h  or --help         -> print this message";
@@ -57,8 +55,8 @@ case $key in
     -v|--vulkan)
     USE_VULKAN=ON
     ;;
-    -gl|--glad)
-    USE_GLAD=ON
+    -m|--glm)
+    USE_GLM=ON
     ;;
     -x|--optix)
     USE_OPTIX=ON
@@ -83,12 +81,12 @@ case $key in
     ;;
     -h|--help)
     printUsage;
-    exit;
+    [[ "${BASH_SOURCE[0]}" != "${0}" ]] && return || exit
     ;;
     *)
     echo "Unrecognized option: '$key'" # unknown option
     printUsage;
-    exit;
+    [[ "${BASH_SOURCE[0]}" != "${0}" ]] && return || exit
     ;;
 esac
 shift # past argument or value
@@ -101,7 +99,7 @@ if [[ "$CLEAN" == true ]]
 
   cmake -E remove_directory _build
   echo "Project clean."
-  exit;
+  [[ "${BASH_SOURCE[0]}" != "${0}" ]] && return || exit
 fi;
 
 
@@ -116,12 +114,11 @@ cmake -E chdir _build cmake -DCMAKE_BUILD_TYPE=$BUILD_MODE \
                             -DSTRICT_FLAGS=$STRICT_FLAGS \
                             -DUSE_GLFW=$USE_GLFW \
                             -DUSE_VULKAN=$USE_VULKAN \
-                            -DUSE_GLAD=$USE_GLAD \
+                            -DUSE_GLM=$USE_GLM \
                             -DUSE_OPTIX=$USE_OPTIX \
                             -DUSE_GUI=$USE_GUI \
                             -DUSE_GMOCK=$USE_GMOCK \
                             -DBUILD_SHARED_TESTS=$TESTING \
-                            -DNO_THIRDPARTY_DOWNLOAD=$OFFLINE \
                             -DCMAKE_INSTALL_PREFIX=$ROOT_DIR/_build ..
 
 # run the cmake build command to build the project with the native build system

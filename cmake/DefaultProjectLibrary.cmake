@@ -15,32 +15,16 @@
 
 
 # system header dirs
-set(
-    PROJECT_SYSTEM_INCLUDE_DIRS
-    ${PROJECT_SYSTEM_INCLUDE_DIRS}
-    ${SHARED_SYSTEM_INCLUDE_DIRS}
-    )
+list( APPEND PROJECT_SYSTEM_INCLUDE_DIRS ${SHARED_SYSTEM_INCLUDE_DIRS} )
 
 # libraries to link against
-set(
-    PROJECT_LINK_LIBS
-    ${PROJECT_LINK_LIBS}
-    ${SHARED_LINK_LIBS}
-    )
+list( APPEND PROJECT_LINK_LIBS ${SHARED_LINK_LIBS} )
 
 # targets that must be built before project lib
-set(
-    PROJECT_DEP_TARGETS
-    ${PROJECT_DEP_TARGETS}
-    ${SHARED_DEP_TARGETS}
-    )
+list( APPEND PROJECT_DEP_TARGETS ${SHARED_DEP_TARGETS} )
 
 # header dirs
-set(
-    PROJECT_INCLUDE_DIRS
-    ${PROJECT_INCLUDE_DIRS}
-    ${SHARED_INCLUDE_DIRS}
-    )
+list( APPEND PROJECT_INCLUDE_DIRS ${SHARED_INCLUDE_DIRS} )
 
 
 # Create named folders for the sources within the .vcproj
@@ -266,7 +250,14 @@ endif()
 
 
 # testing
-if ( BUILD_TESTS AND TESTING_SOURCE )
+if ( TESTING_SOURCE )
+
+  list( APPEND TESTING_LINK_LIBS   ${SHARED_LINK_LIBS} )
+  list( APPEND TESTING_DEP_TARGETS ${SHARED_DEP_LIBS} )
+
+  list( APPEND TESTING_SYSTEM_INCLUDE_DIRS ${SHARED_SYSTEM_INCLUDE_DIRS} )
+  list( APPEND TESTING_INCLUDE_DIRS        ${SHARED_INCLUDE_DIRS}        )
+
 
   set( PROJECT_UNIT_TESTS test${PROJECT_NAME} )
 
@@ -314,4 +305,4 @@ if ( BUILD_TESTS AND TESTING_SOURCE )
 
   endforeach( )
 
-endif ( BUILD_TESTS AND TESTING_SOURCE )
+endif ( TESTING_SOURCE )

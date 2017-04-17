@@ -1,6 +1,6 @@
-// OpenGLWrapperUnitTests.cpp
+// CameraUnitTests.cpp
 
-#include "shared/graphics/OpenGLWrapper.hpp"
+#include "shared/graphics/Camera.hpp"
 
 #include "gmock/gmock.h"
 
@@ -10,25 +10,25 @@ namespace
 
 
 ///
-/// \brief The OpenGLWrapperUnitTests class
+/// \brief The CameraUnitTests class
 ///
-class OpenGLWrapperUnitTests : public ::testing::Test
+class CameraUnitTests : public ::testing::Test
 {
 
 protected:
 
   /////////////////////////////////////////////////////////////////
-  /// \brief OpenGLWrapperUnitTests
+  /// \brief CameraUnitTests
   /////////////////////////////////////////////////////////////////
-  OpenGLWrapperUnitTests( )
+  CameraUnitTests( )
   {}
 
 
   /////////////////////////////////////////////////////////////////
-  /// \brief ~OpenGLWrapperUnitTests
+  /// \brief ~CameraUnitTests
   /////////////////////////////////////////////////////////////////
   virtual
-  ~OpenGLWrapperUnitTests( )
+  ~CameraUnitTests( )
   {}
 
 };
@@ -37,7 +37,7 @@ protected:
 /////////////////////////////////////////////////////////////////
 /// \brief UnimplementedTest
 /////////////////////////////////////////////////////////////////
-TEST_F( OpenGLWrapperUnitTests, UnimplementedTest )
+TEST_F( CameraUnitTests, UnimplementedTest )
 {}
 
 

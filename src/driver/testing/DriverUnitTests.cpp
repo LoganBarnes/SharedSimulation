@@ -1,6 +1,6 @@
-// OpenGLWrapperUnitTests.cpp
+// DriverUnitTests.cpp
 
-#include "shared/graphics/OpenGLWrapper.hpp"
+#include "shared/core/Driver.hpp"
 
 #include "gmock/gmock.h"
 
@@ -10,25 +10,25 @@ namespace
 
 
 ///
-/// \brief The OpenGLWrapperUnitTests class
+/// \brief The DriverUnitTests class
 ///
-class OpenGLWrapperUnitTests : public ::testing::Test
+class DriverUnitTests : public ::testing::Test
 {
 
 protected:
 
   /////////////////////////////////////////////////////////////////
-  /// \brief OpenGLWrapperUnitTests
+  /// \brief DriverUnitTests
   /////////////////////////////////////////////////////////////////
-  OpenGLWrapperUnitTests( )
+  DriverUnitTests( )
   {}
 
 
   /////////////////////////////////////////////////////////////////
-  /// \brief ~OpenGLWrapperUnitTests
+  /// \brief ~DriverUnitTests
   /////////////////////////////////////////////////////////////////
   virtual
-  ~OpenGLWrapperUnitTests( )
+  ~DriverUnitTests( )
   {}
 
 };
@@ -37,7 +37,7 @@ protected:
 /////////////////////////////////////////////////////////////////
 /// \brief UnimplementedTest
 /////////////////////////////////////////////////////////////////
-TEST_F( OpenGLWrapperUnitTests, UnimplementedTest )
+TEST_F( DriverUnitTests, UnimplementedTest )
 {}
 
 

@@ -8,7 +8,12 @@ option( USE_OPTIX  "Use the optix library"  OFF )
 option( USE_GUI    "Use the imgui library"  OFF )
 option( USE_GMOCK  "Use the gmock library"  OFF )
 
-option( BUILD_SHARED_TESTS  "Build unit tests for the shared simulation lib"  OFF )
+option( BUILD_SHARED_TESTS "Build unit tests for the shared simulation lib" OFF )
+
+if ( ${BUILD_SHARED_TESTS} )
+  set( USE_GMOCK ON CACHE BOOL "" FORCE )
+  message( "TODO: Add message about enabling gmock" )
+endif()
 
 
 # common directory paths
@@ -41,6 +46,13 @@ if ( USE_GLM )
        ${SRC_DIR}/graphics/GlmCamera.cpp
        )
 
+  list(
+       APPEND SHARED_TEST_SOURCE
+
+       ${SRC_DIR}/graphics/testing/CameraUnitTests.cpp
+       ${SRC_DIR}/graphics/testing/GlmCameraUnitTests.cpp
+       )
+
 endif( USE_GLM )
 
 ################################################
@@ -68,6 +80,12 @@ if ( USE_GLFW )
       ${SRC_DIR}/io/OpenGLIOHandler.cpp
       ${SRC_DIR}/io/SharedCallback.cpp
       )
+
+  list(
+       APPEND SHARED_TEST_SOURCE
+
+       ${SRC_DIR}/graphics/testing/OpenGLWrapperUnitTests.cpp
+       )
 
 endif( USE_GLFW )
 
@@ -119,14 +137,13 @@ endif( USE_GUI )
 # add shared simulation files
 ################################################
 # header dirs
-set(
-    SHARED_INCLUDE_DIRS
-    ${SHARED_INCLUDE_DIRS}
+list(
+     APPEND SHARED_INCLUDE_DIRS
 
-    ${INC_DIR}
-    ${SRC_DIR}
-    ${PROJECT_BINARY_DIR}
-    )
+     ${INC_DIR}
+     ${SRC_DIR}
+     ${PROJECT_BINARY_DIR}
+     )
 
 # cpp files
 set(
@@ -156,6 +173,19 @@ set(
 
     ${SRC_DIR}/world/World.cpp
     )
+
+list(
+     APPEND SHARED_TEST_SOURCE
+
+     ${SRC_DIR}/driver/testing/DriverUnitTests.cpp
+     )
+
+
+if ( ${BUILD_SHARED_TESTS} )
+
+  set( TESTING_SOURCE ${SHARED_TEST_SOURCE} )
+
+endif( )
 
 
 # append thirdparty variables
