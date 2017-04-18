@@ -109,13 +109,6 @@ public:
                    unsigned    codepoint
                    );
 
-  ////////////////////////////////////////////////////////
-  /// \brief handleWindowRefresh
-  /// \param pWindow
-  ////////////////////////////////////////////////////////
-  // virtual
-  // void handleWindowRefresh ( GLFWwindow *pWindow );
-
 
 private:
 

@@ -211,19 +211,4 @@ ImguiCallback::handleChar(
 
 
 
-// ////////////////////////////////////////////////////////
-// /// \brief handleWindowRefresh
-// /// \param pWindow
-// ////////////////////////////////////////////////////////
-// void
-// ImguiCallback::handleWindowRefresh( GLFWwindow* )
-// {
-//   if ( pEventDrivenIO_ )
-//   {
-//     pEventDrivenIO_->showWorld( );
-//   }
-// } // ImguiCallback::handleWindowRefresh
-
-
-
 } // namespace shared
