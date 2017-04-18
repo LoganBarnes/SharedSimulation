@@ -14,17 +14,16 @@
 /// \param args
 /// \return
 ///
-template< typename varType, typename Func, typename ... Ts >
+template< typename varType, typename Func >
 bool
 imguiVarChange(
                varType   &var,
-               Func      imguiFunc,
-               Ts && ... args
+               Func      imguiFunc
                )
 {
   varType oldVar = var;
 
-  imguiFunc( std::forward< Ts >( args ) ... );
+  imguiFunc( );
   return oldVar != var;
 }
 
