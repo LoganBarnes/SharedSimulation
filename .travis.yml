@@ -1,6 +1,6 @@
 # Need these for a more recent CMake on Linux
 language: cpp
-sudo: required
+sudo: false
 dist: trusty
 
 
