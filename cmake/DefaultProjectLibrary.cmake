@@ -158,12 +158,6 @@ if ( NOT MSVC AND STRICT_FLAGS )
 endif( )
 
 
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" )
-  list( APPEND PROJECT_CXX_FLAGS -stdlib=libc++ )
-endif( )
-
-
-
 # make project into library that can be used by multiple executables ( such as test classes )
 if ( PROJECT_SOURCE )
 
