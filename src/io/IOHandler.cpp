@@ -22,11 +22,8 @@ bool signalCaught( false );
 void
 signalHandler( int signum )
 {
-
   std::cout << "Caught signal" << std::endl;
-
   signalCaught = ( signum == SIGINT );
-
 }
 
 
@@ -41,22 +38,17 @@ signalHandler( int signum )
 /////////////////////////////////////////////
 IOHandler::IOHandler(
                      World &world,
-                     bool   printInfo
+                     bool  printInfo
                      )
-  :
-  world_          ( world )
+  : world_          ( world )
   , exitRequested_( false )
 {
-
   signal ( SIGINT, signalHandler );
 
   if ( printInfo )
   {
-
     std::cout << "Press 'CTRL + C' to exit" << std::endl;
-
   }
-
 }
 
 
@@ -91,9 +83,7 @@ IOHandler::showWorld( const double )
 void
 IOHandler::updateIO( )
 {
-
   exitRequested_ |= signalCaught;
-
 }
 
 
@@ -106,9 +96,7 @@ IOHandler::updateIO( )
 void
 IOHandler::waitForIO( )
 {
-
   exitRequested_ |= signalCaught;
-
 }
 
 
@@ -121,19 +109,6 @@ IOHandler::waitForIO( )
 void
 IOHandler::onLoopExit( )
 {}
-
-
-
-/////////////////////////////////////////////
-/// \brief IOHandler::setEventDriven
-/// \param eventDriven
-///
-/// \author Logan Barnes
-/////////////////////////////////////////////
-void
-IOHandler::setEventDriven( const bool )
-{}
-
 
 
 } // namespace shared

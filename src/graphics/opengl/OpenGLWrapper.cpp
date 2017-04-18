@@ -124,9 +124,9 @@ OpenGLWrapper::setTexture(
                  "texture",
                  forceOverride,
                  [ this, &name ]( )
-    {
-      glDeleteTextures( 1, &( this->textures_[ name ] ) );
-    }
+                 {
+                   glDeleteTextures( 1, &( this->textures_[ name ] ) );
+                 }
                  );
 }
 
@@ -180,8 +180,8 @@ OpenGLWrapper::addTextureArray(
   glGenTextures( 1, &texture );
   glBindTexture( GL_TEXTURE_2D, texture );
 
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
 
   if ( linear )
   {
@@ -207,7 +207,7 @@ OpenGLWrapper::addTextureImage(
                                const std::string name,
                                GLsizei           width,
                                GLsizei           height,
-                               const std::string
+                               const std::       string
                                )
 {
   if ( textures_.find( name ) != textures_.end( ) )
@@ -234,7 +234,7 @@ OpenGLWrapper::addTextureImage(
 
 GLuint
 OpenGLWrapper::_addVAOToBuffer(
-                               const GLuint       vbo,
+                               const GLuint      vbo,
                                const VAOSettings &settings
                                ) const
 {
@@ -343,7 +343,7 @@ OpenGLWrapper::addFramebuffer(
   // attach a renderbuffer to depth attachment point
   glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, buf.rbo );
 
-  glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+    glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
 } // OpenGLWrapper::addFramebuffer
 

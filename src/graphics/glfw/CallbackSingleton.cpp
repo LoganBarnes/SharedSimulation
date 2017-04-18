@@ -35,11 +35,9 @@ CallbackSingleton::~CallbackSingleton( ) noexcept
 CallbackSingleton&
 CallbackSingleton::getInstance( ) // Singleton is accessed via getInstance()
 {
-
   static CallbackSingleton instance; // lazy singleton, instantiated on first use
 
   return instance;
-
 }
 
 
@@ -61,9 +59,7 @@ CallbackSingleton::errorCallback(
                                  const char *description
                                  )
 {
-
   CallbackSingleton::getInstance( ).defaultErrorCallback( error, description );
-
 }
 
 
@@ -81,9 +77,7 @@ CallbackSingleton::windowSizeCallback(
                                       int         height
                                       )
 {
-
   CallbackSingleton::getInstance( ).defaultWindowSizeCallback( pWindow, width, height );
-
 }
 
 
@@ -99,9 +93,7 @@ CallbackSingleton::windowFocusCallback(
                                        int         focus
                                        )
 {
-
   CallbackSingleton::getInstance( ).defaultWindowFocusCallback( pWindow, focus );
-
 }
 
 
@@ -123,9 +115,7 @@ CallbackSingleton::keyCallback(
                                int         mods
                                )
 {
-
   CallbackSingleton::getInstance( ).defaultKeyCallback( pWindow, key, scancode, action, mods );
-
 }
 
 
@@ -165,9 +155,7 @@ CallbackSingleton::mouseButtonCallback(
                                        int         mods
                                        )
 {
-
   CallbackSingleton::getInstance( ).defaultMouseButtonCallback( pWindow, button, action, mods );
-
 }
 
 
@@ -185,9 +173,7 @@ CallbackSingleton::scrollCallback(
                                   double      yoffset
                                   )
 {
-
   CallbackSingleton::getInstance( ).defaultScrollCallback( pWindow, xoffset, yoffset );
-
 }
 
 
@@ -203,9 +189,15 @@ CallbackSingleton::charCallback(
                                 unsigned    codepoint
                                 )
 {
-
   CallbackSingleton::getInstance( ).defaultCharCallback( pWindow, codepoint );
+}
 
+
+
+void
+CallbackSingleton::windowRefreshCallback( GLFWwindow *pWindow )
+{
+  CallbackSingleton::getInstance( ).defaultWindowRefreshCallback( pWindow );
 }
 
 
@@ -228,9 +220,7 @@ CallbackSingleton::defaultErrorCallback(
                                         const char *description
                                         )
 {
-
   upDefaultCallbacks_->handleError( error, description );
-
 }
 
 
@@ -248,22 +238,16 @@ CallbackSingleton::defaultWindowSizeCallback(
                                              int         height
                                              )
 {
-
   Callback *pCallback = reinterpret_cast< Callback* >( glfwGetWindowUserPointer( pWindow ) );
 
   if ( pCallback )
   {
-
     pCallback->handleWindowSize( pWindow, width, height );
-
   }
   else
   {
-
     upDefaultCallbacks_->handleWindowSize( pWindow, width, height );
-
   }
-
 } // CallbackSingleton::defaultWindowSizeCallback
 
 
@@ -279,22 +263,16 @@ CallbackSingleton::defaultWindowFocusCallback(
                                               int         focus
                                               )
 {
-
   Callback *pCallback = reinterpret_cast< Callback* >( glfwGetWindowUserPointer( pWindow ) );
 
   if ( pCallback )
   {
-
     pCallback->handleWindowFocus( pWindow, focus );
-
   }
   else
   {
-
     upDefaultCallbacks_->handleWindowFocus( pWindow, focus );
-
   }
-
 } // CallbackSingleton::defaultWindowFocusCallback
 
 
@@ -316,22 +294,16 @@ CallbackSingleton::defaultKeyCallback(
                                       int         mods
                                       )
 {
-
   Callback *pCallback = reinterpret_cast< Callback* >( glfwGetWindowUserPointer( pWindow ) );
 
   if ( pCallback )
   {
-
     pCallback->handleKey( pWindow, key, scancode, action, mods );
-
   }
   else
   {
-
     upDefaultCallbacks_->handleKey( pWindow, key, scancode, action, mods );
-
   }
-
 } // CallbackSingleton::defaultKeyCallback
 
 
@@ -349,22 +321,16 @@ CallbackSingleton::defaultCursorPositionCallback(
                                                  double      ypos
                                                  )
 {
-
   Callback *pCallback = reinterpret_cast< Callback* >( glfwGetWindowUserPointer( pWindow ) );
 
   if ( pCallback )
   {
-
     pCallback->handleCursorPosition( pWindow, xpos, ypos );
-
   }
   else
   {
-
     upDefaultCallbacks_->handleCursorPosition( pWindow, xpos, ypos );
-
   }
-
 } // CallbackSingleton::defaultCursorPositionCallback
 
 
@@ -384,22 +350,16 @@ CallbackSingleton::defaultMouseButtonCallback(
                                               int         mods
                                               )
 {
-
   Callback *pCallback = reinterpret_cast< Callback* >( glfwGetWindowUserPointer( pWindow ) );
 
   if ( pCallback )
   {
-
     pCallback->handleMouseButton( pWindow, button, action, mods );
-
   }
   else
   {
-
     upDefaultCallbacks_->handleMouseButton( pWindow, button, action, mods );
-
   }
-
 } // CallbackSingleton::defaultMouseButtonCallback
 
 
@@ -417,22 +377,16 @@ CallbackSingleton::defaultScrollCallback(
                                          double      yoffset
                                          )
 {
-
   Callback *pCallback = reinterpret_cast< Callback* >( glfwGetWindowUserPointer( pWindow ) );
 
   if ( pCallback )
   {
-
     pCallback->handleScroll( pWindow, xoffset, yoffset );
-
   }
   else
   {
-
     upDefaultCallbacks_->handleScroll( pWindow, xoffset, yoffset );
-
   }
-
 } // CallbackSingleton::defaultScrollCallback
 
 
@@ -443,29 +397,44 @@ CallbackSingleton::defaultCharCallback(
                                        unsigned    codepoint
                                        )
 {
-
   Callback *pCallback = reinterpret_cast< Callback* >( glfwGetWindowUserPointer( pWindow ) );
 
   if ( pCallback )
   {
-
     pCallback->handleChar( pWindow, codepoint );
-
   }
   else
   {
-
     upDefaultCallbacks_->handleChar( pWindow, codepoint );
-
   }
-
 } // CallbackSingleton::defaultCharCallback
 
 
 
 ///
+/// \brief CallbackSingleton::defaultWindowRefreshCallback
+/// \param pWindow
+///
+void
+CallbackSingleton::defaultWindowRefreshCallback( GLFWwindow *pWindow )
+{
+  Callback *pCallback = reinterpret_cast< Callback* >( glfwGetWindowUserPointer( pWindow ) );
+
+  if ( pCallback )
+  {
+    pCallback->handleWindowRefresh( pWindow );
+  }
+  else
+  {
+    upDefaultCallbacks_->handleWindowRefresh( pWindow );
+  }
+} // CallbackSingleton::defaultWindowRefreshCallback
+
+
+
+///
 /// \brief CallbackSingleton::setDefaultCallback
-/// \param callback
+/// \param upCallback
 ///
 void
 CallbackSingleton::setDefaultCallback( std::unique_ptr< Callback > upCallback )

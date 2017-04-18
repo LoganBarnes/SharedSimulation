@@ -28,11 +28,8 @@ EventDriver::EventDriver(
                          World     &world,
                          IOHandler &ioHandler
                          ) noexcept
-  :
-  Driver( world, ioHandler )
-{
-  ioHandler_.setEventDriven( true );
-}
+  : Driver( world, ioHandler )
+{}
 
 
 
@@ -78,15 +75,16 @@ EventDriver::_runEventLoop( )
 {
   ///\todo: determine why this should be called
   ///       twice before event loop starts
-  ioHandler_.showWorld( 1.0 );
-  ioHandler_.showWorld( 1.0 );
+  // ioHandler_.showWorld( 1.0 );
 
   while ( !ioHandler_.isExitRequested( ) )
   {
     // check for input
+    ioHandler_.showWorld( 1.0 );
     ioHandler_.waitForIO( );
   }
 } // EventDriver::_runEventLoop
+
 
 
 } // namespace shared

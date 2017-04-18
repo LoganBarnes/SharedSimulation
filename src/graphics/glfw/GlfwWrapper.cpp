@@ -27,15 +27,10 @@ GlfwWrapper::GlfwWrapper( bool opengl )
   : glfwInitialized_ ( false )
   , pWindow_         ( nullptr )
 {
-
   if ( !_initGlfw( opengl ) )
   {
-
     throw std::runtime_error( "Failed to initialize GLFW" );
-
   }
-
-
 }
 
 
@@ -45,17 +40,13 @@ GlfwWrapper::GlfwWrapper( bool opengl )
 ///
 GlfwWrapper::~GlfwWrapper( )
 {
-
   if ( pWindow_ )
   {
-
     glfwDestroyWindow( pWindow_ );
     pWindow_ = nullptr;
-
   }
 
   _terminateGlfw( );
-
 }
 
 
@@ -67,9 +58,7 @@ GlfwWrapper::~GlfwWrapper( )
 GLFWwindow*
 GlfwWrapper::getWindow( )
 {
-
   return pWindow_;
-
 }
 
 
@@ -82,10 +71,9 @@ GlfwWrapper::getWindow( )
 const char**
 GlfwWrapper::getRequiredInstanceExtensions( unsigned int *pCount )
 {
-
   return glfwGetRequiredInstanceExtensions( pCount );
-
 }
+
 
 
 #ifdef USE_VULKAN
@@ -104,12 +92,12 @@ GlfwWrapper::createWindowSurface(
                                  VkSurfaceKHR                *pSurface
                                  )
 {
-
   return glfwCreateWindowSurface( instance, pWindow_, pAllocator, pSurface );
-
 }
 
-#endif
+
+
+#endif // ifdef USE_VULKAN
 
 
 
@@ -122,44 +110,37 @@ GlfwWrapper::createWindowSurface(
 void
 GlfwWrapper::createNewWindow(
                              const std::string &title,
-                             const int          width,
-                             const int          height,
-                             const bool         resizable,
-                             const bool         initOpengl,
-                             const int          sampleCount
+                             const int         width,
+                             const int         height,
+                             const bool        resizable,
+                             const bool        initOpengl,
+                             const int         sampleCount
                              )
 {
-
   //
   // no title means no visibility
   //
   if ( title.length( ) )
   {
-
     glfwWindowHint( GLFW_VISIBLE, GLFW_TRUE );
-
   }
   else
   {
-
     glfwWindowHint( GLFW_VISIBLE, GLFW_FALSE );
-
   }
+
 
   if ( resizable )
   {
-
     glfwWindowHint( GLFW_RESIZABLE, GLFW_TRUE );
-
   }
   else
   {
-
     glfwWindowHint( GLFW_RESIZABLE, GLFW_FALSE );
-
   }
 
-  glfwWindowHint( GLFW_SAMPLES, sampleCount );
+
+    glfwWindowHint( GLFW_SAMPLES, sampleCount );
 
   pWindow_ = glfwCreateWindow(
                               width,
@@ -171,26 +152,18 @@ GlfwWrapper::createNewWindow(
 
   if ( !pWindow_ )
   {
-
     throw std::runtime_error( "GLFW window creation failed" );
-
   }
-
 
   if ( initOpengl )
   {
-
     glfwMakeContextCurrent( pWindow_ );
     glfwSwapInterval( 1 );
 
-
     if ( !gladLoadGLLoader( reinterpret_cast< GLADloadproc >( glfwGetProcAddress ) ) )
     {
-
       throw std::runtime_error( "Failed to initialize OpenGL context" );
-
     }
-
   }
 
   // set default callback functions
@@ -202,7 +175,6 @@ GlfwWrapper::createNewWindow(
   glfwSetCursorPosCallback  ( pWindow_, CallbackSingleton::cursorPositionCallback );
   glfwSetScrollCallback     ( pWindow_, CallbackSingleton::scrollCallback         );
   glfwSetCharCallback       ( pWindow_, CallbackSingleton::charCallback           );
-
 } // GlfwWrapper::createNewWindow
 
 
@@ -220,9 +192,7 @@ GlfwWrapper::createNewWindow(
 void
 GlfwWrapper::pollEvents( )
 {
-
   glfwPollEvents( );
-
 }
 
 
@@ -233,9 +203,7 @@ GlfwWrapper::pollEvents( )
 void
 GlfwWrapper::waitEvents( )
 {
-
   glfwWaitEvents( );
-
 }
 
 
@@ -246,9 +214,7 @@ GlfwWrapper::waitEvents( )
 void
 GlfwWrapper::swapBuffers( )
 {
-
   glfwSwapBuffers( pWindow_ );
-
 }
 
 
@@ -259,10 +225,9 @@ GlfwWrapper::swapBuffers( )
 int
 GlfwWrapper::windowShouldClose( )
 {
-
   return glfwWindowShouldClose( pWindow_ );
-
 }
+
 
 
 ///
@@ -272,9 +237,7 @@ GlfwWrapper::windowShouldClose( )
 void
 GlfwWrapper::setCallback( std::unique_ptr< Callback > upCallback )
 {
-
   CallbackSingleton::getInstance( ).setDefaultCallback( std::move( upCallback ) );
-
 }
 
 
@@ -296,7 +259,6 @@ GlfwWrapper::setCallback( std::unique_ptr< Callback > upCallback )
 bool
 GlfwWrapper::_initGlfw( bool opengl )
 {
-
   //
   // set error callback before anything else to get
   // error messages from future calls
@@ -309,39 +271,33 @@ GlfwWrapper::_initGlfw( bool opengl )
   //
   if ( !glfwInitialized_ && !glfwInit( ) )
   {
-
     //
     // init failed
     //
     return false;
-
   }
 
   std::cout << "Initialized GLFW Version: ";
   std::cout << glfwGetVersionString( ) << std::endl;
 
-
   glfwInitialized_ = true;
 
   if ( opengl )
   {
-
-    glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR,                 3 );
-    glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR,                 2 );
-    glfwWindowHint( GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE );
+    glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, 3 );
+    glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 2 );
+    glfwWindowHint( GLFW_OPENGL_PROFILE,        GLFW_OPENGL_CORE_PROFILE );
 #ifdef __APPLE__
-    glfwWindowHint( GLFW_OPENGL_FORWARD_COMPAT,         GLFW_TRUE );
+    glfwWindowHint( GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE );
 #endif
 
   }
   else
   {
-
     //
     // not using openGL so tell glfw
     //
     glfwWindowHint( GLFW_CLIENT_API, GLFW_NO_API );
-
   }
 
 
@@ -357,7 +313,6 @@ GlfwWrapper::_initGlfw( bool opengl )
 void
 GlfwWrapper::_terminateGlfw( )
 {
-
   if ( glfwInitialized_ )
   {
 
@@ -369,7 +324,6 @@ GlfwWrapper::_terminateGlfw( )
     std::cout << "Terminated GLFW" << std::endl;
 
   }
-
 }
 
 

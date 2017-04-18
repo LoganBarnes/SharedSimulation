@@ -25,11 +25,11 @@ namespace shared
 /////////////////////////////////////////////
 ImguiOpenGLIOHandler::ImguiOpenGLIOHandler(
                                            World &world,
-                                           bool   printInfo,
-                                           int    width,
-                                           int    height,
-                                           bool   resizable,
-                                           int    aaSamples
+                                           bool  printInfo,
+                                           int   width,
+                                           int   height,
+                                           bool  resizable,
+                                           int   aaSamples
                                            )
   : OpenGLIOHandler( world, printInfo, width, height, resizable, aaSamples )
 {
@@ -80,21 +80,6 @@ ImguiOpenGLIOHandler::showWorld( const double alpha )
   upGlfwWrapper_->swapBuffers( );
 
 } // ImguiOpenGLIOHandler::showWorld
-
-
-
-void
-ImguiOpenGLIOHandler::setEventDriven( const bool eventDriven )
-{
-  if ( eventDriven )
-  {
-    imguiCallback_->setEventHandler( this );
-  }
-  else
-  {
-    imguiCallback_->setEventHandler( nullptr );
-  }
-}
 
 
 

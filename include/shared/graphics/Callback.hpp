@@ -6,6 +6,7 @@
 
 
 struct GLFWwindow;
+
 typedef GLFWwindow GLFWwindow;
 
 
@@ -33,9 +34,7 @@ public:
               const char *description
               )
   {
-
     std::cerr << "ERROR: (" << error << ") " << description << std::endl;
-
   }
 
 
@@ -131,6 +130,13 @@ public:
              GLFWwindow*,
              unsigned
              ) {}
+
+  ////////////////////////////////////////////////////////
+  /// \brief handleWindowRefresh
+  /// \param pWindow
+  ////////////////////////////////////////////////////////
+  virtual void
+  handleWindowRefresh( GLFWwindow* ) {}
 
 };
 

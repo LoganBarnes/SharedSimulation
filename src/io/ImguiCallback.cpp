@@ -1,7 +1,6 @@
 #include "shared/graphics/ImguiCallback.hpp"
 #include "GLFW/glfw3.h"
 #include "imgui.h"
-#include "shared/core/IOHandler.hpp"
 
 
 namespace shared
@@ -9,13 +8,9 @@ namespace shared
 
 
 
-ImguiCallback::ImguiCallback(
-                             std::unique_ptr< Callback > upCallback,
-                             IOHandler                  *pEventDrivenIO
-                             )
+ImguiCallback::ImguiCallback( std::unique_ptr< Callback > upCallback )
   : graphics::Callback( )
   , upCallback_( std::move( upCallback ) )
-  , pEventDrivenIO_( pEventDrivenIO )
 {}
 
 
@@ -45,18 +40,6 @@ ImguiCallback::setCallback( std::unique_ptr< graphics::Callback > upCallback )
 
 
 
-///
-/// \brief ImguiCallback::setEventHandler
-/// \param pEventDrivenIO
-///
-void
-ImguiCallback::setEventHandler( IOHandler *pEventDrivenIO )
-{
-  pEventDrivenIO_ = pEventDrivenIO;
-}
-
-
-
 ////////////////////////////////////////////////////////
 /// \brief handleWindowSize
 /// \param pWindow
@@ -73,11 +56,6 @@ ImguiCallback::handleWindowSize(
   if ( upCallback_ )
   {
     upCallback_->handleWindowSize( pWindow, width, height );
-  }
-
-  if ( pEventDrivenIO_ )
-  {
-    pEventDrivenIO_->showWorld( );
   }
 } // ImguiCallback::handleWindowSize
 
@@ -111,11 +89,6 @@ ImguiCallback::handleMouseButton(
     {
       io.MouseDown[ button ] = true;
     }
-  }
-
-  if ( pEventDrivenIO_ )
-  {
-    pEventDrivenIO_->showWorld( );
   }
 } // ImguiCallback::handleMouseButton
 
@@ -162,11 +135,6 @@ ImguiCallback::handleKey(
     io.KeyAlt   = io.KeysDown[ GLFW_KEY_LEFT_ALT     ] || io.KeysDown[ GLFW_KEY_RIGHT_ALT     ];
     io.KeySuper = io.KeysDown[ GLFW_KEY_LEFT_SUPER   ] || io.KeysDown[ GLFW_KEY_RIGHT_SUPER   ];
   }
-
-  if ( pEventDrivenIO_ )
-  {
-    pEventDrivenIO_->showWorld( );
-  }
 } // ImguiCallback::handleKey
 
 
@@ -189,11 +157,6 @@ ImguiCallback::handleCursorPosition(
   if ( !io.WantCaptureMouse && upCallback_ )
   {
     upCallback_->handleCursorPosition( pWindow, xpos, ypos );
-  }
-
-  if ( pEventDrivenIO_ )
-  {
-    pEventDrivenIO_->showWorld( );
   }
 } // ImguiCallback::handleCursorPosition
 
@@ -223,11 +186,6 @@ ImguiCallback::handleScroll(
   {
     io.MouseWheel += static_cast< float >( yoffset ); // the fractional mouse wheel. 1.0 unit 5 lines
   }
-
-  if ( pEventDrivenIO_ )
-  {
-    pEventDrivenIO_->showWorld( );
-  }
 } // ImguiCallback::handleScroll
 
 
@@ -249,12 +207,22 @@ ImguiCallback::handleChar(
   {
     io.AddInputCharacter( static_cast< unsigned short >( codepoint ) );
   }
-
-  if ( pEventDrivenIO_ )
-  {
-    pEventDrivenIO_->showWorld( );
-  }
 } // ImguiCallback::handleChar
+
+
+
+// ////////////////////////////////////////////////////////
+// /// \brief handleWindowRefresh
+// /// \param pWindow
+// ////////////////////////////////////////////////////////
+// void
+// ImguiCallback::handleWindowRefresh( GLFWwindow* )
+// {
+//   if ( pEventDrivenIO_ )
+//   {
+//     pEventDrivenIO_->showWorld( );
+//   }
+// } // ImguiCallback::handleWindowRefresh
 
 
 

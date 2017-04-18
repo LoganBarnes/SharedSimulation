@@ -6,6 +6,7 @@
 
 
 struct GLFWwindow;
+
 typedef GLFWwindow GLFWwindow;
 
 
@@ -94,6 +95,9 @@ public:
                      unsigned    codepoint
                      );
 
+  static
+  void windowRefreshCallback ( GLFWwindow *pWindow );
+
 
   //
   // the actual implementations of the callback methods
@@ -146,8 +150,10 @@ public:
                             unsigned    codepoint
                             );
 
+  void defaultWindowRefreshCallback ( GLFWwindow *pWindow );
 
-  void setDefaultCallback (std::unique_ptr<Callback> upCallback );
+
+  void setDefaultCallback ( std::unique_ptr< Callback > upCallback );
 
 
 private:
@@ -169,8 +175,8 @@ private:
   CallbackSingleton( const CallbackSingleton& ) = delete;
   void operator=( const CallbackSingleton& )    = delete;
 
-  CallbackSingleton( const CallbackSingleton&& ) = delete;
-  void operator=( const CallbackSingleton&& )    = delete;
+  CallbackSingleton( const CallbackSingleton && ) = delete;
+  void operator=( const CallbackSingleton && )    = delete;
 
 };
 
