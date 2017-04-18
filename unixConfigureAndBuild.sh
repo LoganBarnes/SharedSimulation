@@ -29,7 +29,7 @@ function printUsage() {
   echo "        -m  or --gmock        -> download and build the gmock library";
   echo "        -t  or --test         -> compile unit tests";
   echo "        -d  or --debug        -> compile in debug mode";
-  echo "        -c  or --clean        -> clean project (delete _build folder)";
+  echo "        -c  or --clean        -> clean project (delete build folder)";
   echo "        -h  or --help         -> print this message";
 }
 
@@ -93,11 +93,11 @@ shift # past argument or value
 done
 
 
-# clean project by removing _build dir
+# clean project by removing build dir
 if [[ "$CLEAN" == true ]]
   then
 
-  cmake -E remove_directory _build
+  cmake -E remove_directory build
   echo "Project clean."
   [[ "${BASH_SOURCE[0]}" != "${0}" ]] && return 0 || exit 0
 fi;
@@ -106,11 +106,11 @@ fi;
 # current run directory
 ROOT_DIR=$(pwd)
 
-# create the _build directory
-cmake -E make_directory _build
+# create the build directory
+cmake -E make_directory build
 
 # run cmake from the build directory to configure the project
-cmake -E chdir _build cmake -DCMAKE_BUILD_TYPE=$BUILD_MODE \
+cmake -E chdir build cmake -DCMAKE_BUILD_TYPE=$BUILD_MODE \
                             -DSTRICT_FLAGS=$STRICT_FLAGS \
                             -DUSE_GLFW=$USE_GLFW \
                             -DUSE_VULKAN=$USE_VULKAN \
@@ -119,7 +119,7 @@ cmake -E chdir _build cmake -DCMAKE_BUILD_TYPE=$BUILD_MODE \
                             -DUSE_GUI=$USE_GUI \
                             -DUSE_GMOCK=$USE_GMOCK \
                             -DBUILD_SHARED_TESTS=$TESTING \
-                            -DCMAKE_INSTALL_PREFIX=$ROOT_DIR/_build ..
+                            -DCMAKE_INSTALL_PREFIX=$ROOT_DIR/build ..
 
 # run the cmake build command to build the project with the native build system
-cmake -E chdir _build cmake --build . --target install --config $BUILD_MODE -- -j12
+cmake -E chdir build cmake --build . --target install --config $BUILD_MODE -- -j12

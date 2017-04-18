@@ -149,13 +149,19 @@ endif( PROJECT_CONFIG_FILE )
 # compile flags
 if ( NOT MSVC AND STRICT_FLAGS )
   list(
-       APPEND INTENSE_FLAGS
+       APPEND PROJECT_CXX_FLAGS
        -pedantic -Wall -Wextra -Wcast-align -Wcast-qual -fPIC -Wctor-dtor-privacy
        -Wdisabled-optimization -Wformat=2 -Winit-self -Wmissing-declarations -Wundef -Werror
        -Wmissing-include-dirs -Wold-style-cast -Woverloaded-virtual -Wredundant-decls
        -Wshadow -Wsign-conversion -Wsign-promo -Wstrict-overflow=5 -Wswitch-default -Wno-unused
        )
 endif( )
+
+
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" )
+  list( APPEND PROJECT_CXX_FLAGS -stdlib=libc++ )
+endif( )
+
 
 
 # make project into library that can be used by multiple executables ( such as test classes )
@@ -173,8 +179,8 @@ if ( PROJECT_SOURCE )
     target_compile_features( ${PROJECT_LIB} PRIVATE cxx_range_for )
   endif()
 
-  if ( INTENSE_FLAGS )
-    set_target_properties( ${PROJECT_LIB} PROPERTIES COMPILE_FLAGS ${INTENSE_FLAGS} )
+  if ( PROJECT_CXX_FLAGS )
+    set_target_properties( ${PROJECT_LIB} PROPERTIES COMPILE_FLAGS ${PROJECT_CXX_FLAGS} )
   endif( )
 
   if ( PROJECT_DEP_TARGETS )
@@ -212,8 +218,8 @@ if ( PROJECT_MAIN )
     target_compile_features( ${PROJECT_EXEC} PRIVATE cxx_range_for )
   endif()
 
-  if ( INTENSE_FLAGS )
-    set_target_properties( ${PROJECT_EXEC} PROPERTIES COMPILE_FLAGS ${INTENSE_FLAGS} )
+  if ( PROJECT_CXX_FLAGS )
+    set_target_properties( ${PROJECT_EXEC} PROPERTIES COMPILE_FLAGS ${PROJECT_CXX_FLAGS} )
   endif( )
 
   target_include_directories( ${PROJECT_EXEC} PUBLIC
@@ -275,8 +281,8 @@ if ( TESTING_SOURCE )
     target_compile_features( ${PROJECT_UNIT_TESTS} PRIVATE cxx_range_for )
   endif()
 
-  if ( INTENSE_FLAGS )
-    set_target_properties( ${PROJECT_UNIT_TESTS} PROPERTIES COMPILE_FLAGS ${INTENSE_FLAGS} )
+  if ( PROJECT_CXX_FLAGS )
+    set_target_properties( ${PROJECT_UNIT_TESTS} PROPERTIES COMPILE_FLAGS ${PROJECT_CXX_FLAGS} )
   endif( )
 
   if ( ${DEP_TARGETS} )

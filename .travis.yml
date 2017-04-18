@@ -66,8 +66,12 @@ install:
   #   if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then source .travis/install-cuda-trusty.sh; fi
 
 before_script:
+  - cd ${TRAVIS_BUILD_DIR}
+
 
 script:
-  - cd ${TRAVIS_BUILD_DIR}
   - ./unixConfigureAndBuild.sh -t
+  - ./_build/testbin/testSharedSimulation
+
+  - ./unixConfigureAndBuild.sh -sf -t
   - ./_build/testbin/testSharedSimulation
