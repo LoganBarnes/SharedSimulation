@@ -112,7 +112,7 @@ before_script:
 
 script:
   - ./unixConfigureAndBuild.sh -t
-  - ./_build/testbin/testSharedSimulation
+  - ./build/testbin/testSharedSimulation
 
   - ./unixConfigureAndBuild.sh -sf -t
-  - ./_build/testbin/testSharedSimulation
+  - ./build/testbin/testSharedSimulation
