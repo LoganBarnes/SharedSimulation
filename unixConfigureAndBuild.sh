@@ -81,12 +81,12 @@ case $key in
     ;;
     -h|--help)
     printUsage;
-    [[ "${BASH_SOURCE[0]}" != "${0}" ]] && return || exit
+    [[ "${BASH_SOURCE[0]}" != "${0}" ]] && return 0 || exit 0
     ;;
     *)
     echo "Unrecognized option: '$key'" # unknown option
     printUsage;
-    [[ "${BASH_SOURCE[0]}" != "${0}" ]] && return || exit
+    [[ "${BASH_SOURCE[0]}" != "${0}" ]] && return 1 || exit 1
     ;;
 esac
 shift # past argument or value
@@ -99,7 +99,7 @@ if [[ "$CLEAN" == true ]]
 
   cmake -E remove_directory _build
   echo "Project clean."
-  [[ "${BASH_SOURCE[0]}" != "${0}" ]] && return || exit
+  [[ "${BASH_SOURCE[0]}" != "${0}" ]] && return 0 || exit 0
 fi;
 
 
@@ -123,4 +123,3 @@ cmake -E chdir _build cmake -DCMAKE_BUILD_TYPE=$BUILD_MODE \
 
 # run the cmake build command to build the project with the native build system
 cmake -E chdir _build cmake --build . --target install --config $BUILD_MODE -- -j12
-
