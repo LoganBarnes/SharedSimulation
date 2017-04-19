@@ -282,7 +282,7 @@ if ( USE_GMOCK )
                    )
 
   # Prevent overriding the parent project's compiler/linker settings on Windows
-  set( gtest_force_THIRDPARTY_crt ON CACHE BOOL "" FORCE )
+  set( gtest_force_shared_crt  ON CACHE BOOL "" FORCE )
 
   # Add googlemock directly to the project build
   add_subdirectory( ${googletest_SOURCE_DIR} ${googletest_BINARY_DIR} )
