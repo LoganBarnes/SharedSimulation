@@ -1,4 +1,6 @@
 // OpenGLHelperUnitTests.cpp
+#include <limits>
+
 #include "shared/graphics/GlfwWrapper.hpp"
 #include "shared/graphics/OpenGLHelper.hpp"
 
@@ -101,7 +103,8 @@ TEST_F( OpenGLHelperUnitTests, TestTextureDeleted )
 /////////////////////////////////////////////////////////////////
 TEST_F( OpenGLHelperUnitTests, TestTextureDeletedAndReplaced )
 {
-  GLuint id1, id2;
+  GLuint id1 = std::numeric_limits< GLuint >::max();
+  GLuint id2 = id2;
 
   ASSERT_FALSE( glIsTexture( id1 ) );
   ASSERT_FALSE( glIsTexture( id2 ) );
@@ -113,7 +116,7 @@ TEST_F( OpenGLHelperUnitTests, TestTextureDeletedAndReplaced )
     std::shared_ptr< GLuint > spId =
       graphics::OpenGLHelper::createTextureArray( 10, 10 );
 
-    id = *spId;
+    id1 = *spId;
 
     //
     // check texture exists
