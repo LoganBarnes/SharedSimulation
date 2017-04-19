@@ -10,6 +10,7 @@ addons:
       - valgrind
       - g++-5
       - g++-6
+      - xvfb
     sources: &sources
       - ubuntu-toolchain-r-test
 
@@ -110,6 +111,13 @@ install:
       export PATH="${LLVM_DIR}/clang/bin:${PATH}"
     fi
   - ${CXX} --version
+
+
+  ############################################################################
+  # Set environment for headless rendering via Xvfb
+  ############################################################################
+  - export DISPLAY=':99.0'
+  - Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
 
 
   ############################################################################
