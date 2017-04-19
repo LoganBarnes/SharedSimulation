@@ -23,9 +23,13 @@ namespace graphics
 ///////////////////////////////////////////////////////////////////////////////////
 
 
-GlfwWrapper::GlfwWrapper( bool opengl )
+GlfwWrapper::GlfwWrapper(
+                         const bool print,
+                         bool       opengl
+                         )
   : glfwInitialized_ ( false )
   , pWindow_         ( nullptr )
+  , print_           ( print )
 {
   if ( !_initGlfw( opengl ) )
   {
@@ -277,8 +281,11 @@ GlfwWrapper::_initGlfw( bool opengl )
     return false;
   }
 
-  std::cout << "Initialized GLFW Version: ";
-  std::cout << glfwGetVersionString( ) << std::endl;
+  if ( print_ )
+  {
+    std::cout << "Initialized GLFW Version: ";
+    std::cout << glfwGetVersionString( ) << std::endl;
+  }
 
   glfwInitialized_ = true;
 
@@ -318,11 +325,14 @@ GlfwWrapper::_terminateGlfw( )
 
     glfwTerminate( );
     glfwInitialized_ = false;
+
     //
     // ready to be initialized again if necessary
     //
-    std::cout << "Terminated GLFW" << std::endl;
-
+    if ( print_ )
+    {
+      std::cout << "Terminated GLFW" << std::endl;
+    }
   }
 }
 

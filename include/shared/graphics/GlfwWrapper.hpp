@@ -15,6 +15,7 @@
 
 
 struct GLFWwindow;
+
 typedef GLFWwindow GLFWwindow;
 
 
@@ -38,8 +39,10 @@ public:
   //  Initialization functions
   //
   ///////////////////////////////////////////////////////////////////////////////////
-
-  GlfwWrapper( bool opengl = true );
+  GlfwWrapper(
+              const bool print = true,
+              bool       opengl = true
+              );
 
   ~GlfwWrapper( );
 
@@ -52,11 +55,11 @@ public:
   ///
   void createNewWindow (
                         const std::string &title,
-                        const int          width,
-                        const int          height,
-                        const bool         resizable  = true,
-                        const bool         initOpengl = true,
-                        const int          sampleCount = 0 // no anti-aliasing
+                        const int         width,
+                        const int         height,
+                        const bool        resizable  = true,
+                        const bool        initOpengl = true,
+                        const int         sampleCount = 0  // no anti-aliasing
                         );
 
 
@@ -129,7 +132,7 @@ public:
   /// \brief setCallback
   /// \param pCallback
   //////////////////////////////////////////////////
-  void setCallback( std::unique_ptr< Callback > upCallback );
+  void setCallback ( std::unique_ptr< Callback > upCallback );
 
 
 private:
@@ -154,6 +157,7 @@ private:
 
   GLFWwindow *pWindow_;
 
+  const bool print_;
 
 };
 

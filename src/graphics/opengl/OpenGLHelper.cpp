@@ -52,7 +52,7 @@ OpenGLHelper::setDefaults( )
 ///
 /// \author Logan Barnes
 ////////////////////////////////////////////////////////////////////////////////
-GLuint
+std::shared_ptr< GLuint >
 OpenGLHelper::createProgram(
                             const std::string vertFilePath, ///<
                             const std::string fragFilePath ///<
@@ -70,21 +70,28 @@ OpenGLHelper::createProgram(
 ///
 /// \author Logan Barnes
 ////////////////////////////////////////////////////////////////////////////////
-GLuint
+std::shared_ptr< GLuint >
 OpenGLHelper::createTextureArray(
-                                 GLsizei width,   ///<
-                                 GLsizei height,  ///<
-                                 float  *pArray,  ///<
+                                 GLsizei width,      ///<
+                                 GLsizei height,     ///<
+                                 float  *pArray,     ///<
                                  GLint   filterType, ///<
-                                 GLint   wrapType, ///<
+                                 GLint   wrapType,   ///<
                                  bool /*mipmap*/      ///<
                                  )
 
 {
-  GLuint texture;
+  std::shared_ptr< GLuint > upTexture(
+                                      new GLuint,
+                                      [] ( auto pID )
+                                      {
+                                        glDeleteTextures( 1, pID );
+                                        delete pID;
+                                      }
+                                      );
 
-  glGenTextures( 1, &texture );
-  glBindTexture( GL_TEXTURE_2D, texture );
+  glGenTextures( 1, upTexture.get( ) );
+  glBindTexture( GL_TEXTURE_2D, *upTexture );
 
   glTexParameteri( GL_TEXTURE_2D,     GL_TEXTURE_WRAP_S,   wrapType );
   glTexParameteri( GL_TEXTURE_2D,     GL_TEXTURE_WRAP_T,   wrapType );
@@ -94,7 +101,7 @@ OpenGLHelper::createTextureArray(
 
   glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, pArray );
 
-  return texture;
+  return upTexture;
 } // addTextureArray
 
 
@@ -461,59 +468,59 @@ OpenGLHelper::clearFramebuffer( )
 
 
 
-////////////////////////////////////////////////////////////////////////////////
-/// \brief OpenGLHelper::deleteProgram
-/// \param program
-///
-/// \author Logan Barnes
-////////////////////////////////////////////////////////////////////////////////
-void
-OpenGLHelper::deleteProgram( const GLuint program )
-{
-  glDeleteProgram( program );
-}
+//////////////////////////////////////////////////////////////////////////////////
+///// \brief OpenGLHelper::deleteProgram
+///// \param program
+/////
+///// \author Logan Barnes
+//////////////////////////////////////////////////////////////////////////////////
+//void
+//OpenGLHelper::deleteProgram( const GLuint program )
+//{
+//  glDeleteProgram( program );
+//}
 
 
 
-////////////////////////////////////////////////////////////////////////////////
-/// \brief OpenGLHelper::deleteTexture
-/// \param tex
-///
-/// \author Logan Barnes
-////////////////////////////////////////////////////////////////////////////////
-void
-OpenGLHelper::deleteTexture( const GLuint tex )
-{
-  glDeleteTextures( 1, &tex );
-}
+//////////////////////////////////////////////////////////////////////////////////
+///// \brief OpenGLHelper::deleteTexture
+///// \param tex
+/////
+///// \author Logan Barnes
+//////////////////////////////////////////////////////////////////////////////////
+//void
+//OpenGLHelper::deleteTexture( const GLuint tex )
+//{
+//  glDeleteTextures( 1, &tex );
+//}
 
 
 
-////////////////////////////////////////////////////////////////////////////////
-/// \brief OpenGLHelper::deleteFramebuffer
-/// \param fbo
-///
-/// \author Logan Barnes
-////////////////////////////////////////////////////////////////////////////////
-void
-OpenGLHelper::deleteFramebuffer( const GLuint fbo )
-{
-  glDeleteFramebuffers( 1, &fbo );
-}
+//////////////////////////////////////////////////////////////////////////////////
+///// \brief OpenGLHelper::deleteFramebuffer
+///// \param fbo
+/////
+///// \author Logan Barnes
+//////////////////////////////////////////////////////////////////////////////////
+//void
+//OpenGLHelper::deleteFramebuffer( const GLuint fbo )
+//{
+//  glDeleteFramebuffers( 1, &fbo );
+//}
 
 
 
-////////////////////////////////////////////////////////////////////////////////
-/// \brief OpenGLHelper::deleteRenderbuffer
-/// \param rbo
-///
-/// \author Logan Barnes
-////////////////////////////////////////////////////////////////////////////////
-void
-OpenGLHelper::deleteRenderbuffer( const GLuint rbo )
-{
-  glDeleteRenderbuffers( 1, &rbo );
-}
+//////////////////////////////////////////////////////////////////////////////////
+///// \brief OpenGLHelper::deleteRenderbuffer
+///// \param rbo
+/////
+///// \author Logan Barnes
+//////////////////////////////////////////////////////////////////////////////////
+//void
+//OpenGLHelper::deleteRenderbuffer( const GLuint rbo )
+//{
+//  glDeleteRenderbuffers( 1, &rbo );
+//}
 
 
 
@@ -556,7 +563,7 @@ OpenGLHelper::_readFile( const std::string filePath )
 ///
 /// \author Logan Barnes
 ////////////////////////////////////////////////////////////////////////////////
-GLuint
+std::shared_ptr< GLuint >
 OpenGLHelper::_loadShader(
                           const std::string vertex_path,  ///<
                           const std::string fragment_path ///<
@@ -637,7 +644,12 @@ OpenGLHelper::_loadShader(
   glDeleteShader( vertShader );
   glDeleteShader( fragShader );
 
-  return program;
+  return std::shared_ptr< GLuint >( new GLuint( program ),
+                                   [] ( auto pID )
+                                   {
+                                     glDeleteProgram( *pID );
+                                     delete pID;
+                                   } );
 } // OpenGLHelper::_loadShader
 
 

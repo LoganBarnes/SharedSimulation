@@ -65,6 +65,7 @@ if ( USE_GLFW )
       ADDITIONAL_SOURCE
       ${ADDITIONAL_SOURCE}
 
+      ${INC_DIR}/shared/graphics/GLID.hpp
       ${INC_DIR}/shared/graphics/Callback.hpp
       ${INC_DIR}/shared/graphics/GlfwWrapper.hpp
       ${INC_DIR}/shared/graphics/OpenGLWrapper.hpp
@@ -85,6 +86,7 @@ if ( USE_GLFW )
        APPEND SHARED_TEST_SOURCE
 
        ${SRC_DIR}/graphics/testing/OpenGLWrapperUnitTests.cpp
+       ${SRC_DIR}/graphics/testing/OpenGLHelperUnitTests.cpp
        )
 
 endif( USE_GLFW )
@@ -150,6 +152,7 @@ set(
     PROJECT_SOURCE
 
     ${ADDITIONAL_SOURCE}
+    ${CMAKE_CURRENT_SOURCE_DIR}/formatting/uncrustify.cfg
 
     # driver
     ${INC_DIR}/shared/core/Driver.hpp

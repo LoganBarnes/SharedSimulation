@@ -5,9 +5,9 @@
 #include <sstream>
 #include <vector>
 #include <unordered_map>
+#include <memory>
 
 #include "glad/glad.h"
-
 
 
 namespace graphics
@@ -24,45 +24,45 @@ public:
 
 
   static
-  GLuint createProgram (
-                        const std::string vertFilePath,
-                        const std::string fragFilePath
-                        );
+  std::shared_ptr< GLuint >  createProgram (
+                                            const std::string vertFilePath,
+                                            const std::string fragFilePath
+                                            );
 
   static
-  GLuint createTextureArray (
-                             GLsizei width,
-                             GLsizei height,
-                             float  *pArray = nullptr,
-                             GLint   filterType = GL_NEAREST,
-                             GLint   wrapType = GL_REPEAT,
-                             bool    mipmap = true
-                             );
-
-  template< typename T >
-  static
-  GLuint createBuffer (
-                       const T     *pData,
-                       const size_t numElements,
-                       const GLenum type
-                       );
+  std::shared_ptr< GLuint >  createTextureArray (
+                                                 GLsizei width,
+                                                 GLsizei height,
+                                                 float  *pArray = nullptr,
+                                                 GLint   filterType = GL_NEAREST,
+                                                 GLint   wrapType = GL_REPEAT,
+                                                 bool    mipmap = true
+                                                 );
 
   template< typename T >
   static
-  GLuint createIndexBuffer (
-                            const T     *pData,
-                            const size_t numElements,
-                            const GLenum type
-                            );
+  std::shared_ptr< GLuint >  createBuffer (
+                                           const T     *pData,
+                                           const size_t numElements,
+                                           const GLenum usage
+                                           );
+
+  template< typename T >
+  static
+  std::shared_ptr< GLuint >  createIndexBuffer (
+                                                const T     *pData,
+                                                const size_t numElements,
+                                                const GLenum usage
+                                                );
 
   template< typename T >
   static
   void updateBuffer (
-                     const GLuint buffer,
-                     const size_t elementOffset,
-                     const size_t numElements,
-                     const T     *pData,
-                     const GLenum bufferType
+                     const std::shared_ptr< GLuint > &spBuffer,
+                     const size_t                    elementOffset,
+                     const size_t                    numElements,
+                     const T                        *pData,
+                     const GLenum                    bufferType
                      );
 
 
@@ -73,14 +73,14 @@ public:
 //                       const std::string texture
 //                       );
 
-  static
-  void deleteProgram      ( const GLuint program );
-  static
-  void deleteTexture      ( const GLuint tex );
-  static
-  void deleteFramebuffer  ( const GLuint fbo );
-  static
-  void deleteRenderbuffer ( const GLuint rbo );
+//  static
+//  void deleteProgram      ( const GLuint program );
+//  static
+//  void deleteTexture      ( const GLuint tex );
+//  static
+//  void deleteFramebuffer  ( const GLuint fbo );
+//  static
+//  void deleteRenderbuffer ( const GLuint rbo );
 
   void clearFramebuffer ( );
 
@@ -171,20 +171,17 @@ public:
 //  void destroyFramebuffer ( const std::string name );
 
 
-//  void
-//  setCurrentContext( void *pContext ) { pContext_ = pContext; }
-
-
 private:
 
   static
   std::string _readFile ( const std::string filePath );
 
   static
-  GLuint _loadShader (
-                      const std::string vertex_path,
-                      const std::string fragment_path
-                      );
+  std::shared_ptr< GLuint > _loadShader (
+                                         const std::string vertex_path,
+                                         const std::string fragment_path
+                                         );
+
 
 };
 
@@ -197,28 +194,33 @@ private:
 /// \author Logan Barnes
 ////////////////////////////////////////////////////////////////////////////////
 template< typename T >
-GLuint
-OpenGLHelper::createBuffer(
-                           const T     *pData,       ///<
+std::shared_ptr< GLuint >
+OpenGLHelper::createBuffer(const T     *pData,       ///<
                            const size_t numElements, ///<
-                           const GLenum type         ///<
+                           const GLenum usage         ///<
                            )
 {
-  GLuint buffer;
+  std::shared_ptr< GLuint > upBuffer( new GLuint,
+                                     [] ( auto pID )
+                                     {
+                                       glDeleteBuffers( 1, pID );
+                                       delete pID;
+                                     } );
 
-  glGenBuffers( 1, &buffer );
-  glBindBuffer( GL_ARRAY_BUFFER, buffer );
+  glGenBuffers( 1, upBuffer.get( ) );
+  glBindBuffer( GL_ARRAY_BUFFER, *upBuffer );
   glBufferData(
                GL_ARRAY_BUFFER,
                static_cast< GLsizeiptr >( numElements * sizeof( T ) ),
                pData,
-               type
+               usage
                );
 
   glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
-  return buffer;
+  return upBuffer;
 } // OpenGLHelper::addBuffer
+
 
 
 
@@ -229,28 +231,33 @@ OpenGLHelper::createBuffer(
 /// \author Logan Barnes
 ////////////////////////////////////////////////////////////////////////////////
 template< typename T >
-GLuint
-OpenGLHelper::createIndexBuffer(
-                                const T     *pData,       ///<
+std::shared_ptr< GLuint >
+OpenGLHelper::createIndexBuffer(const T     *pData,       ///<
                                 const size_t numElements, ///<
-                                const GLenum type         ///<
+                                const GLenum usage         ///<
                                 )
 {
-  GLuint ibo;
+  std::shared_ptr< GLuint > upIbo( new GLuint,
+                                  [] ( auto pID )
+                                  {
+                                    glDeleteBuffers( 1, pID );
+                                    delete pID;
+                                  } );
 
-  glGenBuffers( 1, &ibo );
-  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
+  glGenBuffers( 1, upIbo.get( ) );
+  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, *upIbo );
   glBufferData(
                GL_ELEMENT_ARRAY_BUFFER,
                static_cast< GLsizeiptr >( numElements * sizeof( T ) ),
                pData,
-               type
+               usage
                );
 
   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 
-  return ibo;
+  return upIbo;
 } // OpenGLHelper::addIndexBuffer
+
 
 
 
@@ -262,16 +269,16 @@ OpenGLHelper::createIndexBuffer(
 template< typename T >
 void
 OpenGLHelper::updateBuffer(
-                           const GLuint buffer,        ///<
-                           const size_t elementOffset, ///<
-                           const size_t numElements,   ///<
-                           const T     *pData,         ///<
-                           const GLenum bufferType     ///<
+                           const std::shared_ptr< GLuint > &upBuffer, ///<
+                           const size_t                    elementOffset, ///<
+                           const size_t                    numElements, ///<
+                           const T                        *pData,     ///<
+                           const GLenum                    bufferType ///<
                            )
 {
   constexpr auto typeSizeBytes = sizeof( T );
 
-  glBindBuffer( bufferType, buffer );
+  glBindBuffer( bufferType, *upBuffer );
   glBufferSubData(
                   bufferType,
                   static_cast< GLintptr >( elementOffset * typeSizeBytes ),
