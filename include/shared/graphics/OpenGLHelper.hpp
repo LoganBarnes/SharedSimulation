@@ -67,12 +67,13 @@ public:
                      );
 
 
-//  void addFramebuffer (
-//                       const std::string buffer,
-//                       GLsizei           width,
-//                       GLsizei           height,
-//                       const std::string texture
-//                       );
+  static
+  std::shared_ptr< GLuint > createFramebuffer (
+                                               GLsizei                         width,
+                                               GLsizei                         height,
+                                               const std::shared_ptr< GLuint > &upTex,
+                                               std::shared_ptr< GLuint >      *pRbo = nullptr
+                                               );
 
 //  static
 //  void deleteProgram      ( const GLuint program );
@@ -196,7 +197,8 @@ private:
 ////////////////////////////////////////////////////////////////////////////////
 template< typename T >
 std::shared_ptr< GLuint >
-OpenGLHelper::createBuffer(const T     *pData,       ///<
+OpenGLHelper::createBuffer(
+                           const T     *pData,       ///<
                            const size_t numElements, ///<
                            const GLenum type,        ///<
                            const GLenum usage        ///<
@@ -222,7 +224,6 @@ OpenGLHelper::createBuffer(const T     *pData,       ///<
 
   return upBuffer;
 } // OpenGLHelper::addBuffer
-
 
 
 
@@ -259,7 +260,6 @@ OpenGLHelper::createBuffer(const T     *pData,       ///<
 
 //  return upIbo;
 //} // OpenGLHelper::addIndexBuffer
-
 
 
 

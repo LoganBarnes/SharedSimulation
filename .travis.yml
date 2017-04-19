@@ -2,7 +2,7 @@
 language: c++
 
 sudo: false
-# dist: trusty
+dist: trusty
 
 addons:
   apt:
@@ -10,7 +10,6 @@ addons:
       - valgrind
       - g++-5
       - g++-6
-      - xvfb
     sources: &sources
       - ubuntu-toolchain-r-test
 
@@ -114,20 +113,13 @@ install:
 
 
   ############################################################################
-  # Set environment for headless rendering via Xvfb
-  ############################################################################
-  - export DISPLAY=':99.0'
-  # - Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
-  - "sh -e /etc/init.d/xvfb start"
-
-
-  ############################################################################
   # Install a CUDA
   ############################################################################
   # - |
   #   if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then source .travis/install-cuda-trusty.sh; fi
 
 before_script:
+   if [ "${TRAVIS_OS_NAME}" = "linux" ]; then export DISPLAY=:99.0; sh -e /etc/init.d/xvfb start; fi
   - cd ${TRAVIS_BUILD_DIR}
 
 

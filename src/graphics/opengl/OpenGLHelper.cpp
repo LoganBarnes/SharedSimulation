@@ -106,6 +106,71 @@ OpenGLHelper::createTextureArray(
 
 
 
+////////////////////////////////////////////////////////////////////////////////
+/// \brief OpenGLHelper::createFramebuffer
+/// \param width
+/// \param height
+/// \param upTex
+/// \return
+///
+/// \author Logan Barnes
+////////////////////////////////////////////////////////////////////////////////
+std::shared_ptr< GLuint >
+OpenGLHelper::createFramebuffer(
+                                GLsizei                         width,
+                                GLsizei                         height,
+                                const std::shared_ptr< GLuint > &upTex,
+                                std::shared_ptr< GLuint >      *pRbo
+                                )
+{
+  std::shared_ptr< GLuint > upRbo( new GLuint,
+                                  [] ( auto pID )
+                                  {
+                                    glDeleteRenderbuffers( 1, pID );
+                                    delete pID;
+                                  } );
+
+  std::shared_ptr< GLuint > upFbo( new GLuint,
+                                  [ upRbo ]( auto pID )
+                                  {
+                                    glDeleteFramebuffers( 1, pID );
+                                    delete pID;
+                                  }
+                                  );
+
+  glGenFramebuffers( 1, upFbo.get( ) );
+  glBindFramebuffer( GL_FRAMEBUFFER, *upFbo );
+
+  glGenRenderbuffers( 1, upRbo.get( ) );
+  glBindRenderbuffer( GL_RENDERBUFFER, *upRbo );
+  glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height );
+  glBindRenderbuffer( GL_RENDERBUFFER, 0 );
+
+  // attach a texture to FBO color attachment point
+  glFramebufferTexture2D(
+                         GL_FRAMEBUFFER,
+                         GL_COLOR_ATTACHMENT0,
+                         GL_TEXTURE_2D,
+                         *upTex,
+                         0
+                         );
+
+
+  // attach a renderbuffer to depth attachment point
+  glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, *upRbo );
+
+  glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+
+  if ( pRbo )
+  {
+    *pRbo = upRbo;
+  }
+
+  return upFbo;
+} // createFramebuffer
+
+
+
 //GLuint
 //OpenGLHelper::_addVAOToBuffer(
 //                               const GLuint       vbo,
