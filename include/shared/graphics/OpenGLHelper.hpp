@@ -44,7 +44,8 @@ public:
   std::shared_ptr< GLuint >  createBuffer (
                                            const T     *pData,
                                            const size_t numElements,
-                                           const GLenum usage
+                                           const GLenum type = GL_ARRAY_BUFFER,
+                                           const GLenum usage = GL_STATIC_DRAW
                                            );
 
   template< typename T >
@@ -197,7 +198,8 @@ template< typename T >
 std::shared_ptr< GLuint >
 OpenGLHelper::createBuffer(const T     *pData,       ///<
                            const size_t numElements, ///<
-                           const GLenum usage         ///<
+                           const GLenum type,        ///<
+                           const GLenum usage        ///<
                            )
 {
   std::shared_ptr< GLuint > upBuffer( new GLuint,
@@ -208,15 +210,15 @@ OpenGLHelper::createBuffer(const T     *pData,       ///<
                                      } );
 
   glGenBuffers( 1, upBuffer.get( ) );
-  glBindBuffer( GL_ARRAY_BUFFER, *upBuffer );
+  glBindBuffer( type, *upBuffer );
   glBufferData(
-               GL_ARRAY_BUFFER,
+               type,
                static_cast< GLsizeiptr >( numElements * sizeof( T ) ),
                pData,
                usage
                );
 
-  glBindBuffer( GL_ARRAY_BUFFER, 0 );
+  glBindBuffer( type, 0 );
 
   return upBuffer;
 } // OpenGLHelper::addBuffer
@@ -224,39 +226,39 @@ OpenGLHelper::createBuffer(const T     *pData,       ///<
 
 
 
-////////////////////////////////////////////////////////////////////////////////
-/// \brief OpenGLHelper::createIndexBuffer
-/// \return
-///
-/// \author Logan Barnes
-////////////////////////////////////////////////////////////////////////////////
-template< typename T >
-std::shared_ptr< GLuint >
-OpenGLHelper::createIndexBuffer(const T     *pData,       ///<
-                                const size_t numElements, ///<
-                                const GLenum usage         ///<
-                                )
-{
-  std::shared_ptr< GLuint > upIbo( new GLuint,
-                                  [] ( auto pID )
-                                  {
-                                    glDeleteBuffers( 1, pID );
-                                    delete pID;
-                                  } );
+//////////////////////////////////////////////////////////////////////////////////
+///// \brief OpenGLHelper::createIndexBuffer
+///// \return
+/////
+///// \author Logan Barnes
+//////////////////////////////////////////////////////////////////////////////////
+//template< typename T >
+//std::shared_ptr< GLuint >
+//OpenGLHelper::createIndexBuffer(const T     *pData,       ///<
+//                                const size_t numElements, ///<
+//                                const GLenum usage        ///<
+//                                )
+//{
+//  std::shared_ptr< GLuint > upIbo( new GLuint,
+//                                  [] ( auto pID )
+//                                  {
+//                                    glDeleteBuffers( 1, pID );
+//                                    delete pID;
+//                                  } );
 
-  glGenBuffers( 1, upIbo.get( ) );
-  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, *upIbo );
-  glBufferData(
-               GL_ELEMENT_ARRAY_BUFFER,
-               static_cast< GLsizeiptr >( numElements * sizeof( T ) ),
-               pData,
-               usage
-               );
+//  glGenBuffers( 1, upIbo.get( ) );
+//  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, *upIbo );
+//  glBufferData(
+//               GL_ELEMENT_ARRAY_BUFFER,
+//               static_cast< GLsizeiptr >( numElements * sizeof( T ) ),
+//               pData,
+//               usage
+//               );
 
-  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+//  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 
-  return upIbo;
-} // OpenGLHelper::addIndexBuffer
+//  return upIbo;
+//} // OpenGLHelper::addIndexBuffer
 
 
 

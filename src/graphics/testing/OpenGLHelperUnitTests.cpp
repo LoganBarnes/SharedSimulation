@@ -111,8 +111,7 @@ TEST_F( OpenGLHelperUnitTests, TestVboIsDeleted )
     std::vector< float > data      = { 0.0f, 0.0f, 0.0f, 0.0f };
     std::shared_ptr< GLuint > spId = opengl_.createBuffer(
                                                           data.data( ),
-                                                          data.size( ),
-                                                          GL_STATIC_DRAW
+                                                          data.size( )
                                                           );
 
     id = *spId;
@@ -170,11 +169,11 @@ TEST_F( OpenGLHelperUnitTests, TestIboIsDeleted )
   //
   {
     std::vector< GLuint > data     = { 0, 1, 2, 1, 2, 3 };
-    std::shared_ptr< GLuint > spId = opengl_.createIndexBuffer(
-                                                               data.data( ),
-                                                               data.size( ),
-                                                               GL_STATIC_DRAW
-                                                               );
+    std::shared_ptr< GLuint > spId = opengl_.createBuffer(
+                                                          data.data( ),
+                                                          data.size( ),
+                                                          GL_ELEMENT_ARRAY_BUFFER
+                                                          );
 
     id = *spId;
 

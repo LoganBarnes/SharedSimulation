@@ -65,7 +65,6 @@ if ( USE_GLFW )
       ADDITIONAL_SOURCE
       ${ADDITIONAL_SOURCE}
 
-      ${INC_DIR}/shared/graphics/GLID.hpp
       ${INC_DIR}/shared/graphics/Callback.hpp
       ${INC_DIR}/shared/graphics/GlfwWrapper.hpp
       ${INC_DIR}/shared/graphics/OpenGLWrapper.hpp
