@@ -23,7 +23,7 @@ class VulkanGlfwWrapper;
 class GlfwWrapper;
 class Callback;
 
-struct StandardIds
+struct StandardPipeline
 {
   std::shared_ptr< GLuint > upProgram;
   std::shared_ptr< GLuint > upVbo;
