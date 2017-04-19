@@ -108,19 +108,8 @@ public:
                                                std::shared_ptr< GLuint >      *pRbo = nullptr
                                                );
 
-//  static
-//  void deleteProgram      ( const GLuint program );
-//  static
-//  void deleteTexture      ( const GLuint tex );
-//  static
-//  void deleteFramebuffer  ( const GLuint fbo );
-//  static
-//  void deleteRenderbuffer ( const GLuint rbo );
-
   void clearFramebuffer ( );
 
-
-//  void useProgram ( const std::string program );
 
 //  void renderBuffer (
 //                     const std::string buffer,
