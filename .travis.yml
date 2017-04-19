@@ -33,6 +33,7 @@ matrix:
 
     # Xcode 8
     - os: osx
+      env: CONFIG_FLAGS="-gl -m -sf -t"
       osx_image: xcode8
 
     # # GCC 5
