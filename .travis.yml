@@ -120,7 +120,9 @@ install:
   #   if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then source .travis/install-cuda-trusty.sh; fi
 
 before_script:
-   if [ "${TRAVIS_OS_NAME}" = "linux" ]; then export DISPLAY=:99.0; sh -e /etc/init.d/xvfb start; fi
+  # - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
+  - export DISPLAY=:99.0;
+  - sh -e /etc/init.d/xvfb start; fi
   - cd ${TRAVIS_BUILD_DIR}
 
 

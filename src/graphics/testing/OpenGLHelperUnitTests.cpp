@@ -41,9 +41,9 @@ protected:
 
 
 /////////////////////////////////////////////////////////////////
-/// \brief TestTextureIsDeleted
+/// \brief TestTextureDeleted
 /////////////////////////////////////////////////////////////////
-TEST_F( OpenGLHelperUnitTests, TestTextureIsDeleted )
+TEST_F( OpenGLHelperUnitTests, TestTextureDeleted )
 {
   GLuint id;
 
@@ -97,9 +97,43 @@ TEST_F( OpenGLHelperUnitTests, TestTextureIsDeleted )
 
 
 /////////////////////////////////////////////////////////////////
-/// \brief TestVboIsDeleted
+/// \brief TestTextureDeletedAndReplaced
 /////////////////////////////////////////////////////////////////
-TEST_F( OpenGLHelperUnitTests, TestVboIsDeleted )
+TEST_F( OpenGLHelperUnitTests, TestTextureDeletedAndReplaced )
+{
+  GLuint id1, id2;
+
+  ASSERT_FALSE( glIsTexture( id1 ) );
+  ASSERT_FALSE( glIsTexture( id2 ) );
+
+  //
+  // create texture in limited scope
+  //
+  {
+    std::shared_ptr< GLuint > spId =
+      graphics::OpenGLHelper::createTextureArray( 10, 10 );
+
+    id = *spId;
+
+    //
+    // check texture exists
+    //
+    ASSERT_TRUE( glIsTexture( id ) );
+  }
+
+  //
+  // GLID went out of scope so texture
+  // should be deleted now
+  //
+  ASSERT_FALSE( glIsTexture( id ) );
+}
+
+
+
+/////////////////////////////////////////////////////////////////
+/// \brief TestVboDeleted
+/////////////////////////////////////////////////////////////////
+TEST_F( OpenGLHelperUnitTests, TestVboDeleted )
 {
   GLuint id;
 
@@ -158,9 +192,9 @@ TEST_F( OpenGLHelperUnitTests, TestVboIsDeleted )
 
 
 /////////////////////////////////////////////////////////////////
-/// \brief TestIboIsDeleted
+/// \brief TestIboDeleted
 /////////////////////////////////////////////////////////////////
-TEST_F( OpenGLHelperUnitTests, TestIboIsDeleted )
+TEST_F( OpenGLHelperUnitTests, TestIboDeleted )
 {
   GLuint id;
 
