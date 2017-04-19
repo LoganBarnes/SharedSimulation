@@ -66,6 +66,11 @@ public:
                      const GLenum                    bufferType
                      );
 
+//  static
+//  void createVao(
+//      const std::vector< VAOElement > &elements,
+//      );
+
 
   static
   std::shared_ptr< GLuint > createFramebuffer (

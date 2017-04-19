@@ -25,12 +25,12 @@ class Callback;
 
 struct StandardPipeline
 {
-  std::shared_ptr< GLuint > upProgram;
-  std::shared_ptr< GLuint > upVbo;
-  std::shared_ptr< GLuint > upIbo;
-  std::shared_ptr< GLuint > upVao;
-  std::shared_ptr< GLuint > upTexture;
-  std::shared_ptr< GLuint > upFramebuffer;
+  std::shared_ptr< GLuint > program;
+  std::shared_ptr< GLuint > vbo;
+  std::shared_ptr< GLuint > ibo;
+  std::shared_ptr< GLuint > vao;
+  std::shared_ptr< GLuint > texture;
+  std::shared_ptr< GLuint > framebuffer;
 };
 
 } // namespace graphics
