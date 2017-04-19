@@ -81,7 +81,7 @@ OpenGLHelper::createTextureArray(
                                  )
 
 {
-  std::shared_ptr< GLuint > upTexture(
+  std::shared_ptr< GLuint > spTexture(
                                       new GLuint,
                                       [] ( auto pID )
                                       {
@@ -90,8 +90,8 @@ OpenGLHelper::createTextureArray(
                                       }
                                       );
 
-  glGenTextures( 1, upTexture.get( ) );
-  glBindTexture( GL_TEXTURE_2D, *upTexture );
+  glGenTextures( 1, spTexture.get( ) );
+  glBindTexture( GL_TEXTURE_2D, *spTexture );
 
   glTexParameteri( GL_TEXTURE_2D,     GL_TEXTURE_WRAP_S,   wrapType );
   glTexParameteri( GL_TEXTURE_2D,     GL_TEXTURE_WRAP_T,   wrapType );
@@ -101,48 +101,119 @@ OpenGLHelper::createTextureArray(
 
   glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, pArray );
 
-  return upTexture;
+  return spTexture;
 } // addTextureArray
 
 
 
 ////////////////////////////////////////////////////////////////////////////////
+/// \brief OpenGLHelper::createVao
+/// \return
+///
+/// \author Logan Barnes
+////////////////////////////////////////////////////////////////////////////////
+std::shared_ptr< GLuint >
+OpenGLHelper::createVao(
+                        const std::shared_ptr< GLuint > &spProgram,    ///<
+                        const std::shared_ptr< GLuint > &spVbo,        ///<
+                        const GLsizei                   totalStride, ///<
+                        const std::vector< VAOElement > &elements    ///<
+                        )
+{
+  std::shared_ptr< GLuint > spVao( new GLuint,
+                                  [] ( auto pID )
+                                  {
+                                    glDeleteVertexArrays( 1, pID );
+                                    delete pID;
+                                  } );
+
+  //
+  // Initialize the vertex array object
+  //
+  glGenVertexArrays( 1, spVao.get() );
+  glBindVertexArray( *spVao );
+
+  //
+  // bind buffer and save program id for loop
+  //
+  glBindBuffer( GL_ARRAY_BUFFER, *spVbo );
+
+  GLuint program = *spProgram;
+
+  //
+  // iteratoe through all elements
+  //
+  for ( const auto & vaoElmt : elements )
+  {
+    int pos                   = glGetAttribLocation( program, vaoElmt.name.c_str( ) );
+
+    if ( pos < 0 )
+    {
+      std::stringstream msg;
+      msg << "attrib location "
+          << vaoElmt.name
+          << " not found for program "
+          << program;
+
+      throw std::runtime_error( msg.str( ) );
+    }
+
+    GLuint position = static_cast< GLuint >( pos );
+
+    glEnableVertexAttribArray( position );
+      glVertexAttribPointer(
+                            position,
+                            vaoElmt.size,   // Num coordinates per position
+                            vaoElmt.type,   // Type
+                            GL_FALSE,       // Normalized
+                            totalStride,    // Stride, 0 = tightly packed
+                            vaoElmt.pointer // Array buffer offset
+                            );
+    }
+
+    // Unbind buffers.
+    glBindBuffer( GL_ARRAY_BUFFER, 0 );
+    glBindVertexArray( 0 );
+
+    return spVao;
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////
 /// \brief OpenGLHelper::createFramebuffer
-/// \param width
-/// \param height
-/// \param upTex
 /// \return
 ///
 /// \author Logan Barnes
 ////////////////////////////////////////////////////////////////////////////////
 std::shared_ptr< GLuint >
 OpenGLHelper::createFramebuffer(
-                                GLsizei                         width,
-                                GLsizei                         height,
-                                const std::shared_ptr< GLuint > &upTex,
-                                std::shared_ptr< GLuint >      *pRbo
+                                GLsizei                         width,  ///<
+                                GLsizei                         height, ///<
+                                const std::shared_ptr< GLuint > &spTex, ///<
+                                std::shared_ptr< GLuint >      *pRbo    ///<
                                 )
 {
-  std::shared_ptr< GLuint > upRbo( new GLuint,
+  std::shared_ptr< GLuint > spRbo( new GLuint,
                                   [] ( auto pID )
                                   {
                                     glDeleteRenderbuffers( 1, pID );
                                     delete pID;
                                   } );
 
-  std::shared_ptr< GLuint > upFbo( new GLuint,
-                                  [ upRbo ]( auto pID )
+  std::shared_ptr< GLuint > spFbo( new GLuint,
+                                  [ spRbo ]( auto pID )
                                   {
                                     glDeleteFramebuffers( 1, pID );
                                     delete pID;
                                   }
                                   );
 
-  glGenFramebuffers( 1, upFbo.get( ) );
-  glBindFramebuffer( GL_FRAMEBUFFER, *upFbo );
+  glGenFramebuffers( 1, spFbo.get( ) );
+  glBindFramebuffer( GL_FRAMEBUFFER, *spFbo );
 
-  glGenRenderbuffers( 1, upRbo.get( ) );
-  glBindRenderbuffer( GL_RENDERBUFFER, *upRbo );
+  glGenRenderbuffers( 1, spRbo.get( ) );
+  glBindRenderbuffer( GL_RENDERBUFFER, *spRbo );
   glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height );
   glBindRenderbuffer( GL_RENDERBUFFER, 0 );
 
@@ -151,22 +222,22 @@ OpenGLHelper::createFramebuffer(
                          GL_FRAMEBUFFER,
                          GL_COLOR_ATTACHMENT0,
                          GL_TEXTURE_2D,
-                         *upTex,
+                         *spTex,
                          0
                          );
 
 
   // attach a renderbuffer to depth attachment point
-  glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, *upRbo );
+  glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, *spRbo );
 
   glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
   if ( pRbo )
   {
-    *pRbo = upRbo;
+    *pRbo = spRbo;
   }
 
-  return upFbo;
+  return spFbo;
 } // createFramebuffer
 
 

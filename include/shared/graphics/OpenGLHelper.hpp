@@ -13,6 +13,31 @@
 namespace graphics
 {
 
+///
+/// \brief The StandardPipeline struct
+///
+struct StandardPipeline
+{
+  std::shared_ptr< GLuint > program;
+  std::shared_ptr< GLuint > vbo;
+  std::shared_ptr< GLuint > ibo;
+  std::shared_ptr< GLuint > vao;
+  std::shared_ptr< GLuint > texture;
+  std::shared_ptr< GLuint > framebuffer;
+};
+
+
+///
+/// \brief The VAOSetting struct
+///
+struct VAOElement
+{
+  std::string name;
+  GLint size;
+  GLenum type;
+  void *pointer;
+};
+
 
 class OpenGLHelper
 {
@@ -66,17 +91,20 @@ public:
                      const GLenum                    bufferType
                      );
 
-//  static
-//  void createVao(
-//      const std::vector< VAOElement > &elements,
-//      );
+  static
+  std::shared_ptr< GLuint > createVao (
+                                       const std::shared_ptr< GLuint > &spProgram,
+                                       const std::shared_ptr< GLuint > &spVbo,
+                                       const GLsizei                   totalStride,
+                                       const std::vector< VAOElement > &elements
+                                       );
 
 
   static
   std::shared_ptr< GLuint > createFramebuffer (
                                                GLsizei                         width,
                                                GLsizei                         height,
-                                               const std::shared_ptr< GLuint > &upTex,
+                                               const std::shared_ptr< GLuint > &spTex,
                                                std::shared_ptr< GLuint >      *pRbo = nullptr
                                                );
 

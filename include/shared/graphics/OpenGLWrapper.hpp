@@ -6,24 +6,12 @@
 #include <vector>
 #include <unordered_map>
 
-#include "glad/glad.h"
-
 #include "shared/graphics/OpenGLHelper.hpp"
 
 
 namespace graphics
 {
 
-///
-/// \brief The VAOSetting struct
-///
-struct VAOElement
-{
-  std::string name;
-  GLint size;
-  GLenum type;
-  void *pointer;
-};
 
 ///
 /// \brief The VAOSettings struct
