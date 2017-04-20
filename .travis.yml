@@ -129,7 +129,10 @@ before_script:
   - cd ${TRAVIS_BUILD_DIR}
 
 script:
+  - mkdir build
+  - cd build
   - cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBUILD_SHARED_LIBS=$SHARED -DBUILD_SHARED_TESTS=$TESTS -DUSE_GLFW=ON -DUSE_GLM=ON -DUSE_GUI=ON -DSTRICT_FLAGS=ON ..
+  - cmake --build .
 
 notifications:
   on_success: never
