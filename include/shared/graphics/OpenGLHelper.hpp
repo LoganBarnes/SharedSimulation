@@ -108,26 +108,52 @@ public:
                                                std::shared_ptr< GLuint >      *pRbo = nullptr
                                                );
 
+  static
+  void bindFramebuffer ( );
+
+  static
+  void bindFramebuffer ( const std::shared_ptr< GLuint > &spFbo );
+
+  static
   void clearFramebuffer ( );
 
+  static
+  void setTextureUniform (
+                          const std::shared_ptr< GLuint > &spProgram,
+                          const std::string               uniform,
+                          const std::shared_ptr< GLuint > &spTexture,
+                          int                             activeTex
+                          );
 
-//  void renderBuffer (
-//                     const std::string buffer,
-//                     const int         start,
-//                     const int         verts,
-//                     const GLenum      mode,
-//                     const std::string ibo = "",
-//                     const void       *pOffset = 0,
-//                     const GLenum      iboType = GL_UNSIGNED_SHORT
-//                     );
+  static
+  void setFloatUniform (
+                        const std::shared_ptr< GLuint > &spProgram,
+                        const std::string               uniform,
+                        const float                    *pValue,
+                        const int                       size = 1,
+                        const int                       count = 1
+                        );
 
+  static
+  void setMatrixUniform (
+                         const std::shared_ptr< GLuint > &spProgram,
+                         const std::string               uniform,
+                         const float                    *pValue,
+                         const int                       size,
+                         const int                       count
+                         );
 
-//  void setTextureUniform (
-//                          const std::string program,
-//                          const std::string uniform,
-//                          const std::string texture,
-//                          int               activeTex
-//                          );
+  static
+  void renderBuffer (
+                     const std::shared_ptr< GLuint > &spVao,
+                     const int                       start,
+                     const int                       verts,
+                     const GLenum                    mode,
+                     const std::shared_ptr< GLuint > spIbo = nullptr,
+                     const void                     *pOffset = 0,
+                     const GLenum                    iboType = GL_UNSIGNED_SHORT
+                     );
+
 //  void setBoolUniform (
 //                       const std::string program,
 //                       const std::string uniform,

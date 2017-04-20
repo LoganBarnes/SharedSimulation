@@ -130,7 +130,7 @@ OpenGLHelper::createVao(
   //
   // Initialize the vertex array object
   //
-  glGenVertexArrays( 1, spVao.get() );
+  glGenVertexArrays( 1, spVao.get( ) );
   glBindVertexArray( *spVao );
 
   //
@@ -143,9 +143,9 @@ OpenGLHelper::createVao(
   //
   // iteratoe through all elements
   //
-  for ( const auto & vaoElmt : elements )
+  for ( const auto &vaoElmt : elements )
   {
-    int pos                   = glGetAttribLocation( program, vaoElmt.name.c_str( ) );
+    int pos = glGetAttribLocation( program, vaoElmt.name.c_str( ) );
 
     if ( pos < 0 )
     {
@@ -161,22 +161,22 @@ OpenGLHelper::createVao(
     GLuint position = static_cast< GLuint >( pos );
 
     glEnableVertexAttribArray( position );
-      glVertexAttribPointer(
-                            position,
-                            vaoElmt.size,   // Num coordinates per position
-                            vaoElmt.type,   // Type
-                            GL_FALSE,       // Normalized
-                            totalStride,    // Stride, 0 = tightly packed
-                            vaoElmt.pointer // Array buffer offset
-                            );
-    }
+    glVertexAttribPointer(
+                          position,
+                          vaoElmt.size,     // Num coordinates per position
+                          vaoElmt.type,     // Type
+                          GL_FALSE,         // Normalized
+                          totalStride,      // Stride, 0 = tightly packed
+                          vaoElmt.pointer   // Array buffer offset
+                          );
+  }
 
-    // Unbind buffers.
-    glBindBuffer( GL_ARRAY_BUFFER, 0 );
-    glBindVertexArray( 0 );
+  // Unbind buffers.
+  glBindBuffer( GL_ARRAY_BUFFER, 0 );
+  glBindVertexArray( 0 );
 
-    return spVao;
-}
+  return spVao;
+} // createVao
 
 
 
@@ -315,65 +315,39 @@ OpenGLHelper::createFramebuffer(
 
 
 
-//void
-//OpenGLHelper::addFramebuffer(
-//                              const std::string buffer,
-//                              GLsizei           width,
-//                              GLsizei           height,
-//                              const std::string texture
-//                              )
-
-//{
-//  _checkItemExists( texture, textures_, "textures" );
-
-//  if ( framebuffers_.find( buffer ) != framebuffers_.end( ) )
-//  {
-//    FrameBuffer &buf = framebuffers_[ buffer ];
-//    glDeleteFramebuffers( 1, &buf.fbo );
-//    glDeleteRenderbuffers( 1, &buf.rbo );
-//  }
-
-//  FrameBuffer &buf = framebuffers_[ buffer ];
-
-//  glGenFramebuffers( 1, &buf.fbo );
-//  glBindFramebuffer( GL_FRAMEBUFFER, buf.fbo );
-
-//  glGenRenderbuffers( 1, &buf.rbo );
-//  glBindRenderbuffer( GL_RENDERBUFFER, buf.rbo );
-//  glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height );
-//  glBindRenderbuffer( GL_RENDERBUFFER, 0 );
-
-//  // attach a texture to FBO color attachment point
-//  glFramebufferTexture2D( GL_FRAMEBUFFER,
-//                         GL_COLOR_ATTACHMENT0,
-//                         GL_TEXTURE_2D,
-//                         textures_[ texture ],
-//                         0 );
-
-//  // attach a renderbuffer to depth attachment point
-//  glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, buf.rbo );
-
-//  glBindFramebuffer( GL_FRAMEBUFFER, 0 );
-
-//} // OpenGLHelper::addFramebuffer
+////////////////////////////////////////////////////////////////////////////////
+/// \brief OpenGLHelper::bindFramebuffer
+/// \param spFbo
+///
+/// \author Logan Barnes
+////////////////////////////////////////////////////////////////////////////////
+void
+OpenGLHelper::bindFramebuffer( )
+{
+  glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+}
 
 
 
-//void
-//OpenGLHelper::bindFramebuffer( const std::string name )
-//{
-//  if ( name.length( ) == 0 )
-//  {
-//    glBindFramebuffer( GL_FRAMEBUFFER, 0 );
-//    return;
-//  }
-
-//  _checkItemExists( name, framebuffers_, "framebuffers" );
-//  glBindFramebuffer( GL_FRAMEBUFFER, framebuffers_.at( name ).fbo );
-//}
-
+////////////////////////////////////////////////////////////////////////////////
+/// \brief OpenGLHelper::bindFramebuffer
+/// \param spFbo
+///
+/// \author Logan Barnes
+////////////////////////////////////////////////////////////////////////////////
+void
+OpenGLHelper::bindFramebuffer( const std::shared_ptr< GLuint > &spFbo )
+{
+  glBindFramebuffer( GL_FRAMEBUFFER, *spFbo );
+}
 
 
+
+////////////////////////////////////////////////////////////////////////////////
+/// \brief OpenGLHelper::clearFramebuffer
+///
+/// \author Logan Barnes
+////////////////////////////////////////////////////////////////////////////////
 void
 OpenGLHelper::clearFramebuffer( )
 {
@@ -382,64 +356,31 @@ OpenGLHelper::clearFramebuffer( )
 
 
 
-//void
-//OpenGLHelper::setTextureUniform(
-//                                const GLuint      program,
-//                                const std::string uniform,
-//                                const GLuint      texture,
-//                                int               activeTex
-//                                )
-//{
-//  glActiveTexture( GL_TEXTURE0 + activeTex );
-//  glUniform1i( glGetUniformLocation( program, uniform.c_str( ) ), activeTex );
-//  glBindTexture( GL_TEXTURE_2D, texture );
-//} // OpenGLHelper::setTextureUniform
-
-
-
-//void
-//OpenGLHelper::renderBuffer(
-//                           const std::string buffer,
-//                           const int         start,
-//                           const int         verts,
-//                           const GLenum      mode,
-//                           const std::string ibo,
-//                           const void       *pOffset,
-//                           const GLenum      iboType
-//                           )
-//{
-//  const bool usingIBO = ibo.length( ) > 0;
-
-//  _checkItemExists( buffer, buffers_, "buffer" );
-
-//  GLuint vao = _getVAO( buffers_[ buffer ] );
-
-//  glBindVertexArray( vao );
-
-
-//  if ( usingIBO )
-//  {
-//    _checkItemExists( ibo, indexBuffers_, "indexBuffer" );
-
-//    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, indexBuffers_[ ibo ] );
-//    glDrawElements( mode, verts, iboType, pOffset );
-//    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-//  }
-//  else
-//  {
-//    glDrawArrays( mode, start, verts );
-//  }
-
-//  glBindVertexArray( 0 );
-//} // OpenGLHelper::renderBuffer
+////////////////////////////////////////////////////////////////////////////////
+/// \brief OpenGLHelper::setTextureUniform
+///
+/// \author Logan Barnes
+////////////////////////////////////////////////////////////////////////////////
+void
+OpenGLHelper::setTextureUniform(
+                                const std::shared_ptr< GLuint > &spProgram, ///<
+                                const std::string               uniform,    ///<
+                                const std::shared_ptr< GLuint > &spTexture, ///<
+                                int                             activeTex   ///<
+                                )
+{
+  glActiveTexture( GL_TEXTURE0 + activeTex );
+  glUniform1i( glGetUniformLocation( *spProgram, uniform.c_str( ) ), activeTex );
+  glBindTexture( GL_TEXTURE_2D, *spTexture );
+} // OpenGLHelper::setTextureUniform
 
 
 
 //void
 //OpenGLHelper::setBoolUniform(
-//                             const std::string program,
+//    const std::shared_ptr< GLuint > &spProgram, ///<
 //                             const std::string uniform,
-//                             bool              var
+//                             const bool        *pVvar
 //                             )
 //{
 //  _checkItemExists( program, programs_, "programs" );
@@ -461,97 +402,139 @@ OpenGLHelper::clearFramebuffer( )
 
 
 
-//void
-//OpenGLHelper::setFloatUniform(
-//                              const std::string program,
-//                              const std::string uniform,
-//                              const float      *pValue,
-//                              const int         size,
-//                              const int         count
-//                              )
-//{
-//  _checkItemExists( program, programs_, "programs" );
+////////////////////////////////////////////////////////////////////////////////
+/// \brief OpenGLHelper::setFloatUniform
+///
+/// \author Logan Barnes
+////////////////////////////////////////////////////////////////////////////////
+void
+OpenGLHelper::setFloatUniform(
+                              const std::shared_ptr< GLuint > &spProgram, ///<
+                              const std::string               uniform,    ///<
+                              const float                    *pValue,     ///<
+                              const int                       size,       ///<
+                              const int                       count       ///<
+                              )
+{
+  switch ( size )
+  {
 
-//  switch ( size )
-//  {
+  case 1:
+    glUniform1f( glGetUniformLocation( *spProgram, uniform.c_str( ) ), *pValue );
+    break;
 
-//  case 1:
-//    glUniform1f( glGetUniformLocation( programs_[ program ], uniform.c_str( ) ), *pValue );
-//    break;
+  case 2:
+    glUniform2fv( glGetUniformLocation( *spProgram, uniform.c_str( ) ), count, pValue );
+    break;
 
-//  case 2:
-//    glUniform2fv( glGetUniformLocation( programs_[ program ], uniform.c_str( ) ), count, pValue );
-//    break;
+  case 3:
+    glUniform3fv( glGetUniformLocation( *spProgram, uniform.c_str( ) ), count, pValue );
+    break;
 
-//  case 3:
-//    glUniform3fv( glGetUniformLocation( programs_[ program ], uniform.c_str( ) ), count, pValue );
-//    break;
+  case 4:
+    glUniform4fv( glGetUniformLocation( *spProgram, uniform.c_str( ) ), count, pValue );
+    break;
 
-//  case 4:
-//    glUniform4fv( glGetUniformLocation( programs_[ program ], uniform.c_str( ) ), count, pValue );
-//    break;
+  default:
+    std::stringstream msg;
+    msg << "Float or vector of size " << size << " does not exist";
+    throw std::runtime_error( msg.str( ) );
+    break;
 
-//  default:
-//    std::stringstream msg;
-//    msg << "Float or vector of size " << size << " does not exist";
-//    throw std::runtime_error( msg.str( ) );
-//    break;
+  } // switch
 
-//  } // switch
-
-//} // setFloatUniform
-
-
-
-//void
-//OpenGLHelper::setMatrixUniform(
-//                               const std::string program,
-//                               const std::string uniform,
-//                               const float      *pValue,
-//                               const int         size,
-//                               const int         count
-//                               )
-//{
-//  _checkItemExists( program, programs_, "programs" );
-
-//  switch ( size )
-//  {
-//  case 2:
-//    glUniformMatrix2fv(
-//                       glGetUniformLocation( programs_[ program ], uniform.c_str( ) ),
-//                       count,
-//                       GL_FALSE,
-//                       pValue
-//                       );
-//    break;
-
-//  case 3:
-//    glUniformMatrix3fv(
-//                       glGetUniformLocation( programs_[ program ], uniform.c_str( ) ),
-//                       count,
-//                       GL_FALSE,
-//                       pValue
-//                       );
-//    break;
+} // setFloatUniform
 
 
-//  case 4:
-//    glUniformMatrix4fv(
-//                       glGetUniformLocation( programs_[ program ], uniform.c_str( ) ),
-//                       count,
-//                       GL_FALSE,
-//                       pValue
-//                       );
-//    break;
 
-//  default:
-//    std::stringstream msg;
-//    msg << "Matrix of size " << size << " does not exist";
-//    throw std::runtime_error( msg.str( ) );
-//    break;
-//  } // switch
+////////////////////////////////////////////////////////////////////////////////
+/// \brief OpenGLHelper::setMatrixUniform
+///
+/// \author Logan Barnes
+////////////////////////////////////////////////////////////////////////////////
+void
+OpenGLHelper::setMatrixUniform(
+                               const std::shared_ptr< GLuint > &spProgram, ///<
+                               const std::string               uniform,    ///<
+                               const float                    *pValue,     ///<
+                               const int                       size,       ///<
+                               const int                       count       ///<
+                               )
+{
+  switch ( size )
+  {
+  case 2:
+    glUniformMatrix2fv(
+                       glGetUniformLocation( *spProgram, uniform.c_str( ) ),
+                       count,
+                       GL_FALSE,
+                       pValue
+                       );
+    break;
 
-//} // OpenGLHelper::setMatrixUniform
+  case 3:
+    glUniformMatrix3fv(
+                       glGetUniformLocation( *spProgram, uniform.c_str( ) ),
+                       count,
+                       GL_FALSE,
+                       pValue
+                       );
+    break;
+
+
+  case 4:
+    glUniformMatrix4fv(
+                       glGetUniformLocation( *spProgram, uniform.c_str( ) ),
+                       count,
+                       GL_FALSE,
+                       pValue
+                       );
+    break;
+
+  default:
+    std::stringstream msg;
+    msg << "Matrix of size " << size << " does not exist";
+    throw std::runtime_error( msg.str( ) );
+    break;
+  } // switch
+
+} // OpenGLHelper::setMatrixUniform
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+/// \brief OpenGLHelper::renderBuffer
+///
+/// \author Logan Barnes
+////////////////////////////////////////////////////////////////////////////////
+void
+OpenGLHelper::renderBuffer(
+                           const std::shared_ptr< GLuint > &spVao,
+                           const int                       start,
+                           const int                       verts,
+                           const GLenum                    mode,
+                           const std::shared_ptr< GLuint > spIbo,
+                           const void                     *pOffset,
+                           const GLenum                    iboType
+                           )
+{
+  glBindVertexArray( *spVao );
+
+  if ( spIbo )
+  {
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, *spIbo );
+    glDrawElements( mode, verts, iboType, pOffset );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+  }
+  else
+  {
+    glDrawArrays( mode, start, verts );
+  }
+
+  glBindVertexArray( 0 );
+} // OpenGLHelper::renderBuffer
+
+
 
 
 
@@ -601,62 +584,6 @@ OpenGLHelper::clearFramebuffer( )
 //  glBindBuffer( GL_PIXEL_UNPACK_BUFFER, 0 );
 
 //} // OpenGLHelper::bindBufferToTexture
-
-
-
-//////////////////////////////////////////////////////////////////////////////////
-///// \brief OpenGLHelper::deleteProgram
-///// \param program
-/////
-///// \author Logan Barnes
-//////////////////////////////////////////////////////////////////////////////////
-//void
-//OpenGLHelper::deleteProgram( const GLuint program )
-//{
-//  glDeleteProgram( program );
-//}
-
-
-
-//////////////////////////////////////////////////////////////////////////////////
-///// \brief OpenGLHelper::deleteTexture
-///// \param tex
-/////
-///// \author Logan Barnes
-//////////////////////////////////////////////////////////////////////////////////
-//void
-//OpenGLHelper::deleteTexture( const GLuint tex )
-//{
-//  glDeleteTextures( 1, &tex );
-//}
-
-
-
-//////////////////////////////////////////////////////////////////////////////////
-///// \brief OpenGLHelper::deleteFramebuffer
-///// \param fbo
-/////
-///// \author Logan Barnes
-//////////////////////////////////////////////////////////////////////////////////
-//void
-//OpenGLHelper::deleteFramebuffer( const GLuint fbo )
-//{
-//  glDeleteFramebuffers( 1, &fbo );
-//}
-
-
-
-//////////////////////////////////////////////////////////////////////////////////
-///// \brief OpenGLHelper::deleteRenderbuffer
-///// \param rbo
-/////
-///// \author Logan Barnes
-//////////////////////////////////////////////////////////////////////////////////
-//void
-//OpenGLHelper::deleteRenderbuffer( const GLuint rbo )
-//{
-//  glDeleteRenderbuffers( 1, &rbo );
-//}
 
 
 
