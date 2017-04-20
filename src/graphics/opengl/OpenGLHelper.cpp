@@ -77,7 +77,8 @@ OpenGLHelper::createTextureArray(
                                  float  *pArray,     ///<
                                  GLint   filterType, ///<
                                  GLint   wrapType,   ///<
-                                 bool /*mipmap*/      ///<
+                                 GLint   internalFormat,
+                                 GLenum  format
                                  )
 
 {
@@ -99,7 +100,7 @@ OpenGLHelper::createTextureArray(
   glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filterType );
   glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filterType );
 
-  glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, pArray );
+  glTexImage2D( GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_FLOAT, pArray );
 
   return spTexture;
 } // addTextureArray
@@ -228,6 +229,12 @@ OpenGLHelper::createFramebuffer(
   // attach a renderbuffer to depth attachment point
   glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, *spRbo );
 
+  // Check the framebuffer is ok
+  if ( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE )
+  {
+    throw std::runtime_error( "Framebuffer creation failed" );
+  }
+
   glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
   if ( pRbo )
@@ -237,6 +244,48 @@ OpenGLHelper::createFramebuffer(
 
   return spFbo;
 } // createFramebuffer
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+/// \brief OpenGLHelper::createDepthFramebuffer
+/// \param spDepthTex
+/// \return
+///
+/// \author Logan Barnes
+////////////////////////////////////////////////////////////////////////////////
+std::shared_ptr< GLuint >
+OpenGLHelper::createDepthFramebuffer( const std::shared_ptr< GLuint > &spDepthTex )
+{
+  std::shared_ptr< GLuint > spFbo( new GLuint,
+                                  [] ( auto pID )
+                                  {
+                                    glDeleteFramebuffers( 1, pID );
+                                    delete pID;
+                                  }
+                                  );
+
+  glGenFramebuffers( 1, spFbo.get( ) );
+  glBindFramebuffer( GL_FRAMEBUFFER, *spFbo );
+
+  glBindTexture( GL_TEXTURE_2D, *spDepthTex );
+
+  glFramebufferTexture2D( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, *spDepthTex, 0 );
+
+  glDrawBuffer( GL_NONE ); // No color buffer is drawn to
+  glReadBuffer( GL_NONE ); // No color buffer is read to
+
+  // Check the framebuffer is ok
+  if ( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE )
+  {
+    throw std::runtime_error( "Framebuffer creation failed" );
+  }
+
+  glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+
+  return spFbo;
+} // createDepthFramebuffer
 
 
 

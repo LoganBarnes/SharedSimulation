@@ -16,6 +16,7 @@ struct VAOSettings;
 
 class OpenGLWrapper;
 class VulkanGlfwWrapper;
+class OpenGLHelper;
 
 class GlfwWrapper;
 class Callback;

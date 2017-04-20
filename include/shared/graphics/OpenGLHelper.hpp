@@ -61,8 +61,11 @@ public:
                                                  float  *pArray = nullptr,
                                                  GLint   filterType = GL_NEAREST,
                                                  GLint   wrapType = GL_REPEAT,
-                                                 bool    mipmap = true
+                                                 GLint   internalFormat = GL_RGBA32F,
+                                                 GLenum  format = GL_RGBA
                                                  );
+
+
 
   template< typename T >
   static
@@ -107,6 +110,11 @@ public:
                                                const std::shared_ptr< GLuint > &spTex,
                                                std::shared_ptr< GLuint >      *pRbo = nullptr
                                                );
+
+  static
+  std::shared_ptr< GLuint > createDepthFramebuffer (const std::shared_ptr< GLuint > &spDepthTex
+                                                    );
+
 
   static
   void bindFramebuffer ( );
