@@ -5,18 +5,14 @@ branches:
     - master
 
 sudo: false
-dist: trusty
 
 addons:
   apt:
     packages:
       - g++-5
       - g++-6
-      - xvfb
-      - xorg-dev libglu1-mesa-dev
     sources: &sources
       - ubuntu-toolchain-r-test
-      - kubuntu-backports
 
 cache:
   directories:

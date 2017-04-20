@@ -114,8 +114,8 @@ OpenGLHelper::createTextureArray(
 ////////////////////////////////////////////////////////////////////////////////
 std::shared_ptr< GLuint >
 OpenGLHelper::createVao(
-                        const std::shared_ptr< GLuint > &spProgram,    ///<
-                        const std::shared_ptr< GLuint > &spVbo,        ///<
+                        const std::shared_ptr< GLuint > &spProgram,  ///<
+                        const std::shared_ptr< GLuint > &spVbo,      ///<
                         const GLsizei                   totalStride, ///<
                         const std::vector< VAOElement > &elements    ///<
                         )
@@ -138,14 +138,12 @@ OpenGLHelper::createVao(
   //
   glBindBuffer( GL_ARRAY_BUFFER, *spVbo );
 
-  GLuint program = *spProgram;
-
   //
   // iteratoe through all elements
   //
   for ( const auto &vaoElmt : elements )
   {
-    int pos = glGetAttribLocation( program, vaoElmt.name.c_str( ) );
+    int pos = glGetAttribLocation( *spProgram, vaoElmt.name.c_str( ) );
 
     if ( pos < 0 )
     {
@@ -153,7 +151,7 @@ OpenGLHelper::createVao(
       msg << "attrib location "
           << vaoElmt.name
           << " not found for program "
-          << program;
+          << *spProgram;
 
       throw std::runtime_error( msg.str( ) );
     }
