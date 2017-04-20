@@ -31,5 +31,6 @@ set( PROJECT_CONFIG_FILE ${SHARED_DIR}/src/common/ProjectConfig.hpp.in )
 set( PROJECT_MAIN ${CMAKE_CURRENT_SOURCE_DIR}/src/ExampleSim.cpp )
 
 # builds project using previously declared variables
+set( FORCE_CPP_STANDARD 14 )
 include( ${SHARED_DIR}/cmake/DefaultProjectLibrary.cmake )
 

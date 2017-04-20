@@ -152,7 +152,7 @@ script:
   - mkdir build
   - cd build
   - cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBUILD_SHARED_LIBS=$SHARED -DBUILD_SHARED_TESTS=$TESTS -DUSE_GLFW=ON -DUSE_GLM=ON -DUSE_GUI=ON -DSTRICT_FLAGS=ON ..
-  - cmake --build .
+  - cmake --build . -- -j12
 
   ############################################################################
   # Build example projects using simulation library
@@ -161,7 +161,7 @@ script:
   - mkdir build
   - cd build
   - cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBUILD_SHARED_LIBS=$SHARED ..
-  - cmake --build .
+  - cmake --build . -- -j12
 
 notifications:
   on_success: never

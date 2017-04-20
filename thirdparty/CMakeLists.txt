@@ -77,6 +77,13 @@ if ( USE_GLFW )
   add_library               ( glad ${THIRDPARTY}/glad/src/glad.c       )
   target_include_directories( glad SYSTEM PUBLIC ${THIRDPARTY}/include )
 
+  install(
+          TARGETS glad
+          RUNTIME DESTINATION bin
+          LIBRARY DESTINATION lib
+          ARCHIVE DESTINATION lib
+          )
+
   # glfw lib
   list( APPEND THIRDPARTY_LINK_LIBS glfw glad )
 
@@ -251,6 +258,16 @@ if ( USE_GUI )
   set_property( TARGET imgui PROPERTY CXX_STANDARD          11 )
   set_property( TARGET imgui PROPERTY CXX_STANDARD_REQUIRED ON )
 
+  # rpath for unix libs
+  set_property( TARGET imgui PROPERTY INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/lib )
+
+  install(
+          TARGETS imgui
+          RUNTIME DESTINATION bin
+          LIBRARY DESTINATION lib
+          ARCHIVE DESTINATION lib
+          )
+
    # imgui header dirs
   list(
        APPEND
@@ -265,6 +282,8 @@ if ( USE_GUI )
 
   # imgui must be built before project lib
   list( APPEND THIRDPARTY_DEP_TARGETS imgui )
+
+  install()
 
   message( "USING GUI" )
 
