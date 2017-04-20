@@ -13,6 +13,7 @@ USE_OPTIX=OFF
 USE_GUI=OFF
 USE_GMOCK=OFF
 TESTING=OFF
+SHARED_LIBS=OFF
 
 CLEAN=false
 
@@ -29,6 +30,7 @@ function printUsage() {
   echo "        -m  or --gmock        -> download and build the gmock library";
   echo "        -t  or --test         -> compile unit tests";
   echo "        -d  or --debug        -> compile in debug mode";
+  echo "        -s  or --shared       -> compile as shared libraries";
   echo "        -c  or --clean        -> clean project (delete build folder)";
   echo "        -h  or --help         -> print this message";
 }
@@ -70,8 +72,8 @@ case $key in
     -t|--test)
     TESTING=ON
     ;;
-    -o|--offline)
-    OFFLINE=ON
+    -s|--shared)
+    SHARED_LIBS=ON
     ;;
     -d|--debug)
     BUILD_MODE=Debug
@@ -119,6 +121,7 @@ cmake -E chdir build cmake -DCMAKE_BUILD_TYPE=$BUILD_MODE \
                             -DUSE_GUI=$USE_GUI \
                             -DUSE_GMOCK=$USE_GMOCK \
                             -DBUILD_SHARED_TESTS=$TESTING \
+                            -DBUILD_SHARED_LIBS=$SHARED_LIBS \
                             -DCMAKE_INSTALL_PREFIX=$ROOT_DIR/build ..
 
 # run the cmake build command to build the project with the native build system
