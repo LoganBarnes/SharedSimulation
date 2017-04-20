@@ -18,21 +18,26 @@ cache:
 
 addons:
   apt:
-    sources:
-      - kubuntu-backports
     packages:
       - g++-5
       - g++-6
+    sources: &sources
+      - ubuntu-toolchain-r-test
+      - kubuntu-backports
 
 env:
-  - BUILD_MODE=Release TESTING=ON  SHARED_LIBS=OFF"
-  # - BUILD_MODE=Release TESTING=ON  SHARED_LIBS=ON"
-  # - BUILD_MODE=Release TESTING=OFF SHARED_LIBS=OFF"
-  # - BUILD_MODE=Release TESTING=OFF SHARED_LIBS=ON"
-  # - BUILD_MODE=Debug   TESTING=ON  SHARED_LIBS=OFF"
-  # - BUILD_MODE=Debug   TESTING=ON  SHARED_LIBS=ON"
-  # - BUILD_MODE=Debug   TESTING=OFF SHARED_LIBS=OFF"
-  # - BUILD_MODE=Debug   TESTING=OFF SHARED_LIBS=ON"
+  - LLVM_VERSION=llvm-3.8.0 BUILD_MODE=Release TESTING=ON SHARED_LIBS=OFF
+  - LLVM_VERSION=llvm-3.9.0 BUILD_MODE=Release TESTING=ON SHARED_LIBS=OFF
+  - COMPILER=g++-5 BUILD_MODE=Release TESTING=ON SHARED_LIBS=OFF
+  - COMPILER=g++-6 BUILD_MODE=Release TESTING=ON SHARED_LIBS=OFF
+  - LLVM_VERSION=default BUILD_MODE=Release TESTING=ON  SHARED_LIBS=OFF"
+  # - LLVM_VERSION=default BUILD_MODE=Release TESTING=ON  SHARED_LIBS=ON"
+  # - LLVM_VERSION=default BUILD_MODE=Release TESTING=OFF SHARED_LIBS=OFF"
+  # - LLVM_VERSION=default BUILD_MODE=Release TESTING=OFF SHARED_LIBS=ON"
+  # - LLVM_VERSION=default BUILD_MODE=Debug   TESTING=ON  SHARED_LIBS=OFF"
+  # - LLVM_VERSION=default BUILD_MODE=Debug   TESTING=ON  SHARED_LIBS=ON"
+  # - LLVM_VERSION=default BUILD_MODE=Debug   TESTING=OFF SHARED_LIBS=OFF"
+  # - LLVM_VERSION=default BUILD_MODE=Debug   TESTING=OFF SHARED_LIBS=ON"
 
 install:
   ############################################################################
@@ -41,13 +46,6 @@ install:
   - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
   - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
 
-
-  # ############################################################################
-  # # Setup default versions and override compiler if needed
-  # ############################################################################
-  # - if [[ "${LLVM_VERSION}" == "default" ]]; then LLVM_VERSION=3.9.0; fi
-
-  # - if [[ "${COMPILER}" != "" ]]; then export CXX=${COMPILER}; fi
 
 
   ############################################################################
@@ -64,32 +62,32 @@ install:
   - cmake --version
 
 
-  # ############################################################################
-  # # Install Clang, libc++ and libc++abi
-  # ############################################################################
-  # - |
-  #   if [[ "${LLVM_VERSION}" != "" ]]; then
-  #     LLVM_DIR=${DEPS_DIR}/llvm-${LLVM_VERSION}
-  #     if [[ -z "$(ls -A ${LLVM_DIR})" ]]; then
-  #       LLVM_URL="http://llvm.org/releases/${LLVM_VERSION}/llvm-${LLVM_VERSION}.src.tar.xz"
-  #       LIBCXX_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxx-${LLVM_VERSION}.src.tar.xz"
-  #       LIBCXXABI_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxxabi-${LLVM_VERSION}.src.tar.xz"
-  #       CLANG_URL="http://llvm.org/releases/${LLVM_VERSION}/clang+llvm-${LLVM_VERSION}-x86_64-linux-gnu-ubuntu-14.04.tar.xz"
-  #       mkdir -p ${LLVM_DIR} ${LLVM_DIR}/build ${LLVM_DIR}/projects/libcxx ${LLVM_DIR}/projects/libcxxabi ${LLVM_DIR}/clang
-  #       travis_retry wget --quiet -O - ${LLVM_URL}      | tar --strip-components=1 -xJ -C ${LLVM_DIR}
-  #       travis_retry wget --quiet -O - ${LIBCXX_URL}    | tar --strip-components=1 -xJ -C ${LLVM_DIR}/projects/libcxx
-  #       travis_retry wget --quiet -O - ${LIBCXXABI_URL} | tar --strip-components=1 -xJ -C ${LLVM_DIR}/projects/libcxxabi
-  #       travis_retry wget --quiet -O - ${CLANG_URL}     | tar --strip-components=1 -xJ -C ${LLVM_DIR}/clang
-  #       (cd ${LLVM_DIR}/build && cmake .. -DCMAKE_INSTALL_PREFIX=${LLVM_DIR}/install -DCMAKE_CXX_COMPILER=clang++)
-  #       (cd ${LLVM_DIR}/build/projects/libcxx && make install -j2)
-  #       (cd ${LLVM_DIR}/build/projects/libcxxabi && make install -j2)
-  #     fi
-  #     export CXXFLAGS="-nostdinc++ -isystem ${LLVM_DIR}/install/include/c++/v1"
-  #     export LDFLAGS="-L ${LLVM_DIR}/install/lib -l c++ -l c++abi"
-  #     export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${LLVM_DIR}/install/lib"
-  #     export PATH="${LLVM_DIR}/clang/bin:${PATH}"
-  #   fi
-  # - ${CXX} --version
+  ############################################################################
+  # Install Clang, libc++ and libc++abi
+  ############################################################################
+  - |
+    if [[ "${LLVM_VERSION}" != "" ]]; then
+      LLVM_DIR=${DEPS_DIR}/llvm-${LLVM_VERSION}
+      if [[ -z "$(ls -A ${LLVM_DIR})" ]]; then
+        LLVM_URL="http://llvm.org/releases/${LLVM_VERSION}/llvm-${LLVM_VERSION}.src.tar.xz"
+        LIBCXX_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxx-${LLVM_VERSION}.src.tar.xz"
+        LIBCXXABI_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxxabi-${LLVM_VERSION}.src.tar.xz"
+        CLANG_URL="http://llvm.org/releases/${LLVM_VERSION}/clang+llvm-${LLVM_VERSION}-x86_64-linux-gnu-ubuntu-14.04.tar.xz"
+        mkdir -p ${LLVM_DIR} ${LLVM_DIR}/build ${LLVM_DIR}/projects/libcxx ${LLVM_DIR}/projects/libcxxabi ${LLVM_DIR}/clang
+        travis_retry wget --quiet -O - ${LLVM_URL}      | tar --strip-components=1 -xJ -C ${LLVM_DIR}
+        travis_retry wget --quiet -O - ${LIBCXX_URL}    | tar --strip-components=1 -xJ -C ${LLVM_DIR}/projects/libcxx
+        travis_retry wget --quiet -O - ${LIBCXXABI_URL} | tar --strip-components=1 -xJ -C ${LLVM_DIR}/projects/libcxxabi
+        travis_retry wget --quiet -O - ${CLANG_URL}     | tar --strip-components=1 -xJ -C ${LLVM_DIR}/clang
+        (cd ${LLVM_DIR}/build && cmake .. -DCMAKE_INSTALL_PREFIX=${LLVM_DIR}/install -DCMAKE_CXX_COMPILER=clang++)
+        (cd ${LLVM_DIR}/build/projects/libcxx && make install -j2)
+        (cd ${LLVM_DIR}/build/projects/libcxxabi && make install -j2)
+      fi
+      export CXXFLAGS="-nostdinc++ -isystem ${LLVM_DIR}/install/include/c++/v1"
+      export LDFLAGS="-L ${LLVM_DIR}/install/lib -l c++ -l c++abi"
+      export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${LLVM_DIR}/install/lib"
+      export PATH="${LLVM_DIR}/clang/bin:${PATH}"
+    fi
+  - ${CXX} --version
 
 
   ############################################################################
