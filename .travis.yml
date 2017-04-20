@@ -10,8 +10,6 @@ addons:
       - valgrind
       - g++-5
       - g++-6
-      - xvfb
-      - xorg-dev libglu1-mesa-dev
     sources: &sources
       - ubuntu-toolchain-r-test
 
@@ -31,10 +29,10 @@ matrix:
     #   env: CONFIG_FLAGS="-gl -m -sf -t"
     #   osx_image: xcode7.3
 
-    # Xcode 8
-    - os: osx
-      env: CONFIG_FLAGS="-gl -m -sf -t"
-      osx_image: xcode8
+    # # Xcode 8
+    # - os: osx
+    #   env: CONFIG_FLAGS="-gl -m -sf -t"
+    #   osx_image: xcode8
 
     # # GCC 5
     # - os: linux
@@ -43,18 +41,18 @@ matrix:
 
     # # GCC 6
     # - os: linux
-    #   env: COMPILER=g++-6
+    #   env: COMPILER=g++-6 CONFIG_FLAGS="-gl -m -sf -t"
     #   compiler: gcc
 
     # # clang 3.9
     # - os: linux
-    #   env: LLVM_VERSION=3.8.0
+    #   env: LLVM_VERSION=3.8.0 CONFIG_FLAGS="-gl -m -sf -t"
     #   compiler: clang
 
-    # # clang 3.9
-    # - os: linux
-    #   env: LLVM_VERSION=3.9.0
-    #   compiler: clang
+    # clang 3.9
+    - os: linux
+      env: LLVM_VERSION=3.9.0 CONFIG_FLAGS="-gl -m -sf -t"
+      compiler: clang
 
 
 install:
@@ -122,13 +120,16 @@ install:
   #   if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then source .travis/install-cuda-trusty.sh; fi
 
 before_script:
-  # - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
-  # - "export DISPLAY=:99.0"
-  # - "sh -e /etc/init.d/xvfb start"
-  # - sleep 3 # give xvfb some time to start
   - cd ${TRAVIS_BUILD_DIR}
 
 
 script:
   - ./unixConfigureAndBuild.sh $CONFIG_FLAGS
   - ./build/testbin/testSharedSimulation
+
+notifications:
+  email:
+      recipients:
+          - ci@glfw.org
+  on_success: never
+  on_failure: always

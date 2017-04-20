@@ -13,7 +13,7 @@ option( BUILD_SHARED_TESTS "Build unit tests for the shared simulation lib" OFF 
 if ( ${BUILD_SHARED_TESTS} )
   set( USE_GMOCK ON CACHE BOOL "" FORCE )
   message( "TODO: Add message about enabling gmock" )
-endif()
+endif( )
 
 
 # common directory paths
