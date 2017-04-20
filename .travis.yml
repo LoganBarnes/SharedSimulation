@@ -7,19 +7,21 @@ branches:
 sudo: false
 dist: trusty
 
-cache:
-  directories:
-    - ${TRAVIS_BUILD_DIR}/deps/llvm-3.8.0
-    - ${TRAVIS_BUILD_DIR}/deps/llvm-3.9.0
-
 addons:
   apt:
     packages:
       - g++-5
       - g++-6
+      - xvfb
+      - xorg-dev libglu1-mesa-dev
     sources: &sources
       - ubuntu-toolchain-r-test
       - kubuntu-backports
+
+cache:
+  directories:
+    - ${TRAVIS_BUILD_DIR}/deps/llvm-3.8.0
+    - ${TRAVIS_BUILD_DIR}/deps/llvm-3.9.0
 
 matrix:
   include:
