@@ -76,7 +76,8 @@ public:
   void setTexture (
                    const std::string name,
                    const GLuint      id,
-                   const bool        forceOverride = false
+                   const bool        forceOverride = false,
+                   const bool        forceDelete = false
                    );
 
   GLuint getBuffer ( const std::string name );
@@ -285,10 +286,11 @@ private:
   void _replaceItemId (
                        const std::string &key,
                        Map               &map,
-                       const Val          val,
+                       const Val         val,
                        const std::string &mapDiscription = "",
-                       const bool         forceOverride = false,
-                       DeleteFunction     delFunc = [ ]( ){}
+                       const bool        forceOverride = false,
+                       const bool        forceDelete = false,
+                       DeleteFunction    delFunc = [] ( ) {}
                        );
 
 
@@ -447,6 +449,7 @@ OpenGLWrapper::_replaceItemId(
                               const Val          val,
                               const std::string &mapDiscription,
                               const bool         forceOverride,
+                              const bool         forceDelete,
                               DeleteFunction     delFunc
                               )
 {
@@ -460,7 +463,10 @@ OpenGLWrapper::_replaceItemId(
       throw std::runtime_error( msg.str( ) );
     }
 
-    delFunc( );
+    if ( forceDelete )
+    {
+      delFunc( );
+    }
   }
 
   map[ key ] = val;

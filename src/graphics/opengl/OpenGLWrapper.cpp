@@ -114,7 +114,8 @@ void
 OpenGLWrapper::setTexture(
                           const std::string name,
                           const GLuint      id,
-                          const bool        forceOverride
+                          const bool        forceOverride,
+                          const bool        forceDelete
                           )
 {
   _replaceItemId(
@@ -123,12 +124,15 @@ OpenGLWrapper::setTexture(
                  id,
                  "texture",
                  forceOverride,
+                 forceDelete,
                  [ this, &name ]( )
                  {
                    glDeleteTextures( 1, &( this->textures_[ name ] ) );
                  }
                  );
+
 }
+
 
 
 
