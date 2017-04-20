@@ -14,10 +14,8 @@ class Camera
 {
 public:
 
+  explicit
   Camera( );
-
-  virtual
-  ~Camera( ) = default;
 
   const glm::tmat4x4< T > &getProjectionMatrix ( ) const;
   const glm::tmat4x4< T > &getViewMatrix ( ) const;
@@ -61,10 +59,10 @@ public:
                              ) const;
 
 
-protected:
+private:
 
   void setCameraSpace ( );
-  void setViewMatrix ( );
+  void _setViewMatrix ( );
   void setProjectionMatrix ( );
   void setFrustumMatrix ( );
 

@@ -30,11 +30,11 @@ public:
   ///////////////////////////////////////////////////////////////
   OpenGLIOHandler(
                   World &world,
-                  bool   printInfo = true,
-                  int    width     = 640,
-                  int    height    = 480,
-                  bool   resizable = true,
-                  int    aaSamples = 8
+                  bool  printInfo = true,
+                  int   width     = 640,
+                  int   height    = 480,
+                  bool  resizable = true,
+                  int   aaSamples = 8
                   );
 
 
@@ -92,11 +92,12 @@ public:
 
 protected:
 
-  std::unique_ptr< graphics::GlfwWrapper >     upGlfwWrapper_;
-  std::unique_ptr< graphics::OpenGLWrapper >   upGLWrapper_;
-  std::unique_ptr< graphics::Camera< float > > upCamera_;
-  std::unique_ptr< graphics::GlmCamera< float > > upGlmCamera_;
+  std::unique_ptr< graphics::GlfwWrapper >        upGlfwWrapper_;
+  std::unique_ptr< graphics::OpenGLWrapper >      upGLWrapper_;
+  std::unique_ptr< graphics::GlmCamera< float > > upCamera_;
 
+  int windowWidth_;
+  int windowHeight_;
 
 private:
 

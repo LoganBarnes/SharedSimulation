@@ -10,7 +10,7 @@
 #include "imgui.h"
 #include "imgui_impl_glfw_gl3.h"
 #include "shared/graphics/OpenGLWrapper.hpp"
-#include "shared/graphics/Camera.hpp"
+#include "shared/graphics/GlmCamera.hpp"
 
 // project
 #include "CubeWorld.hpp"
@@ -33,7 +33,10 @@ CubeImguiOpenGLIOHandler::CubeImguiOpenGLIOHandler( CubeWorld &cubeWorld )
   : shared::ImguiOpenGLIOHandler( cubeWorld, true, 1040, 720 )
   , cubeWorld_( cubeWorld )
 {
-  upCamera_->updateOrbit( 15.0f, 0.0f, 0.0f );
+  upCamera_->lookAt(
+                    glm::vec3( 0.0f, 0.0f, 15.0f ), // eye
+                    glm::vec3( 0.0f )               // look point (origin)
+                    );
 
   std::unique_ptr< CubeCallback > cubeCallback( new CubeCallback( *this ) );
   imguiCallback_->setCallback( std::move( cubeCallback ) );
@@ -95,17 +98,17 @@ CubeImguiOpenGLIOHandler::~CubeImguiOpenGLIOHandler( )
 
 
 void
-CubeImguiOpenGLIOHandler::addRandomCube()
+CubeImguiOpenGLIOHandler::addRandomCube( )
 {
-  cubeWorld_.addRandomCube();
+  cubeWorld_.addRandomCube( );
 }
 
 
 
 void
-CubeImguiOpenGLIOHandler::removeOldestCube()
+CubeImguiOpenGLIOHandler::removeOldestCube( )
 {
-  cubeWorld_.removeOldestCube();
+  cubeWorld_.removeOldestCube( );
 }
 
 
@@ -120,12 +123,12 @@ CubeImguiOpenGLIOHandler::_onRender( const double )
 
   upGLWrapper_->useProgram( "cubeProgram" );
 
-  const glm::mat4 projectionView = upCamera_->getProjectionMatrix( ) * upCamera_->getViewMatrix( );
+  const glm::mat4 projectionView = upCamera_->getPerspectiveProjectionViewMatrix( );
 
   const CubeVec &cubes          = cubeWorld_.getCubes( );
   glm::mat4 projectionViewModel = glm::mat4( );
 
-  for ( auto & upCube : cubes )
+  for ( auto &upCube : cubes )
   {
     projectionViewModel = projectionView * upCube->getTransformationMatrix( );
 
@@ -144,6 +147,7 @@ CubeImguiOpenGLIOHandler::_onRender( const double )
 
     upGLWrapper_->renderBuffer( "cubeVBO", 0, 15, GL_TRIANGLE_STRIP, "cubeIBO" );
   }
+
   glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 
 } // CubeImguiOpenGLIOHandler::_onRender
@@ -151,7 +155,7 @@ CubeImguiOpenGLIOHandler::_onRender( const double )
 
 
 void
-CubeImguiOpenGLIOHandler::_onGuiRender ( )
+CubeImguiOpenGLIOHandler::_onGuiRender( )
 {
   bool alwaysOpen = true;
 
@@ -173,7 +177,8 @@ CubeImguiOpenGLIOHandler::_onGuiRender ( )
   }
 
   ImGui::End( );
-};
+} // _onGuiRender
+
 
 
 } // namespace example

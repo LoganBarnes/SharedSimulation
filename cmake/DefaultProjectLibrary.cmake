@@ -148,13 +148,10 @@ endif( PROJECT_CONFIG_FILE )
 
 # compile flags
 if ( NOT MSVC AND STRICT_FLAGS )
-  list(
-       APPEND PROJECT_CXX_FLAGS
-       -pedantic -Wall -Wextra -Wcast-align -Wcast-qual -fPIC -Wctor-dtor-privacy
-       -Wdisabled-optimization -Wformat=2 -Winit-self -Wmissing-declarations -Wundef -Werror
-       -Wmissing-include-dirs -Wold-style-cast -Woverloaded-virtual -Wredundant-decls
-       -Wshadow -Wsign-conversion -Wsign-promo -Wstrict-overflow=5 -Wswitch-default -Wno-unused
-       )
+  set( PROJECT_CPP_FLAGS "${PROJECT_CPP_FLAGS} -pedantic -Wall -Wextra -Wcast-align -Wcast-qual -fPIC -Wctor-dtor-privacy" )
+  set( PROJECT_CPP_FLAGS "${PROJECT_CPP_FLAGS} -Wdisabled-optimization -Wformat=2 -Winit-self -Wmissing-declarations -Wundef -Werror" )
+  set( PROJECT_CPP_FLAGS "${PROJECT_CPP_FLAGS} -Wmissing-include-dirs -Wold-style-cast -Woverloaded-virtual -Wredundant-decls" )
+  set( PROJECT_CPP_FLAGS "${PROJECT_CPP_FLAGS} -Wshadow -Wsign-conversion -Wsign-promo -Wstrict-overflow=1 -Wswitch-default -Wno-unused" )
 endif( )
 
 # make project into library that can be used by multiple executables ( such as test classes )
@@ -172,8 +169,8 @@ if ( PROJECT_SOURCE )
     target_compile_features( ${PROJECT_LIB} PRIVATE cxx_range_for )
   endif()
 
-  if ( PROJECT_CXX_FLAGS )
-    set_target_properties( ${PROJECT_LIB} PROPERTIES COMPILE_FLAGS ${PROJECT_CXX_FLAGS} )
+  if ( PROJECT_CPP_FLAGS )
+    set_target_properties( ${PROJECT_LIB} PROPERTIES COMPILE_FLAGS ${PROJECT_CPP_FLAGS} )
   endif( )
 
   if ( PROJECT_DEP_TARGETS )
@@ -213,8 +210,8 @@ if ( PROJECT_MAIN )
     target_compile_features( ${PROJECT_EXEC} PRIVATE cxx_range_for )
   endif()
 
-  if ( PROJECT_CXX_FLAGS )
-    set_target_properties( ${PROJECT_EXEC} PROPERTIES COMPILE_FLAGS ${PROJECT_CXX_FLAGS} )
+  if ( PROJECT_CPP_FLAGS )
+    set_target_properties( ${PROJECT_EXEC} PROPERTIES COMPILE_FLAGS ${PROJECT_CPP_FLAGS} )
   endif( )
 
   target_include_directories( ${PROJECT_EXEC} PUBLIC
@@ -276,8 +273,8 @@ if ( TESTING_SOURCE )
     target_compile_features( ${PROJECT_UNIT_TESTS} PRIVATE cxx_range_for )
   endif()
 
-  if ( PROJECT_CXX_FLAGS )
-    set_target_properties( ${PROJECT_UNIT_TESTS} PROPERTIES COMPILE_FLAGS ${PROJECT_CXX_FLAGS} )
+  if ( PROJECT_CPP_FLAGS )
+    set_target_properties( ${PROJECT_UNIT_TESTS} PROPERTIES COMPILE_FLAGS ${PROJECT_CPP_FLAGS} )
   endif( )
 
   add_dependencies ( ${PROJECT_UNIT_TESTS} ${PROJECT_LIB} ${TESTING_DEP_TARGETS} gmock_main )

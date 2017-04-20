@@ -39,17 +39,17 @@ if ( USE_GLM )
   list(
        APPEND ADDITIONAL_SOURCE
 
-       ${INC_DIR}/shared/graphics/Camera.hpp
+#       ${INC_DIR}/shared/graphics/Camera.hpp
        ${INC_DIR}/shared/graphics/GlmCamera.hpp
 
-       ${SRC_DIR}/graphics/Camera.cpp
+#       ${SRC_DIR}/graphics/Camera.cpp
        ${SRC_DIR}/graphics/GlmCamera.cpp
        )
 
   list(
        APPEND SHARED_TEST_SOURCE
 
-       ${SRC_DIR}/graphics/testing/CameraUnitTests.cpp
+#       ${SRC_DIR}/graphics/testing/CameraUnitTests.cpp
        ${SRC_DIR}/graphics/testing/GlmCameraUnitTests.cpp
        )
 
@@ -150,8 +150,9 @@ list(
 set(
     PROJECT_SOURCE
 
-    ${ADDITIONAL_SOURCE}
     ${CMAKE_CURRENT_SOURCE_DIR}/formatting/uncrustify.cfg
+
+    ${ADDITIONAL_SOURCE}
 
     # driver
     ${INC_DIR}/shared/core/Driver.hpp

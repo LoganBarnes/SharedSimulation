@@ -334,7 +334,7 @@ OpenGLHelper::setTextureUniform(
                                 int                             activeTex   ///<
                                 )
 {
-  glActiveTexture( GL_TEXTURE0 + activeTex );
+  glActiveTexture( static_cast< GLenum >( GL_TEXTURE0 + activeTex ) );
   glUniform1i( glGetUniformLocation( *spProgram, uniform.c_str( ) ), activeTex );
   glBindTexture( GL_TEXTURE_2D, *spTexture );
 }

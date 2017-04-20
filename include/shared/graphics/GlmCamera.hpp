@@ -14,9 +14,8 @@ class GlmCamera
 {
 public:
 
+  explicit
   GlmCamera( );
-
-  ~GlmCamera( ) = default;
 
   const glm::tmat4x4< T >&
   getViewMatrix( ) const { return viewMatrix_; }
