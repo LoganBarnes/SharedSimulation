@@ -245,8 +245,8 @@ if ( USE_GUI )
                              ${SRC_DIR}/gui
                              )
 
-  target_link_libraries( imgui glfw )
-  add_dependencies     ( imgui glfw )
+  target_link_libraries( imgui glfw glad )
+  add_dependencies     ( imgui glfw glad )
 
   set_property( TARGET imgui PROPERTY CXX_STANDARD          11 )
   set_property( TARGET imgui PROPERTY CXX_STANDARD_REQUIRED ON )
