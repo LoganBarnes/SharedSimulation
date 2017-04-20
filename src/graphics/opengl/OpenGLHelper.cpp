@@ -187,47 +187,85 @@ OpenGLHelper::createVao(
 ////////////////////////////////////////////////////////////////////////////////
 std::shared_ptr< GLuint >
 OpenGLHelper::createFramebuffer(
-                                GLsizei                         width,  ///<
-                                GLsizei                         height, ///<
-                                const std::shared_ptr< GLuint > &spTex, ///<
-                                std::shared_ptr< GLuint >      *pRbo    ///<
+                                GLsizei                         width,      ///<
+                                GLsizei                         height,     ///<
+                                const std::shared_ptr< GLuint > spColorTex, ///<
+                                const std::shared_ptr< GLuint > spDepthTex  ///<
                                 )
 {
-  std::shared_ptr< GLuint > spRbo( new GLuint,
-                                  [] ( auto pID )
-                                  {
-                                    glDeleteRenderbuffers( 1, pID );
-                                    delete pID;
-                                  } );
+  std::shared_ptr< GLuint > spRbo = nullptr;
+  std::shared_ptr< GLuint > spFbo = nullptr;
 
-  std::shared_ptr< GLuint > spFbo( new GLuint,
-                                  [ spRbo ]( auto pID )
-                                  {
-                                    glDeleteFramebuffers( 1, pID );
-                                    delete pID;
-                                  }
-                                  );
+  //
+  // no depth texture; create a renderbuffer
+  //
+  if ( !spDepthTex )
+  {
+    spRbo = std::shared_ptr< GLuint >( new GLuint,
+                                      []  ( auto pID )
+                                      {
+                                        glDeleteRenderbuffers( 1, pID );
+                                        delete pID;
+                                      }
+                                      );
+  }
+
+  spFbo = std::shared_ptr< GLuint >( new GLuint,
+                                    [ spRbo ] ( auto pID )
+                                    {
+                                      glDeleteFramebuffers( 1, pID );
+                                      delete pID;
+                                    }
+                                    );
+
 
   glGenFramebuffers( 1, spFbo.get( ) );
   glBindFramebuffer( GL_FRAMEBUFFER, *spFbo );
 
-  glGenRenderbuffers( 1, spRbo.get( ) );
-  glBindRenderbuffer( GL_RENDERBUFFER, *spRbo );
-  glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height );
-  glBindRenderbuffer( GL_RENDERBUFFER, 0 );
+  //
+  // set color attachment if there is one
+  //
+  if ( spColorTex )
+  {
+    glBindTexture( GL_TEXTURE_2D, *spColorTex );
 
-  // attach a texture to FBO color attachment point
-  glFramebufferTexture2D(
-                         GL_FRAMEBUFFER,
-                         GL_COLOR_ATTACHMENT0,
-                         GL_TEXTURE_2D,
-                         *spTex,
-                         0
-                         );
+    glFramebufferTexture2D(
+                           GL_FRAMEBUFFER,
+                           GL_COLOR_ATTACHMENT0,
+                           GL_TEXTURE_2D,
+                           *spColorTex,
+                           0
+                           );
+  }
+  else // no color attachment
+  {
+    glDrawBuffer( GL_NONE ); // No color buffer is drawn to
+    glReadBuffer( GL_NONE ); // No color buffer is read to
+  }
 
+  if ( spDepthTex )
+  {
+    glBindTexture( GL_TEXTURE_2D, *spDepthTex );
 
-  // attach a renderbuffer to depth attachment point
-  glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, *spRbo );
+    glFramebufferTexture2D(
+                           GL_FRAMEBUFFER,
+                           GL_DEPTH_ATTACHMENT,
+                           GL_TEXTURE_2D,
+                           *spDepthTex,
+                           0
+                           );
+  }
+  else
+  {
+    glGenRenderbuffers( 1, spRbo.get( ) );
+    glBindRenderbuffer( GL_RENDERBUFFER, *spRbo );
+    glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height );
+    glBindRenderbuffer( GL_RENDERBUFFER, 0 );
+
+    // attach a renderbuffer to depth attachment point
+    glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, *spRbo );
+  }
+
 
   // Check the framebuffer is ok
   if ( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE )
@@ -236,56 +274,9 @@ OpenGLHelper::createFramebuffer(
   }
 
   glBindFramebuffer( GL_FRAMEBUFFER, 0 );
-
-  if ( pRbo )
-  {
-    *pRbo = spRbo;
-  }
 
   return spFbo;
 } // createFramebuffer
-
-
-
-
-////////////////////////////////////////////////////////////////////////////////
-/// \brief OpenGLHelper::createDepthFramebuffer
-/// \param spDepthTex
-/// \return
-///
-/// \author Logan Barnes
-////////////////////////////////////////////////////////////////////////////////
-std::shared_ptr< GLuint >
-OpenGLHelper::createDepthFramebuffer( const std::shared_ptr< GLuint > &spDepthTex )
-{
-  std::shared_ptr< GLuint > spFbo( new GLuint,
-                                  [] ( auto pID )
-                                  {
-                                    glDeleteFramebuffers( 1, pID );
-                                    delete pID;
-                                  }
-                                  );
-
-  glGenFramebuffers( 1, spFbo.get( ) );
-  glBindFramebuffer( GL_FRAMEBUFFER, *spFbo );
-
-  glBindTexture( GL_TEXTURE_2D, *spDepthTex );
-
-  glFramebufferTexture2D( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, *spDepthTex, 0 );
-
-  glDrawBuffer( GL_NONE ); // No color buffer is drawn to
-  glReadBuffer( GL_NONE ); // No color buffer is read to
-
-  // Check the framebuffer is ok
-  if ( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE )
-  {
-    throw std::runtime_error( "Framebuffer creation failed" );
-  }
-
-  glBindFramebuffer( GL_FRAMEBUFFER, 0 );
-
-  return spFbo;
-} // createDepthFramebuffer
 
 
 

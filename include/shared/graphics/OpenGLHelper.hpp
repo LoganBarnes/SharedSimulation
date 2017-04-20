@@ -107,14 +107,9 @@ public:
   std::shared_ptr< GLuint > createFramebuffer (
                                                GLsizei                         width,
                                                GLsizei                         height,
-                                               const std::shared_ptr< GLuint > &spTex,
-                                               std::shared_ptr< GLuint >      *pRbo = nullptr
+                                               const std::shared_ptr< GLuint > spColorTex = nullptr,
+                                               const std::shared_ptr< GLuint > spDepthTex = nullptr
                                                );
-
-  static
-  std::shared_ptr< GLuint > createDepthFramebuffer (const std::shared_ptr< GLuint > &spDepthTex
-                                                    );
-
 
   static
   void bindFramebuffer ( );

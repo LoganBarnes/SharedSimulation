@@ -256,76 +256,16 @@ TEST_F( OpenGLHelperUnitTests, TestIboDeletedAndReplaced )
 
 
 /////////////////////////////////////////////////////////////////
-/// \brief FramebufferAndRenderbufferDeleted
+/// \brief FramebufferDeleted
 /////////////////////////////////////////////////////////////////
-TEST_F( OpenGLHelperUnitTests, FramebufferAndRenderbufferDeleted )
+TEST_F( OpenGLHelperUnitTests, FramebufferDeleted )
 {
-  GLuint fbo, rbo;
-
-  //
-  // create texture in limited scope
-  //
-  {
-    auto texId = graphics::OpenGLHelper::createTextureArray( 10, 10 );
-
-    std::shared_ptr< GLuint > spFbo;
-
-    // get renderbuffer in limited scope
-    {
-      std::shared_ptr< GLuint > spRbo;
-      spFbo = graphics::OpenGLHelper::createFramebuffer( 10, 10, texId, &spRbo );
-
-      fbo = *spFbo;
-      rbo = *spRbo;
-
-      //
-      // check buffers exist
-      //
-      ASSERT_TRUE( glIsFramebuffer( fbo ) );
-      ASSERT_TRUE( glIsRenderbuffer( rbo ) );
-
-    }
-
-    //
-    // renderbuffer is out of scope but it should
-    // still exist until the framebuffer is deleted
-    //
-      ASSERT_TRUE( glIsFramebuffer( fbo ) );
-      ASSERT_TRUE( glIsRenderbuffer( rbo ) );
-
-
-    auto spFbo2 = spFbo;
-    auto spFbo3 = spFbo;
-
-    auto spFbo4 = spFbo2;
-
-    auto spId5( std::move( spFbo4 ) );
-
-    //
-    // gid4 was moved so it should be invalid
-    //
-    ASSERT_FALSE( spFbo4 );
-
-    //
-    // all other copied variables should still be valid
-    //
-    ASSERT_TRUE ( spFbo );
-    ASSERT_TRUE ( spFbo2 );
-    ASSERT_TRUE ( spFbo3 );
-    ASSERT_TRUE ( spId5 );
-
-    ASSERT_EQ( fbo, *spFbo );
-    ASSERT_EQ( fbo, *spFbo2 );
-    ASSERT_EQ( fbo, *spFbo3 );
-    ASSERT_EQ( fbo, *spId5 );
-  }
-
-  //
-  // id went out of scope so framebuffer and
-  // renderbuffer should be deleted now
-  //
-  ASSERT_FALSE( glIsFramebuffer( fbo ) );
-  ASSERT_FALSE( glIsRenderbuffer( rbo ) );
+  checkDeleted( glIsFramebuffer,
+               [] ( )
+               {
+                 auto texId = graphics::OpenGLHelper::createTextureArray( 10, 10 );
+                 return graphics::OpenGLHelper::createFramebuffer( 10, 10, texId );
+               } );
 }
 
 
@@ -339,6 +279,57 @@ TEST_F( OpenGLHelperUnitTests, FramebufferDeletedAndReplaced )
                           [] ( )
                           {    auto texId = graphics::OpenGLHelper::createTextureArray( 10, 10 );
                                return graphics::OpenGLHelper::createFramebuffer( 10, 10, texId );
+                          } );
+}
+
+
+
+/////////////////////////////////////////////////////////////////
+/// \brief DepthbufferDeleted
+/////////////////////////////////////////////////////////////////
+TEST_F( OpenGLHelperUnitTests, DepthbufferDeleted )
+{
+  checkDeleted( glIsFramebuffer,
+               [] ( )
+               {
+                 auto depthTex = graphics::OpenGLHelper::createTextureArray(
+                                                                            10,
+                                                                            10,
+                                                                            nullptr,
+                                                                            GL_NEAREST,
+                                                                            GL_CLAMP_TO_EDGE,
+                                                                            GL_DEPTH_COMPONENT16,
+                                                                            GL_DEPTH_COMPONENT
+                                                                            );
+                 return graphics::OpenGLHelper::createFramebuffer( 10, 10, nullptr, depthTex );
+               } );
+}
+
+
+
+/////////////////////////////////////////////////////////////////
+/// \brief DepthbufferDeletedAndReplaced
+/////////////////////////////////////////////////////////////////
+TEST_F( OpenGLHelperUnitTests, DepthbufferDeletedAndReplaced )
+{
+  checkDeletedAndReplaced( glIsFramebuffer,
+                          [] ( )
+                          {
+                            auto depthTex = graphics::OpenGLHelper::createTextureArray(
+                                                                                       10,
+                                                                                       10,
+                                                                                       nullptr,
+                                                                                       GL_NEAREST,
+                                                                                       GL_CLAMP_TO_EDGE,
+                                                                                       GL_DEPTH_COMPONENT16,
+                                                                                       GL_DEPTH_COMPONENT
+                                                                                       );
+                            return graphics::OpenGLHelper::createFramebuffer(
+                                                                             10,
+                                                                             10,
+                                                                             nullptr,
+                                                                             depthTex
+                                                                             );
                           } );
 }
 
