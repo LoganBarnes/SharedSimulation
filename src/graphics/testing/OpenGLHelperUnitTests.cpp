@@ -110,7 +110,7 @@ protected:
                           )
   {
     GLuint id1 = std::numeric_limits< GLuint >::max( );
-    GLuint id2 = id2;
+    GLuint id2 = id1;
 
     ASSERT_FALSE( isItem( id1 ) );
     ASSERT_FALSE( isItem( id2 ) );
