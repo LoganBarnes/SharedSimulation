@@ -126,6 +126,15 @@ public:
                           );
 
   static
+  void setIntUniform (
+                      const std::shared_ptr< GLuint > &spProgram,
+                      const std::string               uniform,
+                      const int                      *pValue,
+                      const int                       size = 1,
+                      const int                       count = 1
+                      );
+
+  static
   void setFloatUniform (
                         const std::shared_ptr< GLuint > &spProgram,
                         const std::string               uniform,
@@ -134,13 +143,14 @@ public:
                         const int                       count = 1
                         );
 
+
   static
   void setMatrixUniform (
                          const std::shared_ptr< GLuint > &spProgram,
                          const std::string               uniform,
                          const float                    *pValue,
-                         const int                       size,
-                         const int                       count
+                         const int                       size = 4,
+                         const int                       count = 1
                          );
 
   static
@@ -154,50 +164,8 @@ public:
                      const GLenum                    iboType = GL_UNSIGNED_SHORT
                      );
 
-//  void setBoolUniform (
-//                       const std::string program,
-//                       const std::string uniform,
-//                       bool              var
-//                       );
-//  void setIntUniform (
-//                      const std::string program,
-//                      const std::string uniform,
-//                      int               value
-//                      );
-
-//  void setFloatUniform (
-//                        const std::string program,
-//                        const std::string uniform,
-//                        const float      *pValue,
-//                        const int         size  = 1,
-//                        const int         count = 1
-//                        );
-
-//  void setMatrixUniform (
-//                         const std::string program,
-//                         const std::string uniform,
-//                         const float      *pValue,
-//                         const int         size  = 4,
-//                         const int         count = 1
-//                         );
-
-//  void swapTextures (
-//                     const std::string tex1,
-//                     const std::string tex2
-//                     );
 
 //  void setBlending ( bool blend );
-//  void setCallback ( Callback *callback );
-
-//  void setWindowSize (
-//                      GLsizei width,
-//                      GLsizei height
-//                      );
-
-//  void setViewportSize (
-//                        GLsizei width,
-//                        GLsizei height
-//                        );
 
 //  void bindBufferToTexture (
 //                            const std::string texture,
@@ -206,19 +174,6 @@ public:
 //                            int               width,
 //                            int               height
 //                            );
-
-//  void setClearColor (
-//                      const float r,
-//                      const float g,
-//                      const float b,
-//                      const float a
-//                      );
-
-//  void destroyTexture (
-//                       const std::string name,
-//                       const bool        glDelete = true
-//                       );
-//  void destroyFramebuffer ( const std::string name );
 
 
 private:

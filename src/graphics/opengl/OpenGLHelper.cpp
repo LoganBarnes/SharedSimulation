@@ -240,79 +240,6 @@ OpenGLHelper::createFramebuffer(
 
 
 
-//GLuint
-//OpenGLHelper::_addVAOToBuffer(
-//                               const GLuint       vbo,
-//                               const VAOSettings &settings
-//                               ) const
-//{
-//  GLuint vao;
-
-//  glBindBuffer( GL_ARRAY_BUFFER, vbo );
-
-//  // Initialize the vertex array object.
-//  glGenVertexArrays( 1, &vao );
-//  glBindVertexArray( vao );
-
-//  _checkItemExists( settings.program, programs_, "programs" );
-
-//  const GLuint &program = programs_.at( settings.program );
-
-//  for ( size_t i = 0; i < settings.settings.size( ); ++i )
-//  {
-//    const VAOElement &vaoElmt = settings.settings[ i ];
-//    int pos                   = glGetAttribLocation( program, vaoElmt.name.c_str( ) );
-
-//    if ( pos < 0 )
-//    {
-//      std::stringstream msg;
-//      msg << "attrib location "
-//          << vaoElmt.name
-//          << " not found for program "
-//          << settings.program;
-
-//      throw std::runtime_error( msg.str( ) );
-//    }
-
-//    GLuint position = static_cast< GLuint >( pos );
-
-//    glEnableVertexAttribArray( position );
-//    glVertexAttribPointer(
-//                          position,
-//                          vaoElmt.size,         // Num coordinates per position
-//                          vaoElmt.type,         // Type
-//                          GL_FALSE,             // Normalized
-//                          settings.totalStride, // Stride, 0 = tightly packed
-//                          vaoElmt.pointer       // Array buffer offset
-//                          );
-//  }
-
-//  // Unbind buffers.
-//  glBindBuffer( GL_ARRAY_BUFFER, 0 );
-//  glBindVertexArray( 0 );
-
-//  return vao;
-
-//} // OpenGLHelper::addVAOToBuffer
-
-
-
-//GLuint
-//OpenGLHelper::_getVAO( const Buffer &buf )
-//{
-//  ContextVAOMap &vaos = vaoMap_[ buf.vbo ];
-
-//  if ( vaos.find( pContext_ ) == vaos.end( ) )
-//  {
-//    vaos[ pContext_ ] = _addVAOToBuffer( buf.vbo, buf.settings );
-//  }
-
-//  return vaos[ pContext_ ];
-
-//}
-
-
-
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief OpenGLHelper::bindFramebuffer
 /// \param spFbo
@@ -370,33 +297,52 @@ OpenGLHelper::setTextureUniform(
   glActiveTexture( GL_TEXTURE0 + activeTex );
   glUniform1i( glGetUniformLocation( *spProgram, uniform.c_str( ) ), activeTex );
   glBindTexture( GL_TEXTURE_2D, *spTexture );
-} // OpenGLHelper::setTextureUniform
+}
 
 
 
-//void
-//OpenGLHelper::setBoolUniform(
-//    const std::shared_ptr< GLuint > &spProgram, ///<
-//                             const std::string uniform,
-//                             const bool        *pVvar
-//                             )
-//{
-//  _checkItemExists( program, programs_, "programs" );
-//  glUniform1i( glGetUniformLocation( programs_[ program ], uniform.c_str( ) ), var );
-//}
+////////////////////////////////////////////////////////////////////////////////
+/// \brief OpenGLHelper::setIntUniform
+///
+/// \author Logan Barnes
+////////////////////////////////////////////////////////////////////////////////
+void
+OpenGLHelper::setIntUniform(
+                            const std::shared_ptr< GLuint > &spProgram, ///<
+                            const std::string               uniform,    ///<
+                            const int                      *pValue,     ///<
+                            const int                       size,       ///<
+                            const int                       count       ///<
+                            )
+{
+  switch ( size )
+  {
 
+  case 1:
+    glUniform1i( glGetUniformLocation( *spProgram, uniform.c_str( ) ), *pValue );
+    break;
 
+  case 2:
+    glUniform2iv( glGetUniformLocation( *spProgram, uniform.c_str( ) ), count, pValue );
+    break;
 
-//void
-//OpenGLHelper::setIntUniform(
-//                            const std::string program,
-//                            const std::string uniform,
-//                            int               value
-//                            )
-//{
-//  _checkItemExists( program, programs_, "programs" );
-//  glUniform1i( glGetUniformLocation( programs_[ program ], uniform.c_str( ) ), value );
-//}
+  case 3:
+    glUniform3iv( glGetUniformLocation( *spProgram, uniform.c_str( ) ), count, pValue );
+    break;
+
+  case 4:
+    glUniform4iv( glGetUniformLocation( *spProgram, uniform.c_str( ) ), count, pValue );
+    break;
+
+  default:
+    std::stringstream msg;
+    msg << "Int or vector of size " << size << " does not exist";
+    throw std::runtime_error( msg.str( ) );
+    break;
+
+  } // switch
+
+} // setIntUniform
 
 
 
@@ -531,8 +477,6 @@ OpenGLHelper::renderBuffer(
 
   glBindVertexArray( 0 );
 } // OpenGLHelper::renderBuffer
-
-
 
 
 
