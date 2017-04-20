@@ -25,19 +25,43 @@ addons:
       - ubuntu-toolchain-r-test
       - kubuntu-backports
 
-env:
-  - LLVM_VERSION=llvm-3.8.0 BUILD_MODE=Release TESTING=ON SHARED_LIBS=OFF
-  - LLVM_VERSION=llvm-3.9.0 BUILD_MODE=Release TESTING=ON SHARED_LIBS=OFF
-  - COMPILER=g++-5 BUILD_MODE=Release TESTING=ON SHARED_LIBS=OFF
-  - COMPILER=g++-6 BUILD_MODE=Release TESTING=ON SHARED_LIBS=OFF
-  - LLVM_VERSION=default BUILD_MODE=Release TESTING=ON  SHARED_LIBS=OFF"
-  # - LLVM_VERSION=default BUILD_MODE=Release TESTING=ON  SHARED_LIBS=ON"
-  # - LLVM_VERSION=default BUILD_MODE=Release TESTING=OFF SHARED_LIBS=OFF"
-  # - LLVM_VERSION=default BUILD_MODE=Release TESTING=OFF SHARED_LIBS=ON"
-  # - LLVM_VERSION=default BUILD_MODE=Debug   TESTING=ON  SHARED_LIBS=OFF"
-  # - LLVM_VERSION=default BUILD_MODE=Debug   TESTING=ON  SHARED_LIBS=ON"
-  # - LLVM_VERSION=default BUILD_MODE=Debug   TESTING=OFF SHARED_LIBS=OFF"
-  # - LLVM_VERSION=default BUILD_MODE=Debug   TESTING=OFF SHARED_LIBS=ON"
+matrix:
+  include:
+
+    # # Xcode 7.3
+    # - os: osx
+    #   env: CONFIG_FLAGS="-gl -m -sf -t"
+    #   osx_image: xcode7.3
+
+    # # Xcode 8
+    # - os: osx
+    #   env: CONFIG_FLAGS="-gl -m -sf -t"
+    #   osx_image: xcode8
+
+    # # GCC 5
+    # - os: linux
+    #   env: COMPILER=g++-5 CONFIG_FLAGS="-gl -m -sf -t"
+    #   compiler: gcc
+
+    # # GCC 6
+    # - os: linux
+    #   env: COMPILER=g++-6 CONFIG_FLAGS="-gl -m -sf -t"
+    #   compiler: gcc
+
+    # # clang 3.9
+    # - os: linux
+    #   env: LLVM_VERSION=3.8.0 CONFIG_FLAGS="-gl -m -sf -t"
+    #   compiler: clang
+
+    # clang 3.9
+    - os: linux
+      env: LLVM_VERSION=3.9.0 BUILD_TYPE=Release SHARED=OFF TESTS=ON
+      compiler: clang
+
+    # shared libs
+    - os: linux
+      env: LLVM_VERSION=default BUILD_TYPE=Release SHARED=ON TESTS=ON
+      compiler: clang
 
 install:
   ############################################################################
@@ -46,6 +70,11 @@ install:
   - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
   - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
 
+  ############################################################################
+  # Setup default versions and override compiler if needed
+  ############################################################################
+  - if [[ "${LLVM_VERSION}" == "default" ]]; then LLVM_VERSION=3.9.0; fi
+  - if [[ "${COMPILER}" != "" ]]; then export CXX=${COMPILER}; fi
 
 
   ############################################################################
@@ -100,10 +129,7 @@ before_script:
   - cd ${TRAVIS_BUILD_DIR}
 
 script:
-  - mkdir _build
-  - cd _build
-  - cmake -DSTRICT_FLAGS=ON -DUSE_GLFW=ON -DUSE_GLM=ON -DUSE_GUI=ON -DBUILD_SHARED_TESTS=$TESTING -DCMAKE_BUILD_TYPE=$BUILD_MODE -DBUILD_SHARED_LIBS=$SHARED_LIBS ..
-  - cmake --build .
+  - cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBUILD_SHARED_LIBS=$SHARED -DBUILD_SHARED_TESTS=$TESTS -DUSE_GLFW=ON -DUSE_GLM=ON -DUSE_GUI=ON -DSTRICT_FLAGS=ON ..
 
 notifications:
   on_success: never
