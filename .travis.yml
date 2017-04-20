@@ -22,63 +22,63 @@ cache:
 matrix:
   include:
 
-    # Xcode 7.3
-    - os: osx
-      env: BUILD_TYPE=Release SHARED=OFF TESTS=ON
-      osx_image: xcode7.3
+    # # Xcode 7.3
+    # - os: osx
+    #   env: BUILD_TYPE=Release SHARED=OFF TESTS=ON
+    #   osx_image: xcode7.3
 
-    # Xcode 8
-    - os: osx
-      env: BUILD_TYPE=Release SHARED=OFF TESTS=ON
-      osx_image: xcode8
+    # # Xcode 8
+    # - os: osx
+    #   env: BUILD_TYPE=Release SHARED=OFF TESTS=ON
+    #   osx_image: xcode8
 
-    # GCC 5
-    - os: linux
-      env: COMPILER=g++-5 BUILD_TYPE=Release SHARED=OFF TESTS=ON
-      compiler: gcc
+    # # GCC 5
+    # - os: linux
+    #   env: COMPILER=g++-5 BUILD_TYPE=Release SHARED=OFF TESTS=ON
+    #   compiler: gcc
 
-    # GCC 6
-    - os: linux
-      env: COMPILER=g++-6 BUILD_TYPE=Release SHARED=OFF TESTS=ON
-      compiler: gcc
+    # # GCC 6
+    # - os: linux
+    #   env: COMPILER=g++-6 BUILD_TYPE=Release SHARED=OFF TESTS=ON
+    #   compiler: gcc
 
-    # clang 3.9
-    - os: linux
-      env: LLVM_VERSION=3.8.0 BUILD_TYPE=Release SHARED=OFF TESTS=ON
-      compiler: clang
+    # # clang 3.9
+    # - os: linux
+    #   env: LLVM_VERSION=3.8.0 BUILD_TYPE=Release SHARED=OFF TESTS=ON
+    #   compiler: clang
 
-    # clang 3.9
-    - os: linux
-      env: LLVM_VERSION=3.9.0 BUILD_TYPE=Release SHARED=OFF TESTS=ON
-      compiler: clang
+    # # clang 3.9
+    # - os: linux
+    #   env: LLVM_VERSION=3.9.0 BUILD_TYPE=Release SHARED=OFF TESTS=ON
+    #   compiler: clang
 
-    # shared libs
-    - os: linux
-      env: LLVM_VERSION=default BUILD_TYPE=Release SHARED=ON TESTS=ON
-      compiler: clang
+    # # shared libs
+    # - os: linux
+    #   env: LLVM_VERSION=default BUILD_TYPE=Release SHARED=ON TESTS=ON
+    #   compiler: clang
 
-    # shared libs
-    - os: linux
-      env: LLVM_VERSION=default BUILD_TYPE=Release SHARED=ON TESTS=ON
-      compiler: clang
+    # # shared libs
+    # - os: linux
+    #   env: LLVM_VERSION=default BUILD_TYPE=Release SHARED=ON TESTS=ON
+    #   compiler: clang
 
     # Shared libs
     - os: osx
       env: BUILD_TYPE=Release SHARED=ON TESTS=ON
       osx_image: xcode8
 
-    - os: linux
-      env: LLVM_VERSION=default BUILD_TYPE=Release SHARED=ON TESTS=ON
-      compiler: clang
+    # - os: linux
+    #   env: LLVM_VERSION=default BUILD_TYPE=Release SHARED=ON TESTS=ON
+    #   compiler: clang
 
-    # Debug
-    - os: osx
-      env: BUILD_TYPE=Debug SHARED=OFF TESTS=ON
-      osx_image: xcode8
+    # # Debug
+    # - os: osx
+    #   env: BUILD_TYPE=Debug SHARED=OFF TESTS=ON
+    #   osx_image: xcode8
 
-    - os: linux
-      env: LLVM_VERSION=default BUILD_TYPE=Debug SHARED=OFF TESTS=ON
-      compiler: clang
+    # - os: linux
+    #   env: LLVM_VERSION=default BUILD_TYPE=Debug SHARED=OFF TESTS=ON
+    #   compiler: clang
 
 install:
   ############################################################################
@@ -146,9 +146,21 @@ before_script:
   - cd ${TRAVIS_BUILD_DIR}
 
 script:
+  ############################################################################
+  # Build main simulation library and tests
+  ############################################################################
   - mkdir build
   - cd build
   - cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBUILD_SHARED_LIBS=$SHARED -DBUILD_SHARED_TESTS=$TESTS -DUSE_GLFW=ON -DUSE_GLM=ON -DUSE_GUI=ON -DSTRICT_FLAGS=ON ..
+  - cmake --build .
+
+  ############################################################################
+  # Build example projects using simulation library
+  ############################################################################
+  - cd ../examples
+  - mkdir build
+  - cd build
+  - cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBUILD_SHARED_LIBS=$SHARED ..
   - cmake --build .
 
 notifications:

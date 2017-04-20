@@ -20,6 +20,8 @@ include( ../cmake/DownloadProject.cmake )
 
 set( CMAKE_MACOSX_RPATH TRUE )
 
+###\todo Add checks to make sure dependent libraries will be built
+
 ################################################
 # add glfw3 functionality
 ################################################
@@ -242,6 +244,9 @@ if ( USE_GUI )
                              ${CMAKE_BINARY_DIR}/imgui-src
                              ${SRC_DIR}/gui
                              )
+
+  target_link_libraries( imgui glfw )
+  add_dependencies     ( imgui glfw )
 
   set_property( TARGET imgui PROPERTY CXX_STANDARD          11 )
   set_property( TARGET imgui PROPERTY CXX_STANDARD_REQUIRED ON )
