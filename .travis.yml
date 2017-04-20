@@ -1,15 +1,11 @@
 language: c++
-compiler: clang
 
 branches:
   only:
     - master
 
-os:
-  - linux
-  - osx
-
 sudo: false
+dist: trusty
 
 cache:
   directories:
@@ -28,30 +24,30 @@ addons:
 matrix:
   include:
 
-    # # Xcode 7.3
-    # - os: osx
-    #   env: CONFIG_FLAGS="-gl -m -sf -t"
-    #   osx_image: xcode7.3
+    # Xcode 7.3
+    - os: osx
+      env: BUILD_TYPE=Release SHARED=OFF TESTS=ON
+      osx_image: xcode7.3
 
-    # # Xcode 8
-    # - os: osx
-    #   env: CONFIG_FLAGS="-gl -m -sf -t"
-    #   osx_image: xcode8
+    # Xcode 8
+    - os: osx
+      env: BUILD_TYPE=Release SHARED=OFF TESTS=ON
+      osx_image: xcode8
 
-    # # GCC 5
-    # - os: linux
-    #   env: COMPILER=g++-5 CONFIG_FLAGS="-gl -m -sf -t"
-    #   compiler: gcc
+    # GCC 5
+    - os: linux
+      env: COMPILER=g++-5 BUILD_TYPE=Release SHARED=OFF TESTS=ON
+      compiler: gcc
 
-    # # GCC 6
-    # - os: linux
-    #   env: COMPILER=g++-6 CONFIG_FLAGS="-gl -m -sf -t"
-    #   compiler: gcc
+    # GCC 6
+    - os: linux
+      env: COMPILER=g++-6 BUILD_TYPE=Release SHARED=OFF TESTS=ON
+      compiler: gcc
 
-    # # clang 3.9
-    # - os: linux
-    #   env: LLVM_VERSION=3.8.0 CONFIG_FLAGS="-gl -m -sf -t"
-    #   compiler: clang
+    # clang 3.9
+    - os: linux
+      env: LLVM_VERSION=3.8.0 BUILD_TYPE=Release SHARED=OFF TESTS=ON
+      compiler: clang
 
     # clang 3.9
     - os: linux
@@ -61,6 +57,29 @@ matrix:
     # shared libs
     - os: linux
       env: LLVM_VERSION=default BUILD_TYPE=Release SHARED=ON TESTS=ON
+      compiler: clang
+
+    # shared libs
+    - os: linux
+      env: LLVM_VERSION=default BUILD_TYPE=Release SHARED=ON TESTS=ON
+      compiler: clang
+
+    # Shared libs
+    - os: osx
+      env: BUILD_TYPE=Release SHARED=ON TESTS=ON
+      osx_image: xcode8
+
+    - os: linux
+      env: LLVM_VERSION=default BUILD_TYPE=Release SHARED=ON TESTS=ON
+      compiler: clang
+
+    # Debug
+    - os: osx
+      env: BUILD_TYPE=Debug SHARED=OFF TESTS=ON
+      osx_image: xcode8
+
+    - os: linux
+      env: LLVM_VERSION=default BUILD_TYPE=Debug SHARED=OFF TESTS=ON
       compiler: clang
 
 install:

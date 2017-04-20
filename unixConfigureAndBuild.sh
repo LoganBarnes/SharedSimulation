@@ -113,16 +113,16 @@ cmake -E make_directory build
 
 # run cmake from the build directory to configure the project
 cmake -E chdir build cmake -DCMAKE_BUILD_TYPE=$BUILD_MODE \
-                            -DSTRICT_FLAGS=$STRICT_FLAGS \
-                            -DUSE_GLFW=$USE_GLFW \
-                            -DUSE_VULKAN=$USE_VULKAN \
-                            -DUSE_GLM=$USE_GLM \
-                            -DUSE_OPTIX=$USE_OPTIX \
-                            -DUSE_GUI=$USE_GUI \
-                            -DUSE_GMOCK=$USE_GMOCK \
-                            -DBUILD_SHARED_TESTS=$TESTING \
-                            -DBUILD_SHARED_LIBS=$SHARED_LIBS \
-                            -DCMAKE_INSTALL_PREFIX=$ROOT_DIR/build ..
+                           -DSTRICT_FLAGS=$STRICT_FLAGS \
+                           -DUSE_GLFW=$USE_GLFW \
+                           -DUSE_VULKAN=$USE_VULKAN \
+                           -DUSE_GLM=$USE_GLM \
+                           -DUSE_OPTIX=$USE_OPTIX \
+                           -DUSE_GUI=$USE_GUI \
+                           -DUSE_GMOCK=$USE_GMOCK \
+                           -DBUILD_SHARED_TESTS=$TESTING \
+                           -DBUILD_SHARED_LIBS=$SHARED_LIBS \
+                           -DCMAKE_INSTALL_PREFIX=$ROOT_DIR/build ..
 
 # run the cmake build command to build the project with the native build system
 cmake -E chdir build cmake --build . --target install --config $BUILD_MODE -- -j12
