@@ -11,22 +11,28 @@ os:
 
 sudo: false
 
+cache:
+  directories:
+    - ${TRAVIS_BUILD_DIR}/deps/llvm-3.8.0
+    - ${TRAVIS_BUILD_DIR}/deps/llvm-3.9.0
+
 addons:
   apt:
     sources:
       - kubuntu-backports
     packages:
-      - cmake
+      - g++-5
+      - g++-6
 
 env:
-  - BUILD_MODE=Release TESTING=ON  SHARED_LIBS=ON"
-  # - BUILD_MODE=Release TESTING=ON  SHARED_LIBS=OFF"
-  # - BUILD_MODE=Release TESTING=OFF SHARED_LIBS=ON"
+  - BUILD_MODE=Release TESTING=ON  SHARED_LIBS=OFF"
+  # - BUILD_MODE=Release TESTING=ON  SHARED_LIBS=ON"
   # - BUILD_MODE=Release TESTING=OFF SHARED_LIBS=OFF"
-  # - BUILD_MODE=Debug   TESTING=ON  SHARED_LIBS=ON"
+  # - BUILD_MODE=Release TESTING=OFF SHARED_LIBS=ON"
   # - BUILD_MODE=Debug   TESTING=ON  SHARED_LIBS=OFF"
-  # - BUILD_MODE=Debug   TESTING=OFF SHARED_LIBS=ON"
+  # - BUILD_MODE=Debug   TESTING=ON  SHARED_LIBS=ON"
   # - BUILD_MODE=Debug   TESTING=OFF SHARED_LIBS=OFF"
+  # - BUILD_MODE=Debug   TESTING=OFF SHARED_LIBS=ON"
 
 install:
   ############################################################################
@@ -98,13 +104,7 @@ before_script:
 script:
   - mkdir _build
   - cd _build
-  - cmake -DSTRICT_FLAGS=ON \
-          -DUSE_GLFW=ON \
-          -DUSE_GLM=ON \
-          -DUSE_GUI=ON \
-          -DBUILD_SHARED_TESTS=$TESTING \
-          -DCMAKE_BUILD_TYPE=$BUILD_MODE \
-          -DBUILD_SHARED_LIBS=$SHARED_LIBS ..
+  - cmake -DSTRICT_FLAGS=ON -DUSE_GLFW=ON -DUSE_GLM=ON -DUSE_GUI=ON -DBUILD_SHARED_TESTS=$TESTING -DCMAKE_BUILD_TYPE=$BUILD_MODE -DBUILD_SHARED_LIBS=$SHARED_LIBS ..
   - cmake --build .
 
 notifications:
