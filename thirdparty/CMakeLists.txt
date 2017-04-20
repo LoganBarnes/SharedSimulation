@@ -18,6 +18,7 @@ set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
 # allows for downloading of thirdparty libs at configure time
 include( ../cmake/DownloadProject.cmake )
 
+set( CMAKE_MACOSX_RPATH TRUE )
 
 ################################################
 # add glfw3 functionality

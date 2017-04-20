@@ -157,7 +157,6 @@ if ( NOT MSVC AND STRICT_FLAGS )
        )
 endif( )
 
-
 # make project into library that can be used by multiple executables ( such as test classes )
 if ( PROJECT_SOURCE )
 
@@ -183,6 +182,8 @@ if ( PROJECT_SOURCE )
 
   target_include_directories( ${PROJECT_LIB} SYSTEM PUBLIC ${PROJECT_SYSTEM_INCLUDE_DIRS} )
   target_include_directories( ${PROJECT_LIB}        PUBLIC ${PROJECT_INCLUDE_DIRS}        )
+
+  set_property( TARGET ${PROJECT_EXEC} PROPERTY INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/lib )
 
 endif( PROJECT_SOURCE )
 
@@ -266,7 +267,7 @@ if ( TESTING_SOURCE )
   target_include_directories( ${PROJECT_UNIT_TESTS} SYSTEM PUBLIC ${TESTING_SYSTEM_INCLUDE_DIRS} )
   target_include_directories( ${PROJECT_UNIT_TESTS}        PUBLIC ${TESTING_INCLUDE_DIRS}        )
 
-  target_link_libraries( ${PROJECT_UNIT_TESTS} ${TESTING_LINK_LIBS} gmock gmock_main ${PROJECT_LIB} )
+  target_link_libraries( ${PROJECT_UNIT_TESTS} ${PROJECT_LIB} ${TESTING_LINK_LIBS} gmock_main )
 
   if ( FORCE_CPP_STANDARD )
     set_property( TARGET ${PROJECT_UNIT_TESTS} PROPERTY CXX_STANDARD ${FORCE_CPP_STANDARD} )
@@ -279,11 +280,9 @@ if ( TESTING_SOURCE )
     set_target_properties( ${PROJECT_UNIT_TESTS} PROPERTIES COMPILE_FLAGS ${PROJECT_CXX_FLAGS} )
   endif( )
 
-  if ( ${DEP_TARGETS} )
-    add_dependencies ( ${PROJECT_UNIT_TESTS} ${TESTING_DEP_TARGETS} gmock gmock_main ${PROJECT_LIB} )
-  endif( )
+  add_dependencies ( ${PROJECT_UNIT_TESTS} ${PROJECT_LIB} ${TESTING_DEP_TARGETS} gmock_main )
 
-  # set_property( TARGET ${PROJECT_UNIT_TESTS} PROPERTY INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/lib )
+  set_property( TARGET ${PROJECT_UNIT_TESTS} PROPERTY INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/lib )
 
   # Adds logic to INSTALL.vcproj to copy ${PROJECT_EXEC}.exe to destination directory
   install(
@@ -291,18 +290,18 @@ if ( TESTING_SOURCE )
           RUNTIME DESTINATION testbin
           )
 
-  # Set up cmake testing
-  enable_testing()
-  include( CTest )
+#  # Set up cmake testing
+#  enable_testing()
+#  include( CTest )
 
-  foreach( testFile ${TESTING_SOURCE} )
+#  foreach( testFile ${TESTING_SOURCE} )
 
-    # remove '.cpp' and full path from test name
-    string( REPLACE ".cpp" "" testName ${testFile} )
-    string( REPLACE "${SRC_DIR}/testing/" "" testName ${testName} )
+#    # remove '.cpp' and full path from test name
+#    string( REPLACE ".cpp" "" testName ${testFile} )
+#    string( REPLACE "${SRC_DIR}/testing/" "" testName ${testName} )
 
-    add_test( NAME ${testName} COMMAND ${PROJECT_UNIT_TESTS} "--gtest_filter=${testName}*" )
+#    add_test( NAME ${testName} COMMAND ${PROJECT_UNIT_TESTS} "--gtest_filter=${testName}*" )
 
-  endforeach( )
+#  endforeach( )
 
 endif ( TESTING_SOURCE )
