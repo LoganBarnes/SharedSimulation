@@ -78,27 +78,27 @@ protected:
       //
       // gid4 was moved so it should be invalid
       //
-      ASSERT_FALSE( spId4 );
+      EXPECT_FALSE( spId4 );
 
       //
       // all other copied variables should still be valid
       //
-      ASSERT_TRUE ( spId );
-      ASSERT_TRUE ( spId2 );
-      ASSERT_TRUE ( spId3 );
-      ASSERT_TRUE ( gid5 );
+      EXPECT_TRUE ( spId );
+      EXPECT_TRUE ( spId2 );
+      EXPECT_TRUE ( spId3 );
+      EXPECT_TRUE ( gid5 );
 
-      ASSERT_EQ( id, *spId );
-      ASSERT_EQ( id, *spId2 );
-      ASSERT_EQ( id, *spId3 );
-      ASSERT_EQ( id, *gid5 );
+      EXPECT_EQ( id, *spId );
+      EXPECT_EQ( id, *spId2 );
+      EXPECT_EQ( id, *spId3 );
+      EXPECT_EQ( id, *gid5 );
     }
 
     //
     // id went out of scope so item
     // should be deleted now
     //
-    ASSERT_FALSE( isItem( id ) );
+    EXPECT_FALSE( isItem( id ) );
   } // checkDeleted
 
 

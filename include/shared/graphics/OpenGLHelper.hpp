@@ -277,11 +277,11 @@ OpenGLHelper::createBuffer(
 template< typename T >
 void
 OpenGLHelper::updateBuffer(
-                           const std::shared_ptr< GLuint > &upBuffer, ///<
+                           const std::shared_ptr< GLuint > &upBuffer,     ///<
                            const size_t                    elementOffset, ///<
-                           const size_t                    numElements, ///<
-                           const T                        *pData,     ///<
-                           const GLenum                    bufferType ///<
+                           const size_t                    numElements,   ///<
+                           const T                        *pData,         ///<
+                           const GLenum                    bufferType     ///<
                            )
 {
   constexpr auto typeSizeBytes = sizeof( T );
