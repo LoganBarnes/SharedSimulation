@@ -14,8 +14,10 @@ class SharedCallback : public graphics::Callback
 
 public:
 
+  explicit
   SharedCallback( );
 
+  virtual
   ~SharedCallback( );
 
 

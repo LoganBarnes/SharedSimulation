@@ -439,10 +439,7 @@ CallbackSingleton::defaultWindowRefreshCallback( GLFWwindow *pWindow )
 void
 CallbackSingleton::setDefaultCallback( std::unique_ptr< Callback > upCallback )
 {
-
-  upDefaultCallbacks_.release( );
   upDefaultCallbacks_ = std::move( upCallback );
-
 }
 
 

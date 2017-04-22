@@ -29,11 +29,6 @@ ImguiCallback::setCallback( std::unique_ptr< graphics::Callback > upCallback )
 {
   if ( upCallback )
   {
-    if ( upCallback_ )
-    {
-      upCallback_.release( );
-    }
-
     upCallback_ = std::move( upCallback );
   }
 } // ImguiCallback::setCallback
