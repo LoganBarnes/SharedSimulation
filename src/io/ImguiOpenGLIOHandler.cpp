@@ -18,11 +18,11 @@ namespace shared
 
 
 
-/////////////////////////////////////////////
+///////////////////////////////////////////////////////////////
 /// \brief ImguiOpenGLIOHandler::ImguiOpenGLIOHandler
 ///
 /// \author Logan Barnes
-/////////////////////////////////////////////
+///////////////////////////////////////////////////////////////
 ImguiOpenGLIOHandler::ImguiOpenGLIOHandler(
                                            World &world,
                                            bool  printInfo,
@@ -48,11 +48,11 @@ ImguiOpenGLIOHandler::ImguiOpenGLIOHandler(
 
 
 
-/////////////////////////////////////////////
+///////////////////////////////////////////////////////////////
 /// \brief ImguiOpenGLIOHandler::~ImguiOpenGLIOHandler
 ///
 /// \author Logan Barnes
-/////////////////////////////////////////////
+///////////////////////////////////////////////////////////////
 ImguiOpenGLIOHandler::~ImguiOpenGLIOHandler( )
 {
   ImGui_ImplGlfwGL3_Shutdown( );
@@ -60,15 +60,31 @@ ImguiOpenGLIOHandler::~ImguiOpenGLIOHandler( )
 
 
 
-/////////////////////////////////////////////
+///////////////////////////////////////////////////////////////
 /// \brief ImguiOpenGLIOHandler::showWorld
 /// \param alpha
 ///
 /// \author Logan Barnes
-/////////////////////////////////////////////
+///////////////////////////////////////////////////////////////
 void
 ImguiOpenGLIOHandler::showWorld( const double alpha )
 {
+  //
+  // ImGui handles automatic resizing and event changes in the
+  // frame following the one where the event took place.
+  //
+  // When rendering in an event based driver it isn't guaranteed
+  // that another frame will be drawn immediately after the current
+  // one. Therefore, we render the gui twice to ensure all changes
+  // are captured in the current frame.
+  //
+  if ( eventBased_ )
+  {
+    ImGui_ImplGlfwGL3_NewFrame( );
+    _onGuiRender( );
+    ImGui::Render( );
+  }
+
   ImGui_ImplGlfwGL3_NewFrame( );
 
   _onGuiRender( );

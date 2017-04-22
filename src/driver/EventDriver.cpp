@@ -29,7 +29,9 @@ EventDriver::EventDriver(
                          IOHandler &ioHandler
                          ) noexcept
   : Driver( world, ioHandler )
-{}
+{
+  ioHandler_.setEventBased( true );
+}
 
 
 
@@ -73,16 +75,15 @@ EventDriver::exec(
 void
 EventDriver::_runEventLoop( )
 {
-  ///\todo: determine why this should be called
-  ///       twice before event loop starts
-  // ioHandler_.showWorld( 1.0 );
-
-  while ( !ioHandler_.isExitRequested( ) )
+  do
   {
-    // check for input
     ioHandler_.showWorld( 1.0 );
+
+    // check for input
     ioHandler_.waitForIO( );
   }
+  while ( !ioHandler_.isExitRequested( ) );
+
 } // EventDriver::_runEventLoop
 
 

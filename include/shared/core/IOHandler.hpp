@@ -86,10 +86,20 @@ public:
   isExitRequested( ) { return exitRequested_; }
 
 
+  ///////////////////////////////////////////////////////////////
+  /// \brief setEventBased
+  /// \param eventBased - true if IOHandler is being used
+  ///                     in an event based driver
+  ///////////////////////////////////////////////////////////////
+  void
+  setEventBased( bool eventBased ) { eventBased_ = eventBased; }
+
+
 protected:
 
   World &world_;
   bool exitRequested_;
+  bool eventBased_;
 
 };
 

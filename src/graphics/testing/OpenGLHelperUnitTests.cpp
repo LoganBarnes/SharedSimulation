@@ -99,6 +99,16 @@ protected:
     // should be deleted now
     //
     EXPECT_FALSE( isItem( id ) );
+
+
+    std::shared_ptr< GLuint > spId = createItem( );
+
+    id = *spId;
+    EXPECT_TRUE( isItem( id ) );
+
+    spId = nullptr;
+    EXPECT_FALSE( isItem( id ) );
+
   } // checkDeleted
 
 
