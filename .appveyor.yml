@@ -58,7 +58,7 @@ build_script:
   - cmake --build . --config %BUILD_MODE% -- /m
 
 test_script:
-  - cd %APPVEYOR_BUILD_FOLDER%/build
+  - cd %APPVEYOR_BUILD_FOLDER%\build
   - IF EXIST testbin\testSharedSimulation.exe ( testbin\testSharedSimulation.exe )
 
 notifications:
