@@ -152,13 +152,9 @@ install:
   - |
     if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
       VULKAN_DIR=${TRAVIS_BUILD_DIR}/deps/vulkan
-      if [[ -z "$(ls -A ${VULKAN_DIR})" ]]; then
-        VULKAN_URL="https://vulkan.lunarg.com/sdk/download/${VULKAN_VERSION}/linux/vulkansdk-linux-x86_64-${VULKAN_VERSION}.run"
-        mkdir -p ${VULKAN_DIR}
-        cd ${VULKAN_DIR}
-        travis_retry wget ${VULKAN_URL}
-        bash vulkansdk-linux-x86_64-${VULKAN_VERSION}.run ${VULKAN_DIR}/
-      fi;
+      VULKAN_URL="https://vulkan.lunarg.com/sdk/download/${VULKAN_VERSION}/linux/vulkansdk-linux-x86_64-${VULKAN_VERSION}.run"
+      mkdir -p ${VULKAN_DIR} && cd ${VULKAN_DIR} && travis_retry wget ${VULKAN_URL}
+      bash vulkansdk-linux-x86_64-${VULKAN_VERSION}.run ${VULKAN_DIR}/
       cd ${VULKAN_DIR}/VulkanSDK/${VULKAN_VERSION}
       source setup-env.sh
       VULKAN=ON
@@ -206,6 +202,7 @@ script:
           -DUSE_GLM=ON                   \
           -DUSE_GUI=ON                   \
           -DSTRICT_FLAGS=ON              \
+          -DCMAKE_INSTALL_PREFIX=${TRAVIS_BUILD_DIR}/build-no-tests \
           ..
   - cmake --build . --target install -- -j12
   - cd ..
@@ -225,6 +222,7 @@ script:
           -DUSE_GLM=ON                   \
           -DUSE_GUI=ON                   \
           -DSTRICT_FLAGS=ON              \
+          -DCMAKE_INSTALL_PREFIX=${TRAVIS_BUILD_DIR}/build-tests \
           ..
   - cmake --build . --target install -- -j12
   - if ./testbin/testSharedSimulation

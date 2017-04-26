@@ -82,7 +82,3 @@ build_script:
 test_script:
   - cd %APPVEYOR_BUILD_FOLDER%\build-tests
   - testbin\testSharedSimulation.exe
-
-notifications:
-  - on_build_success: false
-  - on_build_failure: true
