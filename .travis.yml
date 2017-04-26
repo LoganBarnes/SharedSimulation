@@ -45,15 +45,15 @@ env:
 matrix:
   include:
 
-    # Xcode 7.3
-    - os: osx
-      env: SHARED=OFF TESTS=ON
-      osx_image: xcode7.3
+    # # Xcode 7.3
+    # - os: osx
+    #   env: SHARED=OFF TESTS=ON
+    #   osx_image: xcode7.3
 
-    # Xcode 8
-    - os: osx
-      env: SHARED=OFF TESTS=ON
-      osx_image: xcode8
+    # # Xcode 8
+    # - os: osx
+    #   env: SHARED=OFF TESTS=ON
+    #   osx_image: xcode8
 
     # GCC 5
     - os: linux
@@ -61,43 +61,43 @@ matrix:
       compiler: "g++-5"
       addons: *gcc5
 
-    # GCC 6
-    - os: linux
-      env: SHARED=OFF TESTS=ON GCC=6
-      compiler: "g++-6"
-      addons: *gcc6
+    # # GCC 6
+    # - os: linux
+    #   env: SHARED=OFF TESTS=ON GCC=6
+    #   compiler: "g++-6"
+    #   addons: *gcc6
 
-    # clang 3.8
-    - os: linux
-      env: LLVM=3.8 SHARED=OFF TESTS=ON
-      compiler: "clang-3.8"
-      addons: *clang38
+    # # clang 3.8
+    # - os: linux
+    #   env: LLVM=3.8 SHARED=OFF TESTS=ON
+    #   compiler: "clang-3.8"
+    #   addons: *clang38
 
-    # clang 3.9
-    - os: linux
-      env: LLVM=3.9 SHARED=OFF TESTS=ON
-      compiler: "clang-3.9"
-      addons: *clang39
+    # # clang 3.9
+    # - os: linux
+    #   env: LLVM=3.9 SHARED=OFF TESTS=ON
+    #   compiler: "clang-3.9"
+    #   addons: *clang39
 
-    # Shared libs
-    - os: osx
-      env: SHARED=ON TESTS=ON
-      osx_image: xcode8
+    # # Shared libs
+    # - os: osx
+    #   env: SHARED=ON TESTS=ON
+    #   osx_image: xcode8
 
-    - os: linux
-      env: LLVM=default SHARED=ON TESTS=ON
-      compiler: "clang-3.9"
-      addons: *clang39
+    # - os: linux
+    #   env: LLVM=default SHARED=ON TESTS=ON
+    #   compiler: "clang-3.9"
+    #   addons: *clang39
 
-    # Debug
-    - os: osx
-      env: BUILD_TYPE=Debug SHARED=OFF TESTS=ON
-      osx_image: xcode8
+    # # Debug
+    # - os: osx
+    #   env: BUILD_TYPE=Debug SHARED=OFF TESTS=ON
+    #   osx_image: xcode8
 
-    - os: linux
-      env: LLVM=default BUILD_TYPE=Debug SHARED=OFF TESTS=ON
-      compiler: "clang-3.9"
-      addons: *clang39
+    # - os: linux
+    #   env: LLVM=default BUILD_TYPE=Debug SHARED=OFF TESTS=ON
+    #   compiler: "clang-3.9"
+    #   addons: *clang39
 
 
 before_install:
@@ -163,6 +163,10 @@ install:
       cd ${VULKAN_DIR}/VulkanSDK/${VULKAN_VERSION}
       source setup-env.sh
       VULKAN=ON
+      OPENGL=OFF
+    else
+      OPENGL=ON
+      VULKAN=OFF
     fi
 
   ############################################################################
@@ -198,6 +202,7 @@ script:
           -DBUILD_SHARED_LIBS=$SHARED    \
           -DBUILD_SHARED_TESTS=$TESTS    \
           -DUSE_VULKAN=$VULKAN           \
+          -DUSE_OPENGL=$OPENGL           \
           -DUSE_GLFW=ON                  \
           -DUSE_GLM=ON                   \
           -DUSE_GUI=ON                   \

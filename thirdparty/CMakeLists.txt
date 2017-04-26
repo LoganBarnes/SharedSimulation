@@ -3,6 +3,7 @@ project ( SimulationThirdparty )
 
 option( USE_GLM    "Download and compile the glm library"    OFF )
 option( USE_GLFW   "Download and compile the GLFW library"   OFF )
+option( USE_OPENGL "Use the OpenGL framework"                OFF )
 option( USE_VULKAN "Download and compile the Vulkan library" OFF )
 option( USE_OPTIX  "Download and compile the optix library"  OFF )
 option( USE_GUI    "Download and compile the imgui library"  OFF )

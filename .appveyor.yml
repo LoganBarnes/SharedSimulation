@@ -28,7 +28,7 @@ platform: x64
 
 install:
   # todo: download and install vulkan here
-  - VULKAN=OFF
+  - SET VULKAN=OFF
 
 build_script:
   ############################################################################
