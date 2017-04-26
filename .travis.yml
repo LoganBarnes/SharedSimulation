@@ -118,6 +118,7 @@ before_install:
   - |
     if [[ "${LLVM}" != "" ]]; then
       export CXX=clang++-${LLVM}
+      export CXXFLAGS=-stdlib=libc++
     fi
   - |
     if [[ "${GCC}" != "" ]]; then

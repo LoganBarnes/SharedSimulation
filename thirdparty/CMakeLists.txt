@@ -110,6 +110,9 @@ if ( USE_OPENGL )
   # glad must be built before project lib
   list( APPEND THIRDPARTY_DEP_TARGETS glad )
 
+  set( IMGUI_LINK_LIB   glad )
+  set( IMGUI_DEP_TARGET glad )
+
   message( "USING OPENGL" )
 
 endif( USE_OPENGL )
@@ -131,6 +134,8 @@ if ( USE_VULKAN )
 
   # vulkan lib
   list( APPEND THIRDPARTY_LINK_LIBS ${VULKAN_LIBRARY} )
+
+  set( IMGUI_LINK_LIB ${VULKAN_LIBRARY} )
 
   message( "USING VULKAN" )
 
@@ -272,8 +277,8 @@ if ( USE_GUI )
                              ${SRC_DIR}/gui
                              )
 
-  target_link_libraries( imgui glfw glad )
-  add_dependencies     ( imgui glfw glad )
+  target_link_libraries( imgui glfw ${IMGUI_LINK_LIB}   )
+  add_dependencies     ( imgui glfw ${IMGUI_DEP_TARGET} )
 
   set_property( TARGET imgui PROPERTY CXX_STANDARD          11 )
   set_property( TARGET imgui PROPERTY CXX_STANDARD_REQUIRED ON )

@@ -131,16 +131,28 @@ endif( USE_GLFW )
 if ( USE_GUI )
 
   # imgui callbacks
-  set(
-      ADDITIONAL_SOURCE
-      ${ADDITIONAL_SOURCE}
+  list(
+       APPEND ADDITIONAL_SOURCE
 
-      ${INC_DIR}/shared/graphics/ImguiCallback.hpp
-      ${INC_DIR}/shared/core/ImguiOpenGLIOHandler.hpp
+       ${INC_DIR}/shared/graphics/ImguiCallback.hpp
+       ${SRC_DIR}/io/ImguiCallback.cpp
+       )
 
-      ${SRC_DIR}/io/ImguiOpenGLIOHandler.cpp
-      ${SRC_DIR}/io/ImguiCallback.cpp
-      )
+  if ( USE_OPENGL )
+    list(
+         APPEND ADDITIONAL_SOURCE
+         ${INC_DIR}/shared/core/ImguiOpenGLIOHandler.hpp
+         ${SRC_DIR}/io/ImguiOpenGLIOHandler.cpp
+         )
+  endif()
+
+  if ( USE_VULKAN )
+    # list(
+    #      APPEND ADDITIONAL_SOURCE
+    #      ${INC_DIR}/shared/core/ImguiVulkanOHandler.hpp
+    #      ${SRC_DIR}/io/ImguiVulkanOHandler.cpp
+    #      )
+  endif()
 
 endif( USE_GUI )
 
