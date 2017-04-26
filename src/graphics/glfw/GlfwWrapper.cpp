@@ -2,9 +2,11 @@
 
 #include <iostream>
 
-#include "glad/glad.h"
+#ifdef USE_OPENGL
+#include <glad/glad.h>
+#endif
 
-#define GLFW_INCLUDE_GL_3
+#define GLFW_INCLUDE_NONE
 #include "GLFW/glfw3.h"
 
 #include "CallbackSingleton.hpp"

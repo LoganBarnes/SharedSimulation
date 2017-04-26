@@ -1,6 +1,9 @@
 #include "shared/graphics/ImguiCallback.hpp"
-#include "GLFW/glfw3.h"
-#include "imgui.h"
+
+#include <imgui.h>
+
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
 
 
 namespace shared

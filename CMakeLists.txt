@@ -144,7 +144,7 @@ if ( USE_GUI )
          ${INC_DIR}/shared/core/ImguiOpenGLIOHandler.hpp
          ${SRC_DIR}/io/ImguiOpenGLIOHandler.cpp
          )
-  endif()
+  endif( )
 
   if ( USE_VULKAN )
     # list(

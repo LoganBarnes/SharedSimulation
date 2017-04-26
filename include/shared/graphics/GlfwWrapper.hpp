@@ -1,7 +1,6 @@
 // GlfwWrapper.hpp
 #pragma once
 
-
 #include "ThirdpartyDefinesConfig.hpp"
 
 #ifdef USE_VULKAN

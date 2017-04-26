@@ -1,8 +1,8 @@
 #include "CallbackSingleton.hpp"
-#include <istream>
 #include "shared/graphics/Callback.hpp"
-#include "GLFW/glfw3.h"
 
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
 
 namespace graphics
 {

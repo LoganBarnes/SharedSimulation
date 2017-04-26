@@ -612,7 +612,7 @@ VulkanGlfwWrapper::~VulkanGlfwWrapper( )
     vkFreeCommandBuffers(
                          device_,
                          commandPool_,
-                         commandBuffers_.size( ),
+                         static_cast< uint32_t >( commandBuffers_.size( ) ),
                          commandBuffers_.data( )
                          );
 
@@ -1317,7 +1317,7 @@ VulkanGlfwWrapper::_createVulkanInstance( const std::string &title )
   createInfo.pApplicationInfo = &appInfo;
 
   auto extensions                    = getRequiredExtensions( );
-  createInfo.enabledExtensionCount   = extensions.size( );
+  createInfo.enabledExtensionCount   = static_cast< uint32_t >( extensions.size( ) );
   createInfo.ppEnabledExtensionNames = extensions.data( );
 
   //
@@ -1326,7 +1326,7 @@ VulkanGlfwWrapper::_createVulkanInstance( const std::string &title )
   if ( enableValidationLayers )
   {
 
-    createInfo.enabledLayerCount   = validationLayers.size( );
+    createInfo.enabledLayerCount   = static_cast< uint32_t >( validationLayers.size( ) );
     createInfo.ppEnabledLayerNames = validationLayers.data( );
 
   }
@@ -1492,13 +1492,13 @@ VulkanGlfwWrapper::_createVulkanLogicalDevice( )
 
   createInfo.pEnabledFeatures = &deviceFeatures;
 
-  createInfo.enabledExtensionCount   = deviceExtensions.size( );
+  createInfo.enabledExtensionCount   = static_cast< uint32_t >( deviceExtensions.size( ) );
   createInfo.ppEnabledExtensionNames = deviceExtensions.data( );
 
   if ( enableValidationLayers )
   {
 
-    createInfo.enabledLayerCount   = validationLayers.size( );
+    createInfo.enabledLayerCount   = static_cast< uint32_t >( validationLayers.size( ) );
     createInfo.ppEnabledLayerNames = validationLayers.data( );
 
   }
@@ -1628,7 +1628,7 @@ void
 VulkanGlfwWrapper::_createImageViews( )
 {
 
-  uint32_t imageCount = swapChainImages_.size( );
+  uint32_t imageCount = static_cast< uint32_t >( swapChainImages_.size( ) );
 
   swapChainImageViews_.resize( imageCount,
                                VDeleter< VkImageView >{ device_, vkDestroyImageView } );

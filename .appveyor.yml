@@ -5,7 +5,6 @@ branches:
   - master
 
 skip_tags: true
-skip_non_tags: true
 
 image: Visual Studio 2015
 clone_folder: c:\projects\SharedSimulation
@@ -31,8 +30,27 @@ install:
   - SET VULKAN=OFF
   - SET SHARED=OFF
 
-  - appveyor DownloadFile https://vulkan.lunarg.com/sdk/download/1.0.46.0/windows/vulkansdk-windows-x86_64-1.0.46.0.exe
-  - vulkansdk-windows-x86_64-1.0.46.0.exe
+  - echo Downloading Vulkan SDK
+  - appveyor DownloadFile https://www.dropbox.com/s/xrajzwwtuarpvyx/vulkan-1.0.46.0.zip?dl=1
+  - 7z x vulkan-1.0.46.0.zip -ovulcaan
+  - cd cuda\cuda
+  - echo Installing CUDA toolkit 8
+  - setup.exe -s compiler_8.0 cublas_8.0 cublas_dev_8.0 cudart_8.0 curand_8.0 curand_dev_8.0
+
+  - echo Installing VS integration
+  - copy _vs\*.* "c:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\BuildCustomizations"
+
+  - cd ..\..
+
+  - set PATH=%ProgramFiles%\NVIDIA GPU Computing Toolkit\CUDA\v8.0\bin;%ProgramFiles%\NVIDIA GPU Computing Toolkit\CUDA\v8.0\libnvvp;%PATH%
+  - set CUDA_PATH=%ProgramFiles%\NVIDIA GPU Computing Toolkit\CUDA\v8.0
+  - set CUDA_PATH_V8_0=%ProgramFiles%\NVIDIA GPU Computing Toolkit\CUDA\v8.0
+
+  - nvcc -V
+
+build:
+  parallel: true  # enable MSBuild parallel builds
+  verbosity: minimal
 
 build_script:
   - cd %APPVEYOR_BUILD_FOLDER%
@@ -84,5 +102,9 @@ build_script:
 
 test_script:
   - cd %APPVEYOR_BUILD_FOLDER%\build-tests
-  - dir
   - testbin\testSharedSimulation.exe
+
+notifications:
+  - on_build_success: false
+  - on_build_failure: true
+
