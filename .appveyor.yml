@@ -38,6 +38,7 @@ build_script:
   - mkdir build
   - cd build
   - cmake -DCMAKE_GENERATOR_PLATFORM=%PLATFORM% ^
+          -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%/build ^
           -DBUILD_SHARED_TESTS=%UNIT_TESTS% ^
           -DUSE_VULKAN=%VULKAN% ^
           -DUSE_GLFW=ON ^
@@ -45,7 +46,7 @@ build_script:
           -DUSE_GUI=ON ^
           -DBUILD_SHARED_LIBS=OFF ^
           ..
-  - cmake --build . --config %BUILD_MODE% -- /m
+  - cmake --build . --target INSTALL --config %BUILD_MODE% -- /m
 
   ############################################################################
   # Build example projects using simulation library
@@ -57,7 +58,8 @@ build_script:
   - cmake --build . --config %BUILD_MODE% -- /m
 
 test_script:
-  - build\testbin\testSharedSimulation.exe
+  - cd %APPVEYOR_BUILD_FOLDER%/build
+  - IF EXIST testbin\testSharedSimulation.exe ( testbin\testSharedSimulation.exe )
 
 notifications:
   - on_build_success: false
