@@ -13,13 +13,13 @@ clone_folder: c:\projects\SharedSimulation
 environment:
   matrix:
     - BUILD_MODE: Debug
-      UNIT_TESTS: OFF
+      OPENGL: ON
+    - BUILD_MODE: Release
+      OPENGL: ON
     - BUILD_MODE: Debug
-      UNIT_TESTS: ON
+      OPENGL: OFF
     - BUILD_MODE: Release
-      UNIT_TESTS: OFF
-    - BUILD_MODE: Release
-      UNIT_TESTS: ON
+      OPENGL: OFF
 
 matrix:
     fast_finish: true
@@ -29,37 +29,59 @@ platform: x64
 install:
   # todo: download and install vulkan here
   - SET VULKAN=OFF
+  - SET SHARED=OFF
 
 build_script:
-  ############################################################################
-  # Build main simulation library and tests
-  ############################################################################
   - cd %APPVEYOR_BUILD_FOLDER%
-  - mkdir build
-  - cd build
+
+  ############################################################################
+  # Build main simulation library without tests
+  ############################################################################
+  - mkdir build-no-tests
+  - cd build-no-tests
   - cmake -DCMAKE_GENERATOR_PLATFORM=%PLATFORM% ^
-          -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%/build ^
-          -DBUILD_SHARED_TESTS=%UNIT_TESTS% ^
+          -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%/build-no-tests ^
+          -DBUILD_SHARED_TESTS=OFF ^
           -DUSE_VULKAN=%VULKAN% ^
+          -DUSE_OPENGL=%OPENGL% ^
           -DUSE_GLFW=ON ^
           -DUSE_GLM=ON ^
           -DUSE_GUI=ON ^
-          -DBUILD_SHARED_LIBS=OFF ^
+          -DBUILD_SHARED_LIBS=%SHARED% ^
           ..
   - cmake --build . --target INSTALL --config %BUILD_MODE% -- /m
+  - cd ..
+
+  ############################################################################
+  # Build main simulation library with tests
+  ############################################################################
+  - mkdir build-tests
+  - cd build-tests
+  - cmake -DCMAKE_GENERATOR_PLATFORM=%PLATFORM% ^
+          -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%/build-tests ^
+          -DBUILD_SHARED_TESTS= ON ^
+          -DUSE_VULKAN=OFF ^
+          -DUSE_OPENGL=OFF ^
+          -DUSE_GLFW=ON ^
+          -DUSE_GLM=ON ^
+          -DUSE_GUI=ON ^
+          -DBUILD_SHARED_LIBS=%SHARED% ^
+          ..
+  - cmake --build . --target INSTALL --config %BUILD_MODE% -- /m
+  - cd ..
 
   ############################################################################
   # Build example projects using simulation library
   ############################################################################
-  - cd ..\examples
+  - cd examples
   - mkdir build
   - cd build
-  - cmake -DCMAKE_GENERATOR_PLATFORM=%PLATFORM% -DBUILD_SHARED_LIBS=OFF ..
+  - cmake -DCMAKE_GENERATOR_PLATFORM=%PLATFORM% -DBUILD_SHARED_LIBS=%SHARED% ..
   - cmake --build . --config %BUILD_MODE% -- /m
 
 test_script:
-  - cd %APPVEYOR_BUILD_FOLDER%\build
-  - IF EXIST testbin\testSharedSimulation.exe ( testbin\testSharedSimulation.exe )
+  - cd %APPVEYOR_BUILD_FOLDER%\build-tests
+  - testbin\testSharedSimulation.exe
 
 notifications:
   - on_build_success: false
