@@ -35,10 +35,10 @@ install:
 
   - echo Downloading Vulkan SDK
   - appveyor DownloadFile https://www.dropbox.com/s/xrajzwwtuarpvyx/vulkan-1.0.46.0.zip?dl=1
-  - 7z x vulkan-1.0.46.0.zip -ovulkan
-  - dir vulkan
+  - 7z x vulkan-1.0.46.0.zip
+  - dir vulkan-1.0.46.0
 
-  - copy vulkan\*.dll C:\Windows\System32\
+  - copy vulkan-1.0.46.0\*.dll C:\Windows\System32\
 
   - set VULKAN_SDK=%APPVEYOR_BUILD_FOLDER%\deps\vulkan\VulkanSDK\1.0.46.0
   - set PATH=%VULKAN_SDK%\Bin;%PATH%
