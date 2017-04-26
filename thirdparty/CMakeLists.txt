@@ -250,6 +250,15 @@ if ( USE_GUI )
                    QUIET
                    )
 
+  if ( USE_OPENGL )
+    set(
+        IMGUI_GL_SOURCE
+        ${SRC_DIR}/gui/imgui_impl_glfw_gl3.cpp
+        ${SRC_DIR}/gui/imgui_impl_glfw_gl3.h
+        )
+  endif( )
+
+
   # create lib here before any
   # strict compile flags are set
   add_library(
@@ -264,9 +273,6 @@ if ( USE_GUI )
               ${CMAKE_BINARY_DIR}/imgui-src/stb_rect_pack.h
               ${CMAKE_BINARY_DIR}/imgui-src/stb_textedit.h
               ${CMAKE_BINARY_DIR}/imgui-src/stb_truetype.h
-
-              ${SRC_DIR}/gui/imgui_impl_glfw_gl3.h
-              ${SRC_DIR}/gui/imgui_impl_glfw_gl3.cpp
               )
 
   target_include_directories(
