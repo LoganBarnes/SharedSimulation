@@ -40,7 +40,7 @@ install:
 
   - copy vulkan-1.0.46.0\*.dll C:\Windows\System32\
 
-  - set VULKAN_SDK=%APPVEYOR_BUILD_FOLDER%\deps\vulkan-1.0.46.0\VulkanSDK\1.0.46.0
+  - set VULKAN_SDK=%APPVEYOR_BUILD_FOLDER%\deps\vulkan-1.0.46.0\1.0.46.0
   - set PATH=%VULKAN_SDK%\Bin;%PATH%
 
 build:
