@@ -153,9 +153,9 @@ install:
     if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
       VULKAN_DIR=${TRAVIS_BUILD_DIR}/deps/vulkan
       if [[ -z "$(ls -A ${VULKAN_DIR})" ]]; then
-        VULKAN_URL="https://vulkan.lunarg.com/sdk/home/sdk/download/${VULKAN_VERSION}/linux/vulkansdk-linux-x86_64-${VULKAN_VERSION}.run"
+        VULKAN_URL="https://vulkan.lunarg.com/sdk/download/${VULKAN_VERSION}/linux/vulkansdk-linux-x86_64-${VULKAN_VERSION}.run"
         mkdir -p ${VULKAN_DIR}
-        travis_retry wget --quiet -O - ${VULKAN_URL}
+        travis_retry wget ${VULKAN_URL}
         bash ${VULKAN_DIR}/vulkansdk-linux-x86_64-${VULKAN_VERSION}.run ${VULKAN_DIR}/
       fi;
       cd ${VULKAN_DIR}/VulkanSDK/${VULKAN_VERSION}
