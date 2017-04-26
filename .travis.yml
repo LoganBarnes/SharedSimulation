@@ -10,27 +10,27 @@ addons_shortcuts:
   addons_clang38: &clang38
     apt:
       sources: [ 'llvm-toolchain-trusty-3.8' ]
-      packages: [ 'clang-3.8', 'libc++-dev' ]
+      packages: [ 'clang-3.8', 'libc++-dev', 'xorg-dev', 'libglu1-mesa-dev' ]
   addons_clang39: &clang39
     apt:
       sources: [ 'llvm-toolchain-trusty-3.9' ]
-      packages: [ 'clang-3.9', 'libc++-dev' ]
+      packages: [ 'clang-3.9', 'libc++-dev', 'xorg-dev', 'libglu1-mesa-dev' ]
   addons_clang35: &clang40
     apt:
       sources: [ 'llvm-toolchain-trusty-4.0' ]
-      packages: [ 'clang-4.0', 'libc++-dev' ]
+      packages: [ 'clang-4.0', 'libc++-dev', 'xorg-dev', 'libglu1-mesa-dev' ]
   addons_gcc49: &gcc49
     apt:
       sources: [ 'ubuntu-toolchain-r-test' ]
-      packages: [ 'gcc-4.9', 'g++-4.9' ]
+      packages: [ 'gcc-4.9', 'g++-4.9', 'xorg-dev', 'libglu1-mesa-dev' ]
   addons_gcc5: &gcc5
     apt:
       sources: [ 'ubuntu-toolchain-r-test' ]
-      packages: [ 'gcc-5', 'g++-5' ]
+      packages: [ 'gcc-5', 'g++-5', 'xorg-dev', 'libglu1-mesa-dev' ]
   addons_gcc6: &gcc6
     apt:
       sources: [ 'ubuntu-toolchain-r-test' ]
-      packages: [ 'gcc-6', 'g++-6', 'doxygen' ]
+      packages: [ 'gcc-6', 'g++-6', 'doxygen', 'xorg-dev', 'libglu1-mesa-dev' ]
 
 cache:
   directories:
