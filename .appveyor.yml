@@ -26,21 +26,19 @@ matrix:
 platform: x64
 
 install:
-  # todo: download and install vulkan here
-  - set VULKAN=ON
+  - set VULKAN_VERSION=1.0.46.0
   - set SHARED=OFF
 
   - mkdir %APPVEYOR_BUILD_FOLDER%\deps
   - cd %APPVEYOR_BUILD_FOLDER%\deps
 
   - echo Downloading Vulkan SDK
-  - appveyor DownloadFile https://www.dropbox.com/s/xrajzwwtuarpvyx/vulkan-1.0.46.0.zip?dl=1
-  - 7z x vulkan-1.0.46.0.zip
-  - dir vulkan-1.0.46.0
+  - appveyor DownloadFile https://www.dropbox.com/s/xrajzwwtuarpvyx/vulkan-%VULKAN_VERSION%.zip?dl=1
+  - 7z x vulkan-%VULKAN_VERSION%.zip
 
-  - copy vulkan-1.0.46.0\*.dll C:\Windows\System32\
-
-  - set VULKAN_SDK=%APPVEYOR_BUILD_FOLDER%\deps\vulkan-1.0.46.0\1.0.46.0
+  - echo Setting up Vulkan environment
+  - copy vulkan-%VULKAN_VERSION%\*.dll C:\Windows\System32\
+  - set VULKAN_SDK=%APPVEYOR_BUILD_FOLDER%\deps\vulkan-%VULKAN_VERSION%\%VULKAN_VERSION%
   - set PATH=%VULKAN_SDK%\Bin;%PATH%
 
 build:
@@ -58,8 +56,8 @@ build_script:
   - cmake -DCMAKE_GENERATOR_PLATFORM=%PLATFORM% ^
           -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%\build-no-tests ^
           -DBUILD_SHARED_TESTS=OFF ^
-          -DUSE_VULKAN=%VULKAN% ^
-          -DUSE_OPENGL=%OPENGL% ^
+          -DUSE_VULKAN=ON ^
+          -DUSE_OPENGL=ON ^
           -DUSE_GLFW=ON ^
           -DUSE_GLM=ON ^
           -DUSE_GUI=ON ^
