@@ -1,9 +1,10 @@
 cmake_minimum_required ( VERSION 3.2.0 )
 project ( ExampleSimGraphical )
 
-set( USE_GLFW  ON CACHE BOOL "" FORCE )
-set( USE_GLM   ON CACHE BOOL "" FORCE )
-set( USE_GUI   ON CACHE BOOL "" FORCE )
+set( USE_GLFW   ON CACHE BOOL "" FORCE )
+set( USE_OPENGL ON CACHE BOOL "" FORCE )
+set( USE_GLM    ON CACHE BOOL "" FORCE )
+set( USE_GUI    ON CACHE BOOL "" FORCE )
 
 set( SHARED_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../.. )
 
