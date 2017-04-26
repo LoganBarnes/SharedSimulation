@@ -2,6 +2,7 @@
 
 #include "shared/graphics/VulkanGlfwWrapper.hpp"
 #include "shared/graphics/SharedCallback.hpp"
+#include "ThirdpartyDefinesConfig.hpp"
 #include "SharedSimulationConfig.hpp"
 
 #include <iostream>
@@ -41,8 +42,8 @@ VulkanIOHandler::VulkanIOHandler(
   upVulkanWrapper_->createRenderPass( );
 
   upVulkanWrapper_->createGraphicsPipeline(
-                                           vmp::SHADER_PATH + "vulkan/screenSpace/vert.spv",
-                                           vmp::SHADER_PATH + "vulkan/default/frag.spv"
+                                           shared::SHADER_PATH + "vulkan/screenSpace/vert.spv",
+                                           shared::SHADER_PATH + "vulkan/default/frag.spv"
                                            );
 
   upVulkanWrapper_->createFrameBuffer( );

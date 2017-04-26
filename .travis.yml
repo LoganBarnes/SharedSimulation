@@ -4,95 +4,134 @@ branches:
   only:
     - master
 
-sudo: false
+dist: trusty
 
-addons:
-  apt:
-    packages:
-      - g++-5
-      - g++-6
-    sources: &sources
-      - ubuntu-toolchain-r-test
+addons_shortcuts:
+  addons_clang38: &clang38
+    apt:
+      sources: [ 'llvm-toolchain-trusty-3.8' ]
+      packages: [ 'clang-3.8', 'libc++-dev' ]
+  addons_clang39: &clang39
+    apt:
+      sources: [ 'llvm-toolchain-trusty-3.9' ]
+      packages: [ 'clang-3.9', 'libc++-dev' ]
+  addons_clang35: &clang40
+    apt:
+      sources: [ 'llvm-toolchain-trusty-4.0' ]
+      packages: [ 'clang-4.0', 'libc++-dev' ]
+  addons_gcc49: &gcc49
+    apt:
+      sources: [ 'ubuntu-toolchain-r-test' ]
+      packages: [ 'gcc-4.9', 'g++-4.9' ]
+  addons_gcc5: &gcc5
+    apt:
+      sources: [ 'ubuntu-toolchain-r-test' ]
+      packages: [ 'gcc-5', 'g++-5' ]
+  addons_gcc6: &gcc6
+    apt:
+      sources: [ 'ubuntu-toolchain-r-test' ]
+      packages: [ 'gcc-6', 'g++-6', 'doxygen' ]
 
 cache:
   directories:
-    - ${TRAVIS_BUILD_DIR}/deps/llvm-3.8.0
-    - ${TRAVIS_BUILD_DIR}/deps/llvm-3.9.0
+    - ${TRAVIS_BUILD_DIR}/deps/vulkan
+    - /usr/local/cuda-7.5
+    - /usr/local/cuda-8.0
+
+env:
+  global:
+    - VULKAN_VERSION=1.0.46.0
 
 matrix:
   include:
 
-    # Xcode 7.3
-    - os: osx
-      env: BUILD_TYPE=Release SHARED=OFF TESTS=ON
-      osx_image: xcode7.3
+    # # Xcode 7.3
+    # - os: osx
+    #   env: SHARED=OFF TESTS=ON
+    #   osx_image: xcode7.3
 
-    # Xcode 8
-    - os: osx
-      env: BUILD_TYPE=Release SHARED=OFF TESTS=ON
-      osx_image: xcode8
+    # # Xcode 8
+    # - os: osx
+    #   env: SHARED=OFF TESTS=ON
+    #   osx_image: xcode8
 
-    # GCC 5
-    - os: linux
-      env: COMPILER=g++-5 BUILD_TYPE=Release SHARED=OFF TESTS=ON
-      compiler: gcc
+    # # GCC 5
+    # - os: linux
+    #   env: SHARED=OFF TESTS=ON GCC=5
+    #   compiler: "g++-5"
+    #   addons: *gcc5
 
-    # GCC 6
-    - os: linux
-      env: COMPILER=g++-6 BUILD_TYPE=Release SHARED=OFF TESTS=ON
-      compiler: gcc
+    # # GCC 6
+    # - os: linux
+    #   env: SHARED=OFF TESTS=ON GCC=6
+    #   compiler: "g++-6"
+    #   addons: *gcc6
+
+    # # clang 3.8
+    # - os: linux
+    #   env: LLVM=3.8 SHARED=OFF TESTS=ON
+    #   compiler: "clang-3.8"
+    #   addons: *clang38
 
     # clang 3.9
     - os: linux
-      env: LLVM_VERSION=3.8.0 BUILD_TYPE=Release SHARED=OFF TESTS=ON
-      compiler: clang
+      env: LLVM=3.9 SHARED=OFF TESTS=ON
+      compiler: "clang-3.9"
+      addons: *clang39
 
-    # clang 3.9
-    - os: linux
-      env: LLVM_VERSION=3.9.0 BUILD_TYPE=Release SHARED=OFF TESTS=ON
-      compiler: clang
+    # # Shared libs
+    # - os: osx
+    #   env: SHARED=ON TESTS=ON
+    #   osx_image: xcode8
 
-    # shared libs
-    - os: linux
-      env: LLVM_VERSION=default BUILD_TYPE=Release SHARED=ON TESTS=ON
-      compiler: clang
+    # - os: linux
+    #   env: LLVM=default SHARED=ON TESTS=ON
+    #   compiler: "clang-3.9"
+    #   addons: *clang39
 
-    # shared libs
-    - os: linux
-      env: LLVM_VERSION=default BUILD_TYPE=Release SHARED=ON TESTS=ON
-      compiler: clang
+    # # Debug
+    # - os: osx
+    #   env: BUILD_TYPE=Debug SHARED=OFF TESTS=ON
+    #   osx_image: xcode8
 
-    # Shared libs
-    - os: osx
-      env: BUILD_TYPE=Release SHARED=ON TESTS=ON
-      osx_image: xcode8
+    # - os: linux
+    #   env: LLVM=default BUILD_TYPE=Debug SHARED=OFF TESTS=ON
+    #   compiler: "clang-3.9"
+    #   addons: *clang39
 
-    - os: linux
-      env: LLVM_VERSION=default BUILD_TYPE=Release SHARED=ON TESTS=ON
-      compiler: clang
 
-    # Debug
-    - os: osx
-      env: BUILD_TYPE=Debug SHARED=OFF TESTS=ON
-      osx_image: xcode8
+before_install:
+  - |
+    if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
+      brew update
+    fi
 
-    - os: linux
-      env: LLVM_VERSION=default BUILD_TYPE=Debug SHARED=OFF TESTS=ON
-      compiler: clang
-
-install:
   ############################################################################
-  # All the dependencies are installed in ${TRAVIS_BUILD_DIR}/deps/
+  # Set build type to default Release value
   ############################################################################
-  - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
-  - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
+  - if [[ "${BUILD_TYPE}" == "" ]]; then BUILD_TYPE=Release; fi
 
   ############################################################################
   # Setup default versions and override compiler if needed
   ############################################################################
-  - if [[ "${LLVM_VERSION}" == "default" ]]; then LLVM_VERSION=3.9.0; fi
-  - if [[ "${COMPILER}" != "" ]]; then export CXX=${COMPILER}; fi
+  - if [[ "${LLVM}" == "default" ]]; then LLVM=3.8; fi
+  - |
+    if [[ "${LLVM}" != "" ]]; then
+      export CXX=clang++-${LLVM}
+    fi
+  - |
+    if [[ "${GCC}" != "" ]]; then
+      export CXX=g++-${GCC}
+    fi
+  - ${CXX} --version
 
+
+install:
+  ############################################################################
+  # All compiled dependencies are installed in ${TRAVIS_BUILD_DIR}/deps/
+  ############################################################################
+  - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
+  - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
 
   ############################################################################
   # Install a recent CMake
@@ -107,40 +146,41 @@ install:
     fi
   - cmake --version
 
-
   ############################################################################
-  # Install Clang, libc++ and libc++abi
+  # Install Vulkan
   ############################################################################
   - |
-    if [[ "${LLVM_VERSION}" != "" ]]; then
-      LLVM_DIR=${DEPS_DIR}/llvm-${LLVM_VERSION}
-      if [[ -z "$(ls -A ${LLVM_DIR})" ]]; then
-        LLVM_URL="http://llvm.org/releases/${LLVM_VERSION}/llvm-${LLVM_VERSION}.src.tar.xz"
-        LIBCXX_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxx-${LLVM_VERSION}.src.tar.xz"
-        LIBCXXABI_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxxabi-${LLVM_VERSION}.src.tar.xz"
-        CLANG_URL="http://llvm.org/releases/${LLVM_VERSION}/clang+llvm-${LLVM_VERSION}-x86_64-linux-gnu-ubuntu-14.04.tar.xz"
-        mkdir -p ${LLVM_DIR} ${LLVM_DIR}/build ${LLVM_DIR}/projects/libcxx ${LLVM_DIR}/projects/libcxxabi ${LLVM_DIR}/clang
-        travis_retry wget --quiet -O - ${LLVM_URL}      | tar --strip-components=1 -xJ -C ${LLVM_DIR}
-        travis_retry wget --quiet -O - ${LIBCXX_URL}    | tar --strip-components=1 -xJ -C ${LLVM_DIR}/projects/libcxx
-        travis_retry wget --quiet -O - ${LIBCXXABI_URL} | tar --strip-components=1 -xJ -C ${LLVM_DIR}/projects/libcxxabi
-        travis_retry wget --quiet -O - ${CLANG_URL}     | tar --strip-components=1 -xJ -C ${LLVM_DIR}/clang
-        (cd ${LLVM_DIR}/build && cmake .. -DCMAKE_INSTALL_PREFIX=${LLVM_DIR}/install -DCMAKE_CXX_COMPILER=clang++)
-        (cd ${LLVM_DIR}/build/projects/libcxx && make install -j2)
-        (cd ${LLVM_DIR}/build/projects/libcxxabi && make install -j2)
-      fi
-      export CXXFLAGS="-nostdinc++ -isystem ${LLVM_DIR}/install/include/c++/v1"
-      export LDFLAGS="-L ${LLVM_DIR}/install/lib -l c++ -l c++abi"
-      export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${LLVM_DIR}/install/lib"
-      export PATH="${LLVM_DIR}/clang/bin:${PATH}"
+    if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+      VULKAN_DIR=${TRAVIS_BUILD_DIR}/deps/vulkan
+      if [[ -z "$(ls -A ${VULKAN_DIR})" ]]; then
+        VULKAN_URL="https://vulkan.lunarg.com/sdk/home/sdk/download/${VULKAN_VERSION}/linux/vulkansdk-linux-x86_64-${VULKAN_VERSION}.run"
+        mkdir -p ${VULKAN_DIR}
+        travis_retry wget --quiet -O - ${VULKAN_URL}
+        bash ${VULKAN_DIR}/vulkansdk-linux-x86_64-${VULKAN_VERSION}.run ${VULKAN_DIR}/
+      fi;
+      cd ${VULKAN_DIR}/VulkanSDK/${VULKAN_VERSION}
+      source setup-env.sh
+      VULKAN=ON
     fi
-  - ${CXX} --version
-
 
   ############################################################################
-  # Install a CUDA
+  # Install CUDA
   ############################################################################
-  # - |
-  #   if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then source .travis/install-cuda-trusty.sh; fi
+  - |
+    if [[ "${TRAVIS_OS_NAME}" == "linux" && "${CUDA}" != "" ]]; then
+      travis_retry wget http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1404/x86_64/cuda-repo-ubuntu1404_${CUDA}_amd64.deb
+      travis_retry sudo dpkg -i cuda-repo-ubuntu1404_${CUDA}_amd64.deb
+      travis_retry sudo apt-get update -qq
+      export CUDA_APT=${CUDA:0:3}
+      export CUDA_APT=${CUDA_APT/./-}
+      travis_retry sudo apt-get install -y cuda-drivers cuda-core-${CUDA_APT} cuda-cudart-dev-${CUDA_APT} cuda-cufft-dev-${CUDA_APT}
+      travis_retry sudo apt-get clean
+      export CUDA_HOME=/usr/local/cuda-${CUDA:0:3}
+      export LD_LIBRARY_PATH=${CUDA_HOME}/nvvm/lib64:${LD_LIBRARY_PATH}
+      export LD_LIBRARY_PATH=${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}
+      export PATH=${CUDA_HOME}/bin:${PATH}
+    fi
+  - if [[ "${TRAVIS_OS_NAME}" == "linux" && "${CUDA}" != "" ]]; then nvcc --version; fi;
 
 before_script:
   - cd ${TRAVIS_BUILD_DIR}
@@ -151,7 +191,7 @@ script:
   ############################################################################
   - mkdir build
   - cd build
-  - cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBUILD_SHARED_LIBS=$SHARED -DBUILD_SHARED_TESTS=$TESTS -DUSE_GLFW=ON -DUSE_GLM=ON -DUSE_GUI=ON -DSTRICT_FLAGS=ON ..
+  - cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBUILD_SHARED_LIBS=$SHARED -DBUILD_SHARED_TESTS=$TESTS -DUSE_VULKAN=$VULKAN -DUSE_GLFW=ON -DUSE_GLM=ON -DUSE_GUI=ON -DSTRICT_FLAGS=ON ..
   - cmake --build . -- -j12
 
   ############################################################################

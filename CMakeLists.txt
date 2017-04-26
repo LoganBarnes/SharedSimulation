@@ -1,12 +1,13 @@
 cmake_minimum_required ( VERSION 3.7.1 )
 project ( SharedSimulation )
 
-option( USE_GLM    "Use the GLM library"    OFF )
-option( USE_GLFW   "Use the GLFW library"   OFF )
-option( USE_VULKAN "Use the Vulkan library" OFF )
-option( USE_OPTIX  "Use the optix library"  OFF )
-option( USE_GUI    "Use the imgui library"  OFF )
-option( USE_GMOCK  "Use the gmock library"  OFF )
+option( USE_GLM    "Use the GLM library"      OFF )
+option( USE_GLFW   "Use the GLFW library"     OFF )
+option( USE_OPENGL "Use the OpenGL framework" OFF )
+option( USE_VULKAN "Use the Vulkan library"   OFF )
+option( USE_OPTIX  "Use the optix library"    OFF )
+option( USE_GUI    "Use the imgui library"    OFF )
+option( USE_GMOCK  "Use the gmock library"    OFF )
 
 option( BUILD_SHARED_TESTS "Build unit tests for the shared simulation lib" OFF )
 
@@ -26,7 +27,7 @@ add_subdirectory( ${THIRDPARTY} )
 
 # creates an hpp file with defines for each USE_<lib> setting
 configure_file (
-                ${SRC_DIR}/common/SharedSimulationConfig.hpp.in
+                ${SRC_DIR}/common/ThirdpartyDefinesConfig.hpp.in
                 ${PROJECT_BINARY_DIR}/ThirdpartyDefinesConfig.hpp
                 )
 
@@ -214,6 +215,9 @@ set( SHARED_CUDA_DEP_TARGETS         ${THIRDPARTY_CUDA_DEP_TARGETS}         )
 set( PROJECT_INSTALL_HEADER_DIRS ${PROJECT_INSTALL_HEADER_DIRS} ${INC_DIR}/shared )
 
 set( SHARED_UNCRUSTIFY_FILE ${CMAKE_CURRENT_SOURCE_DIR}/formatting/uncrustify.cfg )
+
+set( PROJECT_CONFIG_FILE ${SRC_DIR}/common/ProjectConfig.hpp.in )
+set( PROJECT_NAMESPACE shared )
 
 # build the simulation library
 set ( FORCE_CUDA_STANDARD 11 )
