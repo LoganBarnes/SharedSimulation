@@ -3,7 +3,7 @@
 
 
 #include <memory>
-#include "io/IOHandler.hpp"
+#include "shared/core/IOHandler.hpp"
 
 
 namespace graphics
@@ -68,16 +68,26 @@ public:
   void updateIO ( );
 
 
+  ///////////////////////////////////////////////////////////////
+  /// \brief onLoopExit
+  ///
+  ///        Allows for any synchronization or clean up that
+  ///        needs to be completed before destruction
+  ///
+  ///////////////////////////////////////////////////////////////
+  virtual
+  void onLoopExit ( );
+
+
 protected:
 
   std::unique_ptr< graphics::VulkanGlfwWrapper > upVulkanWrapper_;
-  std::unique_ptr< shared::SharedCallback  >     upCallback_;
 
 
 private:
 
   virtual
-  void onRender ( const double alpha ) = 0;
+  void onRender ( const double alpha );
 
 
 };

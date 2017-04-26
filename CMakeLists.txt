@@ -27,7 +27,7 @@ add_subdirectory( ${THIRDPARTY} )
 # creates an hpp file with defines for each USE_<lib> setting
 configure_file (
                 ${SRC_DIR}/common/SharedSimulationConfig.hpp.in
-                ${PROJECT_BINARY_DIR}/SharedSimulationConfig.hpp
+                ${PROJECT_BINARY_DIR}/ThirdpartyDefinesConfig.hpp
                 )
 
 
@@ -39,17 +39,12 @@ if ( USE_GLM )
   list(
        APPEND ADDITIONAL_SOURCE
 
-#       ${INC_DIR}/shared/graphics/Camera.hpp
        ${INC_DIR}/shared/graphics/GlmCamera.hpp
-
-#       ${SRC_DIR}/graphics/Camera.cpp
        ${SRC_DIR}/graphics/GlmCamera.cpp
        )
 
   list(
        APPEND SHARED_TEST_SOURCE
-
-#       ${SRC_DIR}/graphics/testing/CameraUnitTests.cpp
        ${SRC_DIR}/graphics/testing/GlmCameraUnitTests.cpp
        )
 
@@ -67,49 +62,65 @@ if ( USE_GLFW )
 
       ${INC_DIR}/shared/graphics/Callback.hpp
       ${INC_DIR}/shared/graphics/GlfwWrapper.hpp
-      ${INC_DIR}/shared/graphics/OpenGLWrapper.hpp
-      ${INC_DIR}/shared/graphics/OpenGLHelper.hpp
-      ${INC_DIR}/shared/core/OpenGLIOHandler.hpp
       ${INC_DIR}/shared/graphics/SharedCallback.hpp
 
       ${SRC_DIR}/graphics/glfw/CallbackSingleton.hpp
       ${SRC_DIR}/graphics/glfw/CallbackSingleton.cpp
       ${SRC_DIR}/graphics/glfw/GlfwWrapper.cpp
-      ${SRC_DIR}/graphics/opengl/OpenGLWrapper.cpp
-      ${SRC_DIR}/graphics/opengl/OpenGLHelper.cpp
-      ${SRC_DIR}/io/OpenGLIOHandler.cpp
       ${SRC_DIR}/io/SharedCallback.cpp
       )
 
-  list(
-       APPEND SHARED_TEST_SOURCE
 
-       ${SRC_DIR}/graphics/testing/OpenGLWrapperUnitTests.cpp
-       ${SRC_DIR}/graphics/testing/OpenGLHelperUnitTests.cpp
-       )
+  ################################################
+  # add OpenGL functionality
+  ################################################
+  if ( USE_OPENGL )
+
+    # glfw/opengl wrapper functions and input handling
+    set(
+        ADDITIONAL_SOURCE
+        ${ADDITIONAL_SOURCE}
+
+        ${INC_DIR}/shared/graphics/OpenGLWrapper.hpp
+        ${INC_DIR}/shared/graphics/OpenGLHelper.hpp
+        ${INC_DIR}/shared/core/OpenGLIOHandler.hpp
+
+        ${SRC_DIR}/graphics/opengl/OpenGLWrapper.cpp
+        ${SRC_DIR}/graphics/opengl/OpenGLHelper.cpp
+        ${SRC_DIR}/io/OpenGLIOHandler.cpp
+        )
+
+    list(
+         APPEND SHARED_TEST_SOURCE
+
+         ${SRC_DIR}/graphics/testing/OpenGLWrapperUnitTests.cpp
+         ${SRC_DIR}/graphics/testing/OpenGLHelperUnitTests.cpp
+         )
+
+  endif( USE_OPENGL )
+
+
+  ################################################
+  # add Vulkan functionality
+  ################################################
+  if ( USE_VULKAN )
+
+    # vulkan wrapper functions
+    set(
+        ADDITIONAL_SOURCE
+        ${ADDITIONAL_SOURCE}
+
+        ${INC_DIR}/shared/graphics/VulkanGlfwWrapper.hpp
+        ${INC_DIR}/shared/core/VulkanIOHandler.hpp
+
+        ${SRC_DIR}/graphics/vulkan/VulkanGlfwWrapper.cpp
+        ${SRC_DIR}/io/VulkanIOHandler.cpp
+        )
+
+  endif ( USE_VULKAN )
+
 
 endif( USE_GLFW )
-
-
-
-################################################
-# add vulkan functionality
-################################################
-if ( USE_VULKAN )
-
-  # vulkan wrapper functions
-  set(
-      ADDITIONAL_SOURCE
-      ${ADDITIONAL_SOURCE}
-
-      ${INC_DIR}/shared/graphics/VulkanGlfwWrapper.hpp
-      ${INC_DIR}/shared/core/VulkanIOHandler.hpp
-
-      ${SRC_DIR}/graphics/vulkan/VulkanGlfwWrapper.cpp
-      ${SRC_DIR}/io/VulkanIOHandler.cpp
-      )
-
-endif ( USE_VULKAN )
 
 
 

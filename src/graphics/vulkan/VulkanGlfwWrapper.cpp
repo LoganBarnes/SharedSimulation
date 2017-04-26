@@ -1,12 +1,13 @@
-#include "VulkanGlfwWrapper.hpp"
+#include "shared/graphics/VulkanGlfwWrapper.hpp"
+
+#include "shared/graphics/GlfwWrapper.hpp"
+#include "shared/graphics/Callback.hpp"
 
 #include <iostream>
 #include <set>
 #include <algorithm>
 #include <fstream>
 #include <cstring>
-
-#include "graphics/glfw/GlfwWrapper.hpp"
 
 
 namespace graphics
@@ -594,7 +595,7 @@ createShaderModule(
 
 
 VulkanGlfwWrapper::VulkanGlfwWrapper(  )
-  : upGlfw_( new graphics::GlfwWrapper( false ) ) // no openGL
+  : upGlfw_( new graphics::GlfwWrapper( true, false ) ) // no openGL
 {}
 
 
@@ -1024,7 +1025,7 @@ VulkanGlfwWrapper::createCommandBuffers( )
     renderPassInfo.renderArea.offset = { 0, 0 };
     renderPassInfo.renderArea.extent = swapChainExtent_;
 
-    VkClearValue clearColor        = { 0.0f, 0.0f, 0.0f, 1.0f };
+    VkClearValue clearColor        = { { { 0.0f, 0.0f, 0.0f, 1.0f } } };
     renderPassInfo.clearValueCount = 1;
     renderPassInfo.pClearValues    = &clearColor;
 
@@ -1090,9 +1091,7 @@ VulkanGlfwWrapper::createSemaphores( )
 void
 VulkanGlfwWrapper::checkInputEvents ( )
 {
-
   GlfwWrapper::pollEvents( );
-
 }
 
 
@@ -1185,11 +1184,9 @@ VulkanGlfwWrapper::syncDevice( )
 /// \param pCallback
 ///
 void
-VulkanGlfwWrapper::setCallback( Callback *pCallback )
+VulkanGlfwWrapper::setCallback( std::unique_ptr< Callback > upCallback )
 {
-
-  upGlfw_->setCallback( pCallback );
-
+  upGlfw_->setCallback( std::move( upCallback ) );
 }
 
 
@@ -1400,14 +1397,10 @@ VulkanGlfwWrapper::_setUpVulkanDebugCallback( )
 void
 VulkanGlfwWrapper::_createVulkanSurface( )
 {
-
   if ( upGlfw_->createWindowSurface( instance_, nullptr, surface_.replace( ) ) != VK_SUCCESS )
   {
-
     throw std::runtime_error( "Failed to create window surface" );
-
   }
-
 }
 
 

@@ -5,7 +5,7 @@
 
 #cmakedefine USE_GLFW
 #cmakedefine USE_VULKAN
-#cmakedefine USE_GLAD
+#cmakedefine USE_OPENGL
 #cmakedefine USE_OPTIX
 #cmakedefine USE_GUI
 #cmakedefine USE_GMOCK

@@ -164,10 +164,12 @@ GlfwWrapper::createNewWindow(
     glfwMakeContextCurrent( pWindow_ );
     glfwSwapInterval( 1 );
 
+#ifdef USE_OPENGL
     if ( !gladLoadGLLoader( reinterpret_cast< GLADloadproc >( glfwGetProcAddress ) ) )
     {
       throw std::runtime_error( "Failed to initialize OpenGL context" );
     }
+#endif
   }
 
   // set default callback functions

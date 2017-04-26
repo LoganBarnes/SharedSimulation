@@ -64,14 +64,28 @@ if ( USE_GLFW )
   # compile glfw with current project
   add_subdirectory( ${glfw_SOURCE_DIR} ${glfw_BINARY_DIR} )
 
-  # glfw and glad header dir
+  # glfw header dir
   list(
-       APPEND
-       THIRDPARTY_SYSTEM_INCLUDE_DIRS
-
+       APPEND THIRDPARTY_SYSTEM_INCLUDE_DIRS
        ${glfw_SOURCE_DIR}/include
-       ${THIRDPARTY}/include
        )
+
+  # glfw lib
+  list( APPEND THIRDPARTY_LINK_LIBS glfw )
+
+  # glfw must be built before project lib
+  list( APPEND THIRDPARTY_DEP_TARGETS glfw )
+
+  message( "USING GLFW" )
+
+endif( USE_GLFW )
+
+
+
+################################################
+# add OpenGL functionality
+################################################
+if ( USE_OPENGL )
 
   # build glad as its own library to avoid problems with strict compile flags
   add_library               ( glad ${THIRDPARTY}/glad/src/glad.c       )
@@ -84,20 +98,26 @@ if ( USE_GLFW )
           ARCHIVE DESTINATION lib
           )
 
-  # glfw lib
-  list( APPEND THIRDPARTY_LINK_LIBS glfw glad )
+    # glad header dir
+    list(
+        APPEND THIRDPARTY_SYSTEM_INCLUDE_DIRS
+        ${THIRDPARTY}/include
+        )
 
-  # glfw must be built before project lib
-  list( APPEND THIRDPARTY_DEP_TARGETS glfw glad )
+  # glad lib
+  list( APPEND THIRDPARTY_LINK_LIBS glad )
 
-  message( "USING GLFW" )
+  # glad must be built before project lib
+  list( APPEND THIRDPARTY_DEP_TARGETS glad )
 
-endif( USE_GLFW )
+  message( "USING OPENGL" )
+
+endif( USE_OPENGL )
 
 
 
 ################################################
-# add vulkan functionality
+# add Vulkan functionality
 ################################################
 if ( USE_VULKAN )
 

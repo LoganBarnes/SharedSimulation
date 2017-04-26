@@ -2,16 +2,14 @@
 #pragma once
 
 
-#include <memory>
-#include <string>
-#include "SharedSimulationConfig.hpp"
-
+#include "ThirdpartyDefinesConfig.hpp"
 
 #ifdef USE_VULKAN
-
 #include <vulkan/vulkan.h>
-
 #endif
+
+#include <memory>
+#include <string>
 
 
 struct GLFWwindow;
@@ -89,10 +87,6 @@ public:
 
 #endif
 
-#ifdef USE_GLAD
-
-#endif
-
 
   ///////////////////////////////////////////////////////////////////////////////////
   //
@@ -104,14 +98,14 @@ public:
   //////////////////////////////////////////////////
   /// \brief pollEvents
   //////////////////////////////////////////////////
-
+  static
   void pollEvents ( );
 
 
   //////////////////////////////////////////////////
   /// \brief waitEvents
   //////////////////////////////////////////////////
-
+  static
   void waitEvents ( );
 
 

@@ -8,7 +8,7 @@
 #include <memory>
 #include <vulkan/vulkan.h>
 
-#include "VDeleter.hpp"
+#include "graphics/vulkan/VDeleter.hpp"
 
 
 namespace graphics
@@ -146,7 +146,7 @@ public:
   ///////////////////////////////////////////////////////////////////////////////////
 
   virtual
-  void setCallback ( Callback *pCallback );
+  void setCallback (std::unique_ptr< Callback > upCallback );
 
 
 private:
