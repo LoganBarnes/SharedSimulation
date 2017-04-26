@@ -1,0 +1,64 @@
+version: 1.0.{build}
+
+branches:
+  only:
+  - master
+
+skip_tags: true
+skip_non_tags: true
+
+image: Visual Studio 2015
+clone_folder: c:\projects\SharedSimulation
+
+environment:
+  matrix:
+    - BUILD_MODE: Debug
+      UNIT_TESTS: OFF
+    - BUILD_MODE: Debug
+      UNIT_TESTS: ON
+    - BUILD_MODE: Release
+      UNIT_TESTS: OFF
+    - BUILD_MODE: Release
+      UNIT_TESTS: ON
+
+matrix:
+    fast_finish: true
+
+platform: x64
+
+install:
+  # todo: download and install vulkan here
+  - VULKAN=OFF
+
+build_script:
+  ############################################################################
+  # Build main simulation library and tests
+  ############################################################################
+  - cd %APPVEYOR_BUILD_FOLDER%
+  - mkdir build
+  - cd build
+  - cmake -DCMAKE_GENERATOR_PLATFORM=%PLATFORM% ^
+          -DBUILD_SHARED_TESTS=%UNIT_TESTS% ^
+          -DUSE_VULKAN=%VULKAN% ^
+          -DUSE_GLFW=ON ^
+          -DUSE_GLM=ON ^
+          -DUSE_GUI=ON ^
+          -DBUILD_SHARED_LIBS=OFF ^
+          ..
+  - cmake --build . --config %BUILD_MODE% -- /m
+
+  ############################################################################
+  # Build example projects using simulation library
+  ############################################################################
+  - cd ..\examples
+  - mkdir build
+  - cd build
+  - cmake -DCMAKE_GENERATOR_PLATFORM=%PLATFORM% -DBUILD_SHARED_LIBS=OFF ..
+  - cmake --build . --config %BUILD_MODE% -- /m
+
+test_script:
+  - build\testbin\testSharedSimulation.exe
+
+notifications:
+  - on_build_success: false
+  - on_build_failure: true

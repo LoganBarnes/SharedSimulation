@@ -273,6 +273,8 @@ if ( USE_GUI )
               ${CMAKE_BINARY_DIR}/imgui-src/stb_rect_pack.h
               ${CMAKE_BINARY_DIR}/imgui-src/stb_textedit.h
               ${CMAKE_BINARY_DIR}/imgui-src/stb_truetype.h
+
+              ${IMGUI_GL_SOURCE}
               )
 
   target_include_directories(
