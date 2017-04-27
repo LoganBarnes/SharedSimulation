@@ -1,10 +1,10 @@
-#include "CallbackSingleton.hpp"
+#include "graphics/glfw/CallbackSingleton.hpp"
 #include "shared/graphics/Callback.hpp"
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
-namespace graphics
+namespace shg
 {
 
 //
@@ -444,4 +444,4 @@ CallbackSingleton::setDefaultCallback( std::unique_ptr< Callback > upCallback )
 
 
 
-} // namespace graphics
+} // namespace shg

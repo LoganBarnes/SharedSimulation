@@ -1,19 +1,19 @@
 #include "shared/core/ImguiOpenGLIOHandler.hpp"
 
-// system
-#include <iostream>
-
 // shared
-#include "glad/glad.h"
 #include "shared/graphics/GlfwWrapper.hpp"
 #include "shared/graphics/OpenGLWrapper.hpp"
 #include "shared/graphics/ImguiCallback.hpp"
 #include "shared/graphics/SharedCallback.hpp"
-#include "imgui.h"
-#include "imgui_impl_glfw_gl3.h"
+#include <imgui.h>
+#include <imgui_impl_glfw_gl3.h>
+#include <glad/glad.h>
+
+// system
+#include <iostream>
 
 
-namespace shared
+namespace shs
 {
 
 
@@ -33,14 +33,14 @@ ImguiOpenGLIOHandler::ImguiOpenGLIOHandler(
                                            )
   : OpenGLIOHandler( world, printInfo, width, height, resizable, aaSamples )
 {
-  imguiCallback_ = new shared::ImguiCallback( );
+  imguiCallback_ = new shs::ImguiCallback( );
 
   // imguiCallback no longer has ownership of memory
-  std::unique_ptr< graphics::Callback > upCallback( imguiCallback_ );
+  std::unique_ptr< shg::Callback > upCallback( imguiCallback_ );
   upGlfwWrapper_->setCallback( std::move( upCallback ) );
 
   // default callback
-  std::unique_ptr< shared::SharedCallback > upSharedCallback( new shared::SharedCallback( ) );
+  std::unique_ptr< shs::SharedCallback > upSharedCallback( new shs::SharedCallback( ) );
   imguiCallback_->setCallback ( std::move( upSharedCallback ) );
 
   ImGui_ImplGlfwGL3_Init( upGlfwWrapper_->getWindow( ), false ); // false for no callbacks
@@ -127,4 +127,4 @@ ImguiOpenGLIOHandler::_onGuiRender( )
 
 
 
-} // namespace shared
+} // namespace shs

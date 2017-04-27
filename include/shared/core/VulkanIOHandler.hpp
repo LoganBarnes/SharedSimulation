@@ -1,12 +1,11 @@
 // VulkanIOHandler.hpp
 #pragma once
 
-
-#include <memory>
 #include "shared/core/IOHandler.hpp"
+#include <memory>
 
 
-namespace graphics
+namespace shg
 {
 
 class VulkanGlfwWrapper;
@@ -14,7 +13,7 @@ class VulkanGlfwWrapper;
 }
 
 
-namespace shared
+namespace shs
 {
 
 
@@ -37,7 +36,7 @@ public:
   ///////////////////////////////////////////////////////////////
   VulkanIOHandler(
                   World &world,
-                  bool   printInfo = true
+                  bool  printInfo = true
                   );
 
 
@@ -81,7 +80,7 @@ public:
 
 protected:
 
-  std::unique_ptr< graphics::VulkanGlfwWrapper > upVulkanWrapper_;
+  std::unique_ptr< shg::VulkanGlfwWrapper > upVulkanWrapper_;
 
 
 private:
@@ -93,5 +92,4 @@ private:
 };
 
 
-} // namespace shared
-
+} // namespace shs

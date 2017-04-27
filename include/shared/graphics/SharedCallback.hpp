@@ -5,11 +5,11 @@
 #include "shared/graphics/Callback.hpp"
 
 
-namespace shared
+namespace shs
 {
 
 
-class SharedCallback : public graphics::Callback
+class SharedCallback : public shg::Callback
 {
 
 public:
@@ -42,4 +42,4 @@ public:
 };
 
 
-} // namespace shared
+} // namespace shs

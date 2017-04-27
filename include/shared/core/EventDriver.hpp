@@ -2,10 +2,10 @@
 #pragma once
 
 
-#include "Driver.hpp"
+#include "shared/core/Driver.hpp"
 
 
-namespace shared
+namespace shs
 {
 
 
@@ -63,4 +63,4 @@ private:
 };
 
 
-} // namespace shared
+} // namespace shs

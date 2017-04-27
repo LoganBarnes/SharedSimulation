@@ -8,10 +8,8 @@
 #include <sstream>
 #include <stdexcept>
 
-//#include "graphics/glfw/CallbackSingleton.hpp"
 
-
-namespace graphics
+namespace shg
 {
 
 
@@ -132,7 +130,6 @@ OpenGLWrapper::setTexture(
                  );
 
 }
-
 
 
 
@@ -863,4 +860,4 @@ OpenGLWrapper::_loadShader(
 
 
 
-} // namespace graphics
+} // namespace shg

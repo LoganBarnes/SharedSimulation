@@ -8,10 +8,8 @@
 #include <sstream>
 #include <stdexcept>
 
-//#include "graphics/glfw/CallbackSingleton.hpp"
 
-
-namespace graphics
+namespace shg
 {
 
 
@@ -699,4 +697,4 @@ OpenGLHelper::_loadShader(
 
 
 
-} // namespace graphics
+} // namespace shg

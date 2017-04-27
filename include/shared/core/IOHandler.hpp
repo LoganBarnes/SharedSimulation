@@ -2,7 +2,7 @@
 #pragma once
 
 
-namespace shared
+namespace shs
 {
 
 
@@ -104,4 +104,4 @@ protected:
 };
 
 
-} // namespace shared
+} // namespace shs

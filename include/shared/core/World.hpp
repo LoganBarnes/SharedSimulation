@@ -2,7 +2,7 @@
 #pragma once
 
 
-namespace shared
+namespace shs
 {
 
 /////////////////////////////////////////////
@@ -59,5 +59,4 @@ private:
 };
 
 
-} // end namespace shared
-
+} // end namespace shs

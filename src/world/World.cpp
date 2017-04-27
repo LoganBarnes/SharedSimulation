@@ -1,7 +1,7 @@
 #include "shared/core/World.hpp"
 
 
-namespace shared
+namespace shs
 {
 
 
@@ -38,4 +38,4 @@ World::update(
 
 
 
-} // namespace shared
+} // namespace shs

@@ -16,7 +16,7 @@ struct GLFWwindow;
 typedef GLFWwindow GLFWwindow;
 
 
-namespace graphics
+namespace shg
 {
 
 class Callback;
@@ -155,4 +155,4 @@ private:
 };
 
 
-} // namespace graphics
+} // namespace shg

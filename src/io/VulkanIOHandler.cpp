@@ -8,7 +8,7 @@
 #include <iostream>
 
 
-namespace shared
+namespace shs
 {
 
 
@@ -23,7 +23,7 @@ VulkanIOHandler::VulkanIOHandler(
                                  bool  printInfo
                                  )
   : IOHandler( world, false )
-  , upVulkanWrapper_( new graphics::VulkanGlfwWrapper( ) )
+  , upVulkanWrapper_( new shg::VulkanGlfwWrapper( ) )
 {
 
   if ( printInfo )
@@ -33,7 +33,7 @@ VulkanIOHandler::VulkanIOHandler(
 
   }
 
-  std::unique_ptr< shared::SharedCallback  > upCallback_( new shared::SharedCallback( ) );
+  std::unique_ptr< shs::SharedCallback  > upCallback_( new shs::SharedCallback( ) );
   upVulkanWrapper_->setCallback( std::move( upCallback_ ) );
 
 
@@ -42,8 +42,8 @@ VulkanIOHandler::VulkanIOHandler(
   upVulkanWrapper_->createRenderPass( );
 
   upVulkanWrapper_->createGraphicsPipeline(
-                                           shared::SHADER_PATH + "vulkan/screenSpace/vert.spv",
-                                           shared::SHADER_PATH + "vulkan/default/frag.spv"
+                                           shs::SHADER_PATH + "vulkan/screenSpace/vert.spv",
+                                           shs::SHADER_PATH + "vulkan/default/frag.spv"
                                            );
 
   upVulkanWrapper_->createFrameBuffer( );
@@ -98,6 +98,7 @@ VulkanIOHandler::updateIO( )
 }
 
 
+
 /////////////////////////////////////////////
 /// \brief Renderer::onRender
 /// \param alpha
@@ -109,6 +110,7 @@ VulkanIOHandler::onRender( const double )
 {
   upVulkanWrapper_->drawFrame( );
 } // TerrainIOHandler::onRender
+
 
 
 /////////////////////////////////////////////
@@ -124,5 +126,4 @@ VulkanIOHandler::onLoopExit( )
 
 
 
-
-} // namespace shared
+} // namespace shs

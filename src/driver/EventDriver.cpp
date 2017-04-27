@@ -1,12 +1,12 @@
 #include "shared/core/EventDriver.hpp"
 
-#include <iostream>
-
 #include "shared/core/World.hpp"
 #include "shared/core/IOHandler.hpp"
 
+#include <iostream>
 
-namespace shared
+
+namespace shs
 {
 
 
@@ -88,4 +88,4 @@ EventDriver::_runEventLoop( )
 
 
 
-} // namespace shared
+} // namespace shs

@@ -1,17 +1,17 @@
 #include "shared/core/OpenGLIOHandler.hpp"
 
-// system
-#include <iostream>
-
 // shared
-#include "glad/glad.h"
 #include "shared/graphics/GlfwWrapper.hpp"
 #include "shared/graphics/OpenGLWrapper.hpp"
 #include "shared/graphics/GlmCamera.hpp"
 #include "shared/graphics/SharedCallback.hpp"
+#include <glad/glad.h>
+
+// system
+#include <iostream>
 
 
-namespace shared
+namespace shs
 {
 
 
@@ -30,9 +30,9 @@ OpenGLIOHandler::OpenGLIOHandler(
                                  int    aaSamples
                                  )
   : IOHandler( world, false )
-  , upGlfwWrapper_( new graphics::GlfwWrapper( ) )
-  , upGLWrapper_  ( new graphics::OpenGLWrapper( ) )
-  , upCamera_  ( new graphics::GlmCamera< float >( ) )
+  , upGlfwWrapper_( new shg::GlfwWrapper( ) )
+  , upGLWrapper_  ( new shg::OpenGLWrapper( ) )
+  , upCamera_  ( new shg::GlmCamera< float >( ) )
   , windowWidth_( width )
   , windowHeight_( height )
 {
@@ -43,7 +43,7 @@ OpenGLIOHandler::OpenGLIOHandler(
 
   upGlfwWrapper_->createNewWindow( "OpenGL Window", width, height, resizable, true, aaSamples );
 
-  std::unique_ptr< graphics::Callback > upCallback( new shared::SharedCallback( ) );
+  std::unique_ptr< shg::Callback > upCallback( new shs::SharedCallback( ) );
   upGlfwWrapper_->setCallback( std::move( upCallback ) );
 
   upGLWrapper_->setCurrentContext( upGlfwWrapper_->getWindow( ) ); // optional with only one window
@@ -128,4 +128,4 @@ OpenGLIOHandler::resize(
 
 
 
-} // namespace shared
+} // namespace shs

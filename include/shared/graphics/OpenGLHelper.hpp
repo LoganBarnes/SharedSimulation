@@ -1,16 +1,16 @@
 // OpenGLHelper.hpp
 #pragma once
 
+#include <glad/glad.h>
+
 #include <string>
 #include <sstream>
 #include <vector>
 #include <unordered_map>
 #include <memory>
 
-#include "glad/glad.h"
 
-
-namespace graphics
+namespace shg
 {
 
 ///
@@ -299,4 +299,4 @@ OpenGLHelper::updateBuffer(
 
 
 
-} // namespace graphics
+} // namespace shg

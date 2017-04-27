@@ -1,5 +1,4 @@
 // GlmCameraUnitTests.cpp
-
 #include "shared/graphics/GlmCamera.hpp"
 
 #include "gmock/gmock.h"

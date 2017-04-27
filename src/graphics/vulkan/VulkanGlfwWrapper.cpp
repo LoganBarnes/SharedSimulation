@@ -10,7 +10,7 @@
 #include <cstring>
 
 
-namespace graphics
+namespace shg
 {
 
 
@@ -595,7 +595,7 @@ createShaderModule(
 
 
 VulkanGlfwWrapper::VulkanGlfwWrapper(  )
-  : upGlfw_( new graphics::GlfwWrapper( true, false ) ) // no openGL
+  : upGlfw_( new shg::GlfwWrapper( true, false ) ) // no openGL
 {}
 
 
@@ -1681,4 +1681,4 @@ VulkanGlfwWrapper::_createImageViews( )
 ///////////////////////////////////////////////////////////////////////////////////
 
 
-} // namespace graphics
+} // namespace shg

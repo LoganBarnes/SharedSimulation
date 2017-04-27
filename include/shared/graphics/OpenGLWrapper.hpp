@@ -1,15 +1,15 @@
 // OpenGLWrapper.hpp
 #pragma once
 
+#include "shared/graphics/OpenGLHelper.hpp"
+
 #include <string>
 #include <sstream>
 #include <vector>
 #include <unordered_map>
 
-#include "shared/graphics/OpenGLHelper.hpp"
 
-
-namespace graphics
+namespace shg
 {
 
 
@@ -474,4 +474,4 @@ OpenGLWrapper::_replaceItemId(
 
 
 
-} // namespace graphics
+} // namespace shg

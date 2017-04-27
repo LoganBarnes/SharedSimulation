@@ -6,7 +6,7 @@
 
 
 
-namespace shared
+namespace shs
 {
 
 
@@ -111,4 +111,4 @@ IOHandler::onLoopExit( )
 {}
 
 
-} // namespace shared
+} // namespace shs

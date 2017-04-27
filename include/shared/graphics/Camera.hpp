@@ -2,10 +2,10 @@
 #pragma once
 
 
-#include "glm/glm.hpp"
+#include <glm/glm.hpp>
 
 
-namespace graphics
+namespace shg
 {
 
 
@@ -82,4 +82,4 @@ private:
 };
 
 
-} // namespace graphics
+} // namespace shg

@@ -10,7 +10,7 @@ struct GLFWwindow;
 typedef GLFWwindow GLFWwindow;
 
 
-namespace graphics
+namespace shg
 {
 
 
@@ -141,4 +141,4 @@ public:
 };
 
 
-} // namespace graphics
+} // namespace shg

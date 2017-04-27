@@ -1,5 +1,4 @@
 // DriverUnitTests.cpp
-
 #include "shared/core/Driver.hpp"
 
 #include "gmock/gmock.h"

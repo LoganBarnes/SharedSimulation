@@ -1,6 +1,8 @@
+// GlfwWrapper.hpp
 #include "shared/graphics/GlfwWrapper.hpp"
 
-#include <iostream>
+#include "shared/graphics/Callback.hpp"
+#include "graphics/glfw/CallbackSingleton.hpp"
 
 #ifdef USE_OPENGL
 #include <glad/glad.h>
@@ -9,11 +11,10 @@
 #define GLFW_INCLUDE_NONE
 #include "GLFW/glfw3.h"
 
-#include "CallbackSingleton.hpp"
-#include "shared/graphics/Callback.hpp"
+#include <iostream>
 
 
-namespace graphics
+namespace shg
 {
 
 
@@ -167,10 +168,12 @@ GlfwWrapper::createNewWindow(
     glfwSwapInterval( 1 );
 
 #ifdef USE_OPENGL
+
     if ( !gladLoadGLLoader( reinterpret_cast< GLADloadproc >( glfwGetProcAddress ) ) )
     {
       throw std::runtime_error( "Failed to initialize OpenGL context" );
     }
+
 #endif
   }
 
@@ -351,4 +354,4 @@ GlfwWrapper::_terminateGlfw( )
 ///////////////////////////////////////////////////////////////////////////////////
 
 
-} // namespace graphics
+} // namespace shg

@@ -6,13 +6,13 @@
 #include <GLFW/glfw3.h>
 
 
-namespace shared
+namespace shs
 {
 
 
 
 ImguiCallback::ImguiCallback( std::unique_ptr< Callback > upCallback )
-  : graphics::Callback( )
+  : shg::Callback( )
   , upCallback_( std::move( upCallback ) )
 {}
 
@@ -28,7 +28,7 @@ ImguiCallback::~ImguiCallback( )
 /// \param upCallback
 ///
 void
-ImguiCallback::setCallback( std::unique_ptr< graphics::Callback > upCallback )
+ImguiCallback::setCallback( std::unique_ptr< shg::Callback > upCallback )
 {
   if ( upCallback )
   {
@@ -209,4 +209,4 @@ ImguiCallback::handleChar(
 
 
 
-} // namespace shared
+} // namespace shs

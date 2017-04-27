@@ -5,7 +5,7 @@
 
 
 
-namespace graphics
+namespace shg
 {
 
 ///
@@ -251,4 +251,4 @@ template class GlmCamera< float >;
 template class GlmCamera< double >;
 
 
-} // namespace graphics
+} // namespace shg

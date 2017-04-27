@@ -1,21 +1,20 @@
 // ImguiCallback.hpp
 #pragma once
 
-
-#include <memory>
 #include "shared/graphics/Callback.hpp"
+#include <memory>
 
 
-namespace shared
+namespace shs
 {
 
 
-class ImguiCallback : public graphics::Callback
+class ImguiCallback : public shg::Callback
 {
 
 public:
 
-  ImguiCallback( std::unique_ptr< graphics::Callback > upCallback = nullptr );
+  ImguiCallback( std::unique_ptr< shg::Callback > upCallback = nullptr );
 
   ~ImguiCallback( );
 
@@ -24,7 +23,7 @@ public:
   /// \brief setCallback
   /// \param upCallback
   ////////////////////////////////////////////////////////
-  void setCallback ( std::unique_ptr< graphics::Callback > upCallback );
+  void setCallback ( std::unique_ptr< shg::Callback > upCallback );
 
 
   ////////////////////////////////////////////////////////
@@ -112,10 +111,10 @@ public:
 
 private:
 
-  std::unique_ptr< graphics::Callback > upCallback_;
+  std::unique_ptr< shg::Callback > upCallback_;
 
 
 };
 
 
-} // namespace shared
+} // namespace shs

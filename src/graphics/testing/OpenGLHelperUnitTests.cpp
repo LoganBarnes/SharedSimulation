@@ -1,10 +1,10 @@
 // OpenGLHelperUnitTests.cpp
-#include <limits>
-
 #include "shared/graphics/GlfwWrapper.hpp"
 #include "shared/graphics/OpenGLHelper.hpp"
 
 #include "gmock/gmock.h"
+
+#include <limits>
 
 
 namespace
@@ -37,7 +37,7 @@ protected:
   {}
 
 
-  graphics::GlfwWrapper glfw_;
+  shg::GlfwWrapper glfw_;
 
 
   template< typename IsItemFunc, typename CreateFunc >
@@ -173,10 +173,10 @@ protected:
 TEST_F( OpenGLHelperUnitTests, TestTextureDeleted )
 {
   checkDeleted( glIsTexture,
-               [ ] ( )
-    {
-      return graphics::OpenGLHelper::createTextureArray( 10, 10 );
-    } );
+               []  ( )
+               {
+                 return shg::OpenGLHelper::createTextureArray( 10, 10 );
+               } );
 }
 
 
@@ -187,10 +187,10 @@ TEST_F( OpenGLHelperUnitTests, TestTextureDeleted )
 TEST_F( OpenGLHelperUnitTests, TestTextureDeletedAndReplaced )
 {
   checkDeletedAndReplaced( glIsTexture,
-                          [ ] ( )
-    {
-      return graphics::OpenGLHelper::createTextureArray( 10, 10 );
-    } );
+                          []  ( )
+                          {
+                            return shg::OpenGLHelper::createTextureArray( 10, 10 );
+                          } );
 }
 
 
@@ -201,14 +201,14 @@ TEST_F( OpenGLHelperUnitTests, TestTextureDeletedAndReplaced )
 TEST_F( OpenGLHelperUnitTests, TestVboDeleted )
 {
   checkDeleted( glIsBuffer,
-               [ ] ( )
-    {
-      std::vector< float > data      = { 0.0f, 0.0f, 0.0f, 0.0f };
-      return graphics::OpenGLHelper::createBuffer(
-                                                  data.data( ),
-                                                  data.size( )
-                                                  );
-    } );
+               []  ( )
+               {
+                 std::vector< float > data      = { 0.0f, 0.0f, 0.0f, 0.0f };
+                 return shg::OpenGLHelper::createBuffer(
+                                                        data.data( ),
+                                                        data.size( )
+                                                        );
+               } );
 }
 
 
@@ -219,14 +219,14 @@ TEST_F( OpenGLHelperUnitTests, TestVboDeleted )
 TEST_F( OpenGLHelperUnitTests, TestVboDeletedAndReplaced )
 {
   checkDeletedAndReplaced( glIsBuffer,
-                          [ ] ( )
-    {
-      std::vector< float > data      = { 0.0f, 0.0f, 0.0f, 0.0f };
-      return graphics::OpenGLHelper::createBuffer(
-                                                  data.data( ),
-                                                  data.size( )
-                                                  );
-    } );
+                          []  ( )
+                          {
+                            std::vector< float > data      = { 0.0f, 0.0f, 0.0f, 0.0f };
+                            return shg::OpenGLHelper::createBuffer(
+                                                                   data.data( ),
+                                                                   data.size( )
+                                                                   );
+                          } );
 }
 
 
@@ -237,15 +237,15 @@ TEST_F( OpenGLHelperUnitTests, TestVboDeletedAndReplaced )
 TEST_F( OpenGLHelperUnitTests, TestIboDeleted )
 {
   checkDeleted( glIsBuffer,
-               [ ] ( )
-    {
-      std::vector< float > data      = { 0.0f, 0.0f, 0.0f, 0.0f };
-      return graphics::OpenGLHelper::createBuffer(
-                                                  data.data( ),
-                                                  data.size( ),
-                                                  GL_ELEMENT_ARRAY_BUFFER
-                                                  );
-    } );
+               []  ( )
+               {
+                 std::vector< float > data      = { 0.0f, 0.0f, 0.0f, 0.0f };
+                 return shg::OpenGLHelper::createBuffer(
+                                                        data.data( ),
+                                                        data.size( ),
+                                                        GL_ELEMENT_ARRAY_BUFFER
+                                                        );
+               } );
 }
 
 
@@ -256,15 +256,15 @@ TEST_F( OpenGLHelperUnitTests, TestIboDeleted )
 TEST_F( OpenGLHelperUnitTests, TestIboDeletedAndReplaced )
 {
   checkDeletedAndReplaced( glIsBuffer,
-                          [ ] ( )
-    {
-      std::vector< float > data      = { 0.0f, 0.0f, 0.0f, 0.0f };
-      return graphics::OpenGLHelper::createBuffer(
-                                                  data.data( ),
-                                                  data.size( ),
-                                                  GL_ELEMENT_ARRAY_BUFFER
-                                                  );
-    } );
+                          []  ( )
+                          {
+                            std::vector< float > data      = { 0.0f, 0.0f, 0.0f, 0.0f };
+                            return shg::OpenGLHelper::createBuffer(
+                                                                   data.data( ),
+                                                                   data.size( ),
+                                                                   GL_ELEMENT_ARRAY_BUFFER
+                                                                   );
+                          } );
 }
 
 
@@ -275,11 +275,11 @@ TEST_F( OpenGLHelperUnitTests, TestIboDeletedAndReplaced )
 TEST_F( OpenGLHelperUnitTests, FramebufferDeleted )
 {
   checkDeleted( glIsFramebuffer,
-               [ ] ( )
-    {
-      auto texId = graphics::OpenGLHelper::createTextureArray( 10, 10 );
-      return graphics::OpenGLHelper::createFramebuffer( 10, 10, texId );
-    } );
+               []  ( )
+               {
+                 auto texId = shg::OpenGLHelper::createTextureArray( 10, 10 );
+                 return shg::OpenGLHelper::createFramebuffer( 10, 10, texId );
+               } );
 }
 
 
@@ -290,11 +290,11 @@ TEST_F( OpenGLHelperUnitTests, FramebufferDeleted )
 TEST_F( OpenGLHelperUnitTests, FramebufferDeletedAndReplaced )
 {
   checkDeletedAndReplaced( glIsFramebuffer,
-                          [ ] ( )
-    {
-      auto texId = graphics::OpenGLHelper::createTextureArray( 10, 10 );
-      return graphics::OpenGLHelper::createFramebuffer( 10, 10, texId );
-    } );
+                          []  ( )
+                          {
+                            auto texId = shg::OpenGLHelper::createTextureArray( 10, 10 );
+                            return shg::OpenGLHelper::createFramebuffer( 10, 10, texId );
+                          } );
 }
 
 
@@ -305,19 +305,19 @@ TEST_F( OpenGLHelperUnitTests, FramebufferDeletedAndReplaced )
 TEST_F( OpenGLHelperUnitTests, DepthbufferDeleted )
 {
   checkDeleted( glIsFramebuffer,
-               [ ] ( )
-    {
-      auto depthTex = graphics::OpenGLHelper::createTextureArray(
-                                                                 10,
-                                                                 10,
-                                                                 nullptr,
-                                                                 GL_NEAREST,
-                                                                 GL_CLAMP_TO_EDGE,
-                                                                 GL_DEPTH_COMPONENT16,
-                                                                 GL_DEPTH_COMPONENT
-                                                                 );
-      return graphics::OpenGLHelper::createFramebuffer( 10, 10, nullptr, depthTex );
-    } );
+               []  ( )
+               {
+                 auto depthTex = shg::OpenGLHelper::createTextureArray(
+                                                                       10,
+                                                                       10,
+                                                                       nullptr,
+                                                                       GL_NEAREST,
+                                                                       GL_CLAMP_TO_EDGE,
+                                                                       GL_DEPTH_COMPONENT16,
+                                                                       GL_DEPTH_COMPONENT
+                                                                       );
+                 return shg::OpenGLHelper::createFramebuffer( 10, 10, nullptr, depthTex );
+               } );
 }
 
 
@@ -328,24 +328,24 @@ TEST_F( OpenGLHelperUnitTests, DepthbufferDeleted )
 TEST_F( OpenGLHelperUnitTests, DepthbufferDeletedAndReplaced )
 {
   checkDeletedAndReplaced( glIsFramebuffer,
-                          [ ] ( )
-    {
-      auto depthTex = graphics::OpenGLHelper::createTextureArray(
-                                                                 10,
-                                                                 10,
-                                                                 nullptr,
-                                                                 GL_NEAREST,
-                                                                 GL_CLAMP_TO_EDGE,
-                                                                 GL_DEPTH_COMPONENT16,
-                                                                 GL_DEPTH_COMPONENT
-                                                                 );
-      return graphics::OpenGLHelper::createFramebuffer(
-                                                       10,
-                                                       10,
-                                                       nullptr,
-                                                       depthTex
-                                                       );
-    } );
+                          []  ( )
+                          {
+                            auto depthTex = shg::OpenGLHelper::createTextureArray(
+                                                                                  10,
+                                                                                  10,
+                                                                                  nullptr,
+                                                                                  GL_NEAREST,
+                                                                                  GL_CLAMP_TO_EDGE,
+                                                                                  GL_DEPTH_COMPONENT16,
+                                                                                  GL_DEPTH_COMPONENT
+                                                                                  );
+                            return shg::OpenGLHelper::createFramebuffer(
+                                                                        10,
+                                                                        10,
+                                                                        nullptr,
+                                                                        depthTex
+                                                                        );
+                          } );
 }
 
 

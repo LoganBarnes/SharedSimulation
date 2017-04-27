@@ -1,6 +1,7 @@
 // VulkanGlfwWrapper.hpp
 #pragma once
 
+#include "graphics/vulkan/VDeleter.hpp"
 
 #include <string>
 #include <functional>
@@ -8,10 +9,8 @@
 #include <memory>
 #include <vulkan/vulkan.h>
 
-#include "graphics/vulkan/VDeleter.hpp"
 
-
-namespace graphics
+namespace shg
 {
 
 class GlfwWrapper;
@@ -213,7 +212,7 @@ private:
   //
   // member vars
   //
-  std::unique_ptr< graphics::GlfwWrapper > upGlfw_;
+  std::unique_ptr< shg::GlfwWrapper > upGlfw_;
 
 
 protected:
@@ -270,4 +269,4 @@ protected:
 };
 
 
-} // namespace graphics
+} // namespace shg

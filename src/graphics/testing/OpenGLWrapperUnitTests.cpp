@@ -1,5 +1,4 @@
 // OpenGLWrapperUnitTests.cpp
-
 #include "shared/graphics/OpenGLWrapper.hpp"
 
 #include "gmock/gmock.h"

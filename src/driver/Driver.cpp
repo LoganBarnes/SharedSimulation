@@ -4,7 +4,7 @@
 #include <sstream>
 
 
-namespace shared
+namespace shs
 {
 
 
@@ -39,6 +39,7 @@ Driver::printProjectInfo(
                          )
 {
   std::stringstream info;
+
   info << "#  Running "
        << name << " v"
        << versionMajor << "."
@@ -61,6 +62,7 @@ void
 Driver::printProjectInfo( const std::string name )
 {
   std::stringstream info;
+
   info << "#  Running " << name << "  #";
 
   std::string borders( info.str( ).length( ), '#' );
@@ -70,4 +72,4 @@ Driver::printProjectInfo( const std::string name )
 
 
 
-} // namespace shared
+} // namespace shs

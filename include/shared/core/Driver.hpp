@@ -5,7 +5,7 @@
 #include <type_traits>
 
 
-namespace shared
+namespace shs
 {
 
 
@@ -89,4 +89,4 @@ protected:
 };
 
 
-} // namespace shared
+} // namespace shs

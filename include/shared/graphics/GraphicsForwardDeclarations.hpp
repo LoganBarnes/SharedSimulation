@@ -1,7 +1,7 @@
 // GraphicsForwardDeclarations.hpp
 #pragma once
 
-namespace graphics
+namespace shg
 {
 
 template< typename T >
@@ -23,4 +23,4 @@ class Callback;
 
 struct StandardPipeline;
 
-} // namespace graphics
+} // namespace shg

@@ -4,13 +4,13 @@
 #include <GLFW/glfw3.h>
 
 
-namespace shared
+namespace shs
 {
 
 
 
 SharedCallback::SharedCallback( )
-  : graphics::Callback( )
+  : shg::Callback( )
 {}
 
 
@@ -49,4 +49,4 @@ SharedCallback::handleKey(
 
 
 
-} // namespace shared
+} // namespace shs

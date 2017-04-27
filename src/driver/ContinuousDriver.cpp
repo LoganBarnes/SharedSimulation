@@ -1,13 +1,13 @@
 #include "shared/core/ContinuousDriver.hpp"
 
-#include <iostream>
-
 #include "shared/core/World.hpp"
 #include "shared/core/IOHandler.hpp"
 
+#include <iostream>
 
 
-namespace shared
+
+namespace shs
 {
 
 
@@ -29,8 +29,7 @@ ContinuousDriver::ContinuousDriver(
                                    World     &world,
                                    IOHandler &ioHandler
                                    ) noexcept
-  :
-  Driver( world, ioHandler )
+  : Driver( world, ioHandler )
   , timeScale_  ( 1.0 )
   , paused_     ( false )
   , startTime_  ( 0.0 )
@@ -234,4 +233,4 @@ ContinuousDriver::_getTimeSeconds( )
 
 
 
-} // namespace shared
+} // namespace shs

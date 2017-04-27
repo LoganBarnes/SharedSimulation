@@ -1,14 +1,13 @@
 // OpenGLIOHandler.hpp
 #pragma once
 
-
-#include <memory>
 #include "shared/core/IOHandler.hpp"
-
 #include "shared/graphics/GraphicsForwardDeclarations.hpp"
 
+#include <memory>
 
-namespace shared
+
+namespace shs
 {
 
 
@@ -92,12 +91,13 @@ public:
 
 protected:
 
-  std::unique_ptr< graphics::GlfwWrapper >        upGlfwWrapper_;
-  std::unique_ptr< graphics::OpenGLWrapper >      upGLWrapper_;
-  std::unique_ptr< graphics::GlmCamera< float > > upCamera_;
+  std::unique_ptr< shg::GlfwWrapper >        upGlfwWrapper_;
+  std::unique_ptr< shg::OpenGLWrapper >      upGLWrapper_;
+  std::unique_ptr< shg::GlmCamera< float > > upCamera_;
 
   int windowWidth_;
   int windowHeight_;
+
 
 private:
 
@@ -107,4 +107,4 @@ private:
 };
 
 
-} // namespace shared
+} // namespace shs

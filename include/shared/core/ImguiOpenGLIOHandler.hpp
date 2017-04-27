@@ -1,10 +1,9 @@
 // ImguiOpenGLIOHandler.hpp
 #pragma once
 
-
+#include "shared/core/OpenGLIOHandler.hpp"
 #include <memory>
 #include <functional>
-#include "shared/core/OpenGLIOHandler.hpp"
 
 
 ///
@@ -17,8 +16,8 @@
 template< typename varType, typename Func >
 bool
 imguiVarChange(
-               varType   &var,
-               Func      imguiFunc
+               varType &var,
+               Func    imguiFunc
                )
 {
   varType oldVar = var;
@@ -29,7 +28,7 @@ imguiVarChange(
 
 
 
-namespace shared
+namespace shs
 {
 
 
@@ -94,4 +93,4 @@ private:
 };
 
 
-} // namespace shared
+} // namespace shs
