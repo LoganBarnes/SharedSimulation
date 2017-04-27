@@ -1,10 +1,10 @@
 #include "CubeWorld.hpp"
 
-#include <random>
-
-#include "glm/gtc/constants.hpp"
-
 #include "RotatingCube.hpp"
+
+#include <glm/gtc/constants.hpp>
+
+#include <random>
 
 namespace simple
 {
@@ -21,7 +21,7 @@ std::uniform_real_distribution< float > realDist( 0.0, 1.0 );
 /// \author Logan Barnes
 /////////////////////////////////////////////
 CubeWorld::CubeWorld( )
-  : shared::World( )
+  : shs::World( )
   , currentId_( 0 )
   , cubes_( )
 {}
@@ -42,7 +42,7 @@ CubeWorld::update(
                   const double timestep   ///< interval since last update
                   )
 {
-  for ( auto & upCube : cubes_ )
+  for ( auto &upCube : cubes_ )
   {
     upCube->update( worldTime, timestep );
   }
@@ -53,12 +53,12 @@ CubeWorld::update(
 void
 CubeWorld::addRandomCube( )
 {
-  constexpr float scale = glm::pi< float >();
-  const glm::vec3 axis = glm::normalize( glm::vec3(
-                                                   realDist( randGen ),
-                                                   realDist( randGen ),
-                                                   realDist( randGen )
-                                                   ) - 0.5f );
+  constexpr float scale = glm::pi< float >( );
+  const glm::vec3 axis  = glm::normalize( glm::vec3(
+                                                    realDist( randGen ),
+                                                    realDist( randGen ),
+                                                    realDist( randGen )
+                                                    ) - 0.5f );
 
   cubes_.push_back( std::unique_ptr< RotatingCube >( new RotatingCube(
                                                                       axis,

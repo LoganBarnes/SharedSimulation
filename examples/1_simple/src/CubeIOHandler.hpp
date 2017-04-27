@@ -16,7 +16,7 @@ class CubeWorld;
 ///
 /// \author Logan Barnes
 /////////////////////////////////////////////
-class CubeIOHandler : public shared::IOHandler
+class CubeIOHandler : public shs::IOHandler
 {
 
 public:
@@ -50,4 +50,3 @@ private:
 
 
 } // namespace simple
-

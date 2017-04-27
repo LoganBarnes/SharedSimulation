@@ -1,11 +1,11 @@
 #include "CubeIOHandler.hpp"
 
+#include "CubeWorld.hpp"
+#include "RotatingCube.hpp"
+
 #include <iostream>
 #include <deque>
 #include <memory>
-
-#include "CubeWorld.hpp"
-#include "RotatingCube.hpp"
 
 
 namespace simple
@@ -18,12 +18,12 @@ namespace simple
 /// \author Logan Barnes
 /////////////////////////////////////////////
 CubeIOHandler::CubeIOHandler( CubeWorld &cubeWorld )
-  : shared::IOHandler( cubeWorld )
+  : shs::IOHandler( cubeWorld )
   , cubeWorld_( cubeWorld )
 {
-  cubeWorld_.addRandomCube();
-  cubeWorld_.addRandomCube();
-  cubeWorld_.addRandomCube();
+  cubeWorld_.addRandomCube( );
+  cubeWorld_.addRandomCube( );
+  cubeWorld_.addRandomCube( );
 }
 
 
@@ -54,7 +54,7 @@ CubeIOHandler::showWorld( const double )
 
   std::cout << "\r(Cube id, rotations) : ";
 
-  for ( auto & upCube : cubes )
+  for ( auto &upCube : cubes )
   {
     std::cout << "(" << upCube->id( ) << ",";
     std::cout << upCube->getRotations( ) << ") ; " << std::flush;

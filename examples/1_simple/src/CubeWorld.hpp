@@ -1,7 +1,6 @@
 // CubeWorld.hpp
 #pragma once
 
-
 #include "shared/core/World.hpp"
 #include <memory>
 #include <deque>
@@ -20,7 +19,7 @@ typedef std::deque< std::unique_ptr< RotatingCube > > CubeVec;
 ///
 /// \author Logan Barnes
 /////////////////////////////////////////////
-class CubeWorld : public shared::World
+class CubeWorld : public shs::World
 {
 
 public:
@@ -48,23 +47,24 @@ public:
                ) final;
 
 
-  void addRandomCube( );
+  void addRandomCube ( );
 
-  void removeOldestCube( );
+  void removeOldestCube ( );
 
   ///////////////////////////////////////////////////////////////
   /// \brief getCube
   /// \return
   ///////////////////////////////////////////////////////////////
-  const CubeVec &getCubes() const { return cubes_; }
+  const CubeVec&
+  getCubes( ) const { return cubes_; }
+
 
 private:
 
   unsigned currentId_;
-  CubeVec  cubes_;
+  CubeVec cubes_;
 
 };
 
 
 } // end namespace simple
-

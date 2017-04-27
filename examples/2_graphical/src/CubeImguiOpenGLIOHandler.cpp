@@ -1,23 +1,23 @@
 #include "CubeImguiOpenGLIOHandler.hpp"
 
-// system
-#include <iostream>
-#include <deque>
-#include <memory>
-
-// shared
-#include "glm/gtc/type_ptr.hpp"
-#include "imgui.h"
-#include "imgui_impl_glfw_gl3.h"
-#include "shared/graphics/OpenGLWrapper.hpp"
-#include "shared/graphics/GlmCamera.hpp"
-
 // project
 #include "CubeWorld.hpp"
 #include "RotatingCube.hpp"
 #include "ExampleSimGraphicalConfig.hpp"
 #include "CubeCallback.hpp"
+
+// shared
 #include "shared/graphics/ImguiCallback.hpp"
+#include "shared/graphics/OpenGLWrapper.hpp"
+#include "shared/graphics/GlmCamera.hpp"
+#include <imgui.h>
+#include <imgui_impl_glfw_gl3.h>
+#include <glm/gtc/type_ptr.hpp>
+
+// system
+#include <iostream>
+#include <deque>
+#include <memory>
 
 
 namespace example
@@ -30,7 +30,7 @@ namespace example
 /// \author Logan Barnes
 /////////////////////////////////////////////
 CubeImguiOpenGLIOHandler::CubeImguiOpenGLIOHandler( CubeWorld &cubeWorld )
-  : shared::ImguiOpenGLIOHandler( cubeWorld, true, 1040, 720 )
+  : shs::ImguiOpenGLIOHandler( cubeWorld, true, 1040, 720 )
   , cubeWorld_( cubeWorld )
 {
   upCamera_->lookAt(
@@ -59,7 +59,7 @@ CubeImguiOpenGLIOHandler::CubeImguiOpenGLIOHandler( CubeWorld &cubeWorld )
     -1, -1,  1  // 8
   };
 
-  graphics::VAOSettings settings = { "cubeProgram", 0 };
+  shg::VAOSettings settings = { "cubeProgram", 0 };
   settings.settings.push_back( { "inPosition", 3, GL_FLOAT, nullptr } );
 
   upGLWrapper_->addBuffer(

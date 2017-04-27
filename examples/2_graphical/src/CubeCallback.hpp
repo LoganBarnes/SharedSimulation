@@ -9,7 +9,7 @@ namespace example
 class CubeImguiOpenGLIOHandler;
 
 
-class CubeCallback : public shared::SharedCallback
+class CubeCallback : public shs::SharedCallback
 {
 public:
 
@@ -44,4 +44,3 @@ private:
 
 
 } //  namespace example
-

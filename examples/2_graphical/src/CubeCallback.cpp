@@ -1,6 +1,8 @@
 #include "CubeCallback.hpp"
-#include "GLFW/glfw3.h"
 #include "CubeImguiOpenGLIOHandler.hpp"
+
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
 
 
 namespace example
@@ -8,7 +10,7 @@ namespace example
 
 
 CubeCallback::CubeCallback( CubeImguiOpenGLIOHandler &handler )
-  : shared::SharedCallback( )
+  : shs::SharedCallback( )
   , handler_       ( handler )
 {}
 
@@ -63,7 +65,7 @@ CubeCallback::handleKey(
 
     case GLFW_KEY_ESCAPE:
 
-      glfwSetWindowShouldClose( pWindow, GL_TRUE );
+      glfwSetWindowShouldClose( pWindow, GLFW_TRUE );
 
       break;
 

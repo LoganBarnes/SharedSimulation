@@ -16,7 +16,7 @@ class CubeWorld;
 ///
 /// \author Logan Barnes
 /////////////////////////////////////////////
-class CubeImguiOpenGLIOHandler : public shared::ImguiOpenGLIOHandler
+class CubeImguiOpenGLIOHandler : public shs::ImguiOpenGLIOHandler
 {
 
 public:
@@ -34,12 +34,10 @@ public:
   ~CubeImguiOpenGLIOHandler( );
 
 
-  void
-  addRandomCube( );
+  void addRandomCube ( );
 
 
-  void
-  removeOldestCube( );
+  void removeOldestCube ( );
 
 
 private:
