@@ -9,7 +9,8 @@ cmake -E chdir build cmake -DCMAKE_GENERATOR_PLATFORM=x64 ^
                            -DUSE_GLM=ON ^
                            -DUSE_GLFW=ON ^
                            -DUSE_GUI=ON ^
+                           -DCMAKE_INSTALL_PREFIX=%CD%\build ^
                            ..
 
 rem run the cmake build command to build the project with the native build system
-cmake -E chdir build cmake --build . --config Release -- /m
+cmake -E chdir build cmake --build . --target INSTALL --config Release -- /m

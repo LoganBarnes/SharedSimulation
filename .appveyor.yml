@@ -40,7 +40,7 @@ build_script:
   - mkdir build-no-tests
   - cd build-no-tests
   - cmake -DCMAKE_GENERATOR_PLATFORM=%PLATFORM% ^
-          -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%/build-no-tests ^
+          -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%\build-no-tests ^
           -DBUILD_SHARED_TESTS=OFF ^
           -DUSE_VULKAN=%VULKAN% ^
           -DUSE_OPENGL=%OPENGL% ^
@@ -58,8 +58,8 @@ build_script:
   - mkdir build-tests
   - cd build-tests
   - cmake -DCMAKE_GENERATOR_PLATFORM=%PLATFORM% ^
-          -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%/build-tests ^
-          -DBUILD_SHARED_TESTS= ON ^
+          -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%\build-tests ^
+          -DBUILD_SHARED_TESTS=ON ^
           -DUSE_VULKAN=OFF ^
           -DUSE_OPENGL=OFF ^
           -DUSE_GLFW=ON ^
@@ -81,4 +81,5 @@ build_script:
 
 test_script:
   - cd %APPVEYOR_BUILD_FOLDER%\build-tests
+  - dir
   - testbin\testSharedSimulation.exe
