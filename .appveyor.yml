@@ -31,8 +31,8 @@ install:
   - SET VULKAN=OFF
   - SET SHARED=OFF
 
-  appveyor DownloadFile https://vulkan.lunarg.com/sdk/download/1.0.46.0/windows/vulkansdk-windows-x86_64-1.0.46.0.exe
-  vulkansdk-windows-x86_64-1.0.46.0.exe
+  - appveyor DownloadFile https://vulkan.lunarg.com/sdk/download/1.0.46.0/windows/vulkansdk-windows-x86_64-1.0.46.0.exe
+  - vulkansdk-windows-x86_64-1.0.46.0.exe
 
 build_script:
   - cd %APPVEYOR_BUILD_FOLDER%
