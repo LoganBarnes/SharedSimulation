@@ -2,7 +2,7 @@
 
 // shared
 #include "shared/graphics/GlfwWrapper.hpp"
-#include "shared/graphics/OpenGLWrapper.hpp"
+#include "shared/graphics/OpenGLHelper.hpp"
 #include "shared/graphics/GlmCamera.hpp"
 #include "shared/graphics/SharedCallback.hpp"
 #include <glad/glad.h>
@@ -23,33 +23,37 @@ namespace shs
 ///////////////////////////////////////////////////////////////
 OpenGLIOHandler::OpenGLIOHandler(
                                  World &world,
-                                 bool   printInfo,
-                                 int    width,
-                                 int    height,
-                                 bool   resizable,
-                                 int    aaSamples
+                                 bool  printInfo,
+                                 int   width,
+                                 int   height,
+                                 bool  resizable,
+                                 int   aaSamples
                                  )
-  : IOHandler( world, false )
-  , upGlfwWrapper_( new shg::GlfwWrapper( ) )
-  , upGLWrapper_  ( new shg::OpenGLWrapper( ) )
-  , upCamera_  ( new shg::GlmCamera< float >( ) )
-  , windowWidth_( width )
-  , windowHeight_( height )
+  : IOHandler     ( world, false )
+  , upGlfwWrapper_( new shg::GlfwWrapper )
+  , upCamera_     ( new shg::GlmCamera< float >)
+  , windowWidth_  ( width )
+  , windowHeight_ ( height )
 {
   if ( printInfo )
   {
     std::cout << "Press 'ESC' to exit" << std::endl;
   }
 
-  upGlfwWrapper_->createNewWindow( "OpenGL Window", width, height, resizable, true, aaSamples );
+  upGlfwWrapper_->createNewWindow(
+                                  "OpenGL Window",
+                                  windowWidth_,
+                                  windowHeight_,
+                                  resizable,
+                                  true,
+                                  aaSamples
+                                  );
 
   std::unique_ptr< shg::Callback > upCallback( new shs::SharedCallback( ) );
   upGlfwWrapper_->setCallback( std::move( upCallback ) );
+  shg::OpenGLHelper::setDefaults( );
 
-  upGLWrapper_->setCurrentContext( upGlfwWrapper_->getWindow( ) ); // optional with only one window
-  upGLWrapper_->setDefaults( width, height );
-
-  upCamera_->setAspectRatio( width * 1.0f / height );
+  upCamera_->setAspectRatio( windowWidth_ * 1.0f / windowHeight_ );
 }
 
 
@@ -73,6 +77,7 @@ OpenGLIOHandler::~OpenGLIOHandler( )
 void
 OpenGLIOHandler::showWorld( const double alpha )
 {
+  glViewport( 0, 0, windowWidth_, windowHeight_ );
   _onRender( alpha );
   upGlfwWrapper_->swapBuffers( );
 } // OpenGLIOHandler::showWorld
@@ -120,10 +125,9 @@ OpenGLIOHandler::resize(
                         const int height
                         )
 {
-  upCamera_->setAspectRatio( width * 1.0f / height );
-  upGLWrapper_->setViewportSize( width, height );
-  windowWidth_ = width;
+  windowWidth_  = width;
   windowHeight_ = height;
+  upCamera_->setAspectRatio( windowWidth_ * 1.0f / windowHeight_ );
 }
 
 

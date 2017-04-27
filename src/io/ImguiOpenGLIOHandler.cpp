@@ -2,7 +2,7 @@
 
 // shared
 #include "shared/graphics/GlfwWrapper.hpp"
-#include "shared/graphics/OpenGLWrapper.hpp"
+#include "shared/graphics/OpenGLHelper.hpp"
 #include "shared/graphics/ImguiCallback.hpp"
 #include "shared/graphics/SharedCallback.hpp"
 #include <imgui.h>
@@ -69,6 +69,7 @@ ImguiOpenGLIOHandler::~ImguiOpenGLIOHandler( )
 void
 ImguiOpenGLIOHandler::showWorld( const double alpha )
 {
+  glViewport( 0, 0, windowWidth_, windowHeight_ );
   //
   // ImGui handles automatic resizing and event changes in the
   // frame following the one where the event took place.
@@ -102,7 +103,7 @@ ImguiOpenGLIOHandler::showWorld( const double alpha )
 void
 ImguiOpenGLIOHandler::_onRender( const double )
 {
-  upGLWrapper_->clearWindow( );
+  shg::OpenGLHelper::clearFramebuffer( );
 }
 
 

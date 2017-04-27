@@ -8,7 +8,7 @@
 
 // shared
 #include "shared/graphics/ImguiCallback.hpp"
-#include "shared/graphics/OpenGLWrapper.hpp"
+#include "shared/graphics/OpenGLHelper.hpp"
 #include "shared/graphics/GlmCamera.hpp"
 #include <imgui.h>
 #include <imgui_impl_glfw_gl3.h>
@@ -26,8 +26,6 @@ namespace example
 
 /////////////////////////////////////////////
 /// \brief Renderer::Renderer
-///
-/// \author Logan Barnes
 /////////////////////////////////////////////
 CubeImguiOpenGLIOHandler::CubeImguiOpenGLIOHandler( CubeWorld &cubeWorld )
   : shs::ImguiOpenGLIOHandler( cubeWorld, true, 1040, 720 )
@@ -41,13 +39,13 @@ CubeImguiOpenGLIOHandler::CubeImguiOpenGLIOHandler( CubeWorld &cubeWorld )
   std::unique_ptr< CubeCallback > cubeCallback( new CubeCallback( *this ) );
   imguiCallback_->setCallback( std::move( cubeCallback ) );
 
-  upGLWrapper_->addProgram(
-                           "cubeProgram",
-                           SHADER_PATH + "simple/shader.vert",
-                           SHADER_PATH + "simple/shader.frag"
-                           );
+  glIds_.program =
+    shg::OpenGLHelper::createProgram(
+                                     SHADER_PATH + "simple/shader.vert",
+                                     SHADER_PATH + "simple/shader.frag"
+                                     );
 
-  std::vector< float > vbo
+  std::vector< float > vbo =
   {
     -1,  1, -1, // 1
     1,   1, -1, // 2
@@ -59,16 +57,10 @@ CubeImguiOpenGLIOHandler::CubeImguiOpenGLIOHandler( CubeWorld &cubeWorld )
     -1, -1,  1  // 8
   };
 
-  shg::VAOSettings settings = { "cubeProgram", 0 };
-  settings.settings.push_back( { "inPosition", 3, GL_FLOAT, nullptr } );
-
-  upGLWrapper_->addBuffer(
-                          "cubeVBO",
-                          vbo.data( ),
-                          vbo.size( ),
-                          GL_STATIC_DRAW,
-                          settings
-                          );
+  std::vector< shg::VAOElement > vao =
+  {
+    { "inPosition", 3, GL_FLOAT, nullptr }
+  };
 
   std::vector< unsigned short > ibo
   {
@@ -77,20 +69,32 @@ CubeImguiOpenGLIOHandler::CubeImguiOpenGLIOHandler( CubeWorld &cubeWorld )
     5, 4, 1, 0, 3
   };
 
-  upGLWrapper_->addIndexBuffer(
-                               "cubeIBO",
-                               ibo.data( ),
-                               ibo.size( ),
-                               GL_STATIC_DRAW
-                               );
+
+  glIds_.vbo = shg::OpenGLHelper::createBuffer(
+                                               vbo.data( ),
+                                               vbo.size( )
+                                               );
+
+  glIds_.vao = shg::OpenGLHelper::createVao(
+                                            glIds_.program,
+                                            glIds_.vbo,
+                                            0,
+                                            vao
+                                            );
+
+
+  glIds_.ibo = shg::OpenGLHelper::createBuffer(
+                                               ibo.data( ),
+                                               ibo.size( ),
+                                               GL_ELEMENT_ARRAY_BUFFER,
+                                               GL_STATIC_DRAW
+                                               );
 }
 
 
 
 /////////////////////////////////////////////
 /// \brief Renderer::~Renderer
-///
-/// \author Logan Barnes
 /////////////////////////////////////////////
 CubeImguiOpenGLIOHandler::~CubeImguiOpenGLIOHandler( )
 {}
@@ -118,10 +122,10 @@ CubeImguiOpenGLIOHandler::_onRender( const double )
 {
   glm::vec3 color( 1.0f, 0.0f, 0.0 );
 
-  upGLWrapper_->clearWindow( );
+  shg::OpenGLHelper::clearFramebuffer( );
   glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 
-  upGLWrapper_->useProgram( "cubeProgram" );
+  glUseProgram( *glIds_.program );
 
   const glm::mat4 projectionView = upCamera_->getPerspectiveProjectionViewMatrix( );
 
@@ -132,20 +136,26 @@ CubeImguiOpenGLIOHandler::_onRender( const double )
   {
     projectionViewModel = projectionView * upCube->getTransformationMatrix( );
 
-    upGLWrapper_->setMatrixUniform(
-                                   "cubeProgram",
-                                   "projectionViewModel",
-                                   glm::value_ptr( projectionViewModel )
-                                   );
+    shg::OpenGLHelper::setMatrixUniform(
+                                        glIds_.program,
+                                        "projectionViewModel",
+                                        glm::value_ptr( projectionViewModel )
+                                        );
 
-    upGLWrapper_->setFloatUniform(
-                                  "cubeProgram",
-                                  "color",
-                                  glm::value_ptr( color ),
-                                  3
-                                  );
+    shg::OpenGLHelper::setFloatUniform(
+                                       glIds_.program,
+                                       "color",
+                                       glm::value_ptr( color ),
+                                       3
+                                       );
 
-    upGLWrapper_->renderBuffer( "cubeVBO", 0, 15, GL_TRIANGLE_STRIP, "cubeIBO" );
+    shg::OpenGLHelper::renderBuffer(
+                                    glIds_.vao,
+                                    0,
+                                    15,
+                                    GL_TRIANGLE_STRIP,
+                                    glIds_.ibo
+                                    );
   }
 
   glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );

@@ -27,7 +27,6 @@ function printUsage() {
   echo "        -m  or --glm          -> download and build the glm library";
   echo "        -x  or --optix        -> download and build the optix library";
   echo "        -i  or --imgui        -> download and build the imgui library";
-  echo "        -m  or --gmock        -> download and build the gmock library";
   echo "        -t  or --test         -> compile unit tests";
   echo "        -d  or --debug        -> compile in debug mode";
   echo "        -s  or --shared       -> compile as shared libraries";
@@ -65,9 +64,6 @@ case $key in
     ;;
     -i|--imgui)
     USE_GUI=ON
-    ;;
-    -m|--gmock)
-    USE_GMOCK=ON
     ;;
     -t|--test)
     TESTING=ON

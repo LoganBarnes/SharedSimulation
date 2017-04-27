@@ -92,7 +92,6 @@ public:
 protected:
 
   std::unique_ptr< shg::GlfwWrapper >        upGlfwWrapper_;
-  std::unique_ptr< shg::OpenGLWrapper >      upGLWrapper_;
   std::unique_ptr< shg::GlmCamera< float > > upCamera_;
 
   int windowWidth_;

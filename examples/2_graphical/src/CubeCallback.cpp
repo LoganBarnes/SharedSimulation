@@ -11,7 +11,7 @@ namespace example
 
 CubeCallback::CubeCallback( CubeImguiOpenGLIOHandler &handler )
   : shs::SharedCallback( )
-  , handler_       ( handler )
+  , handler_( handler )
 {}
 
 
@@ -56,42 +56,26 @@ CubeCallback::handleKey(
                         int
                         )
 {
-
   if ( action == GLFW_RELEASE )
   {
-
     switch ( key )
     {
-
     case GLFW_KEY_ESCAPE:
-
       glfwSetWindowShouldClose( pWindow, GLFW_TRUE );
-
       break;
-
 
     case GLFW_KEY_A:
-
       handler_.addRandomCube( );
-
       break;
-
 
     case GLFW_KEY_R:
-
       handler_.removeOldestCube( );
-
       break;
-
 
     default:
-
       break;
-
     } // switch
-
   }
-
 } // handleKey
 
 

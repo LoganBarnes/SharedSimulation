@@ -2,6 +2,7 @@
 #pragma once
 
 #include "shared/core/ImguiOpenGLIOHandler.hpp"
+#include  "shared/graphics/GraphicsForwardDeclarations.hpp"
 
 
 namespace example
@@ -31,11 +32,10 @@ public:
   /// \brief ~Renderer
   ///////////////////////////////////////////////////////////////
   virtual
-  ~CubeImguiOpenGLIOHandler( );
+  ~CubeImguiOpenGLIOHandler( ) final;
 
 
   void addRandomCube ( );
-
 
   void removeOldestCube ( );
 
@@ -49,6 +49,8 @@ private:
   void _onGuiRender ( ) final;
 
   CubeWorld &cubeWorld_;
+
+  shg::StandardPipeline glIds_;
 
 };
 

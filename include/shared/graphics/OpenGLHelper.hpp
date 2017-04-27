@@ -13,19 +13,6 @@
 namespace shg
 {
 
-///
-/// \brief The StandardPipeline struct
-///
-struct StandardPipeline
-{
-  std::shared_ptr< GLuint > program;
-  std::shared_ptr< GLuint > vbo;
-  std::shared_ptr< GLuint > ibo;
-  std::shared_ptr< GLuint > vao;
-  std::shared_ptr< GLuint > texture;
-  std::shared_ptr< GLuint > framebuffer;
-};
-
 
 ///
 /// \brief The VAOSetting struct
@@ -162,7 +149,7 @@ public:
                      const int                       start,
                      const int                       verts,
                      const GLenum                    mode,
-                     const std::shared_ptr< GLuint > spIbo = nullptr,
+                     const std::shared_ptr< GLuint > &spIbo = nullptr,
                      const void                     *pOffset = 0,
                      const GLenum                    iboType = GL_UNSIGNED_SHORT
                      );

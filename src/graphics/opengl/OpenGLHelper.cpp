@@ -495,7 +495,7 @@ OpenGLHelper::renderBuffer(
                            const int                       start,
                            const int                       verts,
                            const GLenum                    mode,
-                           const std::shared_ptr< GLuint > spIbo,
+                           const std::shared_ptr< GLuint > &spIbo,
                            const void                     *pOffset,
                            const GLenum                    iboType
                            )

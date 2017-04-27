@@ -1,6 +1,9 @@
 // GraphicsForwardDeclarations.hpp
 #pragma once
 
+#include <glad/glad.h>
+#include <memory>
+
 namespace shg
 {
 
@@ -21,6 +24,17 @@ class OpenGLHelper;
 class GlfwWrapper;
 class Callback;
 
-struct StandardPipeline;
+///
+/// \brief The StandardPipeline struct
+///
+struct StandardPipeline
+{
+  std::shared_ptr< GLuint > program;
+  std::shared_ptr< GLuint > vbo;
+  std::shared_ptr< GLuint > ibo;
+  std::shared_ptr< GLuint > vao;
+  std::shared_ptr< GLuint > texture;
+  std::shared_ptr< GLuint > framebuffer;
+};
 
 } // namespace shg
