@@ -1,6 +1,8 @@
 #ifndef VDeleter_hpp
 #define VDeleter_hpp
 
+#include <vulkan/vulkan.h>
+#include <functional>
 
 namespace
 {

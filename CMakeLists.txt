@@ -229,7 +229,7 @@ set( PROJECT_INSTALL_HEADER_DIRS ${PROJECT_INSTALL_HEADER_DIRS} ${INC_DIR}/share
 set( SHARED_UNCRUSTIFY_FILE ${CMAKE_CURRENT_SOURCE_DIR}/formatting/uncrustify.cfg )
 
 set( PROJECT_CONFIG_FILE ${SRC_DIR}/common/ProjectConfig.hpp.in )
-set( PROJECT_NAMESPACE shared )
+set( PROJECT_NAMESPACE shs )
 
 # build the simulation library
 set ( FORCE_CUDA_STANDARD 11 )
