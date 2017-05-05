@@ -30,10 +30,10 @@ SharedCallback::~SharedCallback( )
 ////////////////////////////////////////////////////////
 void
 SharedCallback::handleWindowSize(
-                                  GLFWwindow*,
-                                  int width,
-                                  int height
-                                  )
+                                 GLFWwindow*,
+                                 int width,
+                                 int height
+                                 )
 {
   handler_.resize( width, height );
 }
@@ -57,14 +57,10 @@ SharedCallback::handleKey(
                           int
                           )
 {
-
   if ( key == GLFW_KEY_ESCAPE )
   {
-
     glfwSetWindowShouldClose( pWindow, true );
-
   }
-
 }
 
 

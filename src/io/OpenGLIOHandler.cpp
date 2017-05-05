@@ -23,11 +23,11 @@ namespace shs
 ///////////////////////////////////////////////////////////////
 OpenGLIOHandler::OpenGLIOHandler(
                                  World &world,
-                                 bool  printInfo,
-                                 int   width,
-                                 int   height,
-                                 bool  resizable,
-                                 int   aaSamples
+                                 bool   printInfo,
+                                 int    width,
+                                 int    height,
+                                 bool   resizable,
+                                 int    aaSamples
                                  )
   : IOHandler     ( world, false )
   , upGlfwWrapper_( new shg::GlfwWrapper )
@@ -115,15 +115,13 @@ OpenGLIOHandler::waitForIO( )
 
 ///////////////////////////////////////////////////////////////
 /// \brief OpenGLIOHandler::resize
-/// \param width
-/// \param height
 ///
 /// \author Logan Barnes
 ///////////////////////////////////////////////////////////////
 void
 OpenGLIOHandler::resize(
-                        const int width,
-                        const int height
+                        const int width, ///< new window width
+                        const int height ///< new window height
                         )
 {
   windowWidth_  = width;
