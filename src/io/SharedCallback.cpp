@@ -10,9 +10,9 @@ namespace shs
 
 
 
-SharedCallback::SharedCallback( OpenGLIOHandler &handler )
+SharedCallback::SharedCallback( OpenGLIOHandler *pHandler )
   : shg::Callback( )
-  , handler_  ( handler )
+  , pHandler_( pHandler )
   , shiftDown_( false )
   , ctrlDown_ ( false )
 {}
@@ -37,7 +37,10 @@ SharedCallback::handleWindowSize(
                                  int height
                                  )
 {
-  handler_.resize( width, height );
+  if ( pHandler_ )
+  {
+    pHandler_->resize( width, height );
+  }
 }
 
 
@@ -65,45 +68,22 @@ SharedCallback::handleKey(
     return;
   }
 
-  if ( action == GLFW_PRESS )
+  switch ( key )
   {
-    switch ( key )
-    {
-    case GLFW_KEY_LEFT_SHIFT:
-    case GLFW_KEY_RIGHT_SHIFT:
-      shiftDown_ = true;
-      break;
+  case GLFW_KEY_LEFT_SHIFT:
+  case GLFW_KEY_RIGHT_SHIFT:
+    shiftDown_ = ( action != GLFW_RELEASE );
+    break;
 
-    case GLFW_KEY_LEFT_CONTROL:
-    case GLFW_KEY_RIGHT_CONTROL:
-      ctrlDown_ = true;
-      break;
+  case GLFW_KEY_LEFT_CONTROL:
+  case GLFW_KEY_RIGHT_CONTROL:
+    ctrlDown_ = ( action != GLFW_RELEASE );
+    break;
 
-    default:
-      break;
-    } // switch
+  default:
+    break;
+  }   // switch
 
-  }
-  else
-  if ( action == GLFW_RELEASE )
-  {
-    switch ( key )
-    {
-    case GLFW_KEY_LEFT_SHIFT:
-    case GLFW_KEY_RIGHT_SHIFT:
-      shiftDown_ = false;
-      break;
-
-    case GLFW_KEY_LEFT_CONTROL:
-    case GLFW_KEY_RIGHT_CONTROL:
-      ctrlDown_ = false;
-      break;
-
-    default:
-      break;
-    } // switch
-
-  }
 } // SharedCallback::handleKey
 
 

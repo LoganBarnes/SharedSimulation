@@ -40,7 +40,7 @@ ImguiOpenGLIOHandler::ImguiOpenGLIOHandler(
   upGlfwWrapper_->setCallback( std::move( upCallback ) );
 
   // default callback
-  std::unique_ptr< shs::SharedCallback > upSharedCallback( new shs::SharedCallback( *this ) );
+  std::unique_ptr< shs::SharedCallback > upSharedCallback( new shs::SharedCallback( this ) );
   imguiCallback_->setCallback ( std::move( upSharedCallback ) );
 
   ImGui_ImplGlfwGL3_Init( upGlfwWrapper_->getWindow( ), false ); // false for no callbacks

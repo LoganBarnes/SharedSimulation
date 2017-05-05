@@ -49,7 +49,7 @@ OpenGLIOHandler::OpenGLIOHandler(
                                   aaSamples
                                   );
 
-  std::unique_ptr< shg::Callback > upCallback( new shs::SharedCallback( *this ) );
+  std::unique_ptr< shg::Callback > upCallback( new shs::SharedCallback( this ) );
   upGlfwWrapper_->setCallback( std::move( upCallback ) );
 
   shg::OpenGLHelper::setDefaults( );
