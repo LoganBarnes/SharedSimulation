@@ -7,6 +7,7 @@
 BUILD_MODE=Release
 STRICT_FLAGS=OFF
 USE_GLFW=OFF
+USE_OPENGL=OFF
 USE_VULKAN=OFF
 USE_GLM=OFF
 USE_OPTIX=OFF
@@ -22,7 +23,7 @@ function printUsage() {
   echo "Usage: ./unixConfigureAndBuild.sh <options>";
   echo "    options:";
   echo "        -sf or --strict-flags -> enable strict compile flags";
-  echo "        -gl or --glfw         -> download and build the glfw library";
+  echo "        -gl or --opengl       -> utilize the OpenGL framework";
   echo "        -v  or --vulkan       -> download and build the vulkan library";
   echo "        -m  or --glm          -> download and build the glm library";
   echo "        -x  or --optix        -> download and build the optix library";
@@ -50,11 +51,13 @@ case $key in
     -sf|--strict-flags)
     STRICT_FLAGS=ON
     ;;
-    -gl|--glfw)
+    -gl|--opengl)
+    USE_OPENGL=ON
     USE_GLFW=ON
     ;;
     -v|--vulkan)
     USE_VULKAN=ON
+    USE_GLFW=ON
     ;;
     -m|--glm)
     USE_GLM=ON
@@ -110,7 +113,7 @@ cmake -E make_directory build
 # run cmake from the build directory to configure the project
 cmake -E chdir build cmake -DCMAKE_BUILD_TYPE=$BUILD_MODE \
                            -DSTRICT_FLAGS=$STRICT_FLAGS \
-                           -DUSE_GLFW=$USE_GLFW \
+                           -DUSE_OPENGL=$USE_OPENGL \
                            -DUSE_VULKAN=$USE_VULKAN \
                            -DUSE_GLM=$USE_GLM \
                            -DUSE_OPTIX=$USE_OPTIX \
