@@ -57,6 +57,9 @@ private:
 
   OpenGLIOHandler &handler_;
 
+  bool shiftDown_;
+  bool ctrlDown_;
+
 };
 
 

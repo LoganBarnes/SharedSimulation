@@ -12,7 +12,9 @@ namespace shs
 
 SharedCallback::SharedCallback( OpenGLIOHandler &handler )
   : shg::Callback( )
-  , handler_( handler )
+  , handler_  ( handler )
+  , shiftDown_( false )
+  , ctrlDown_ ( false )
 {}
 
 
@@ -53,15 +55,56 @@ SharedCallback::handleKey(
                           GLFWwindow *pWindow,
                           int         key,
                           int,
-                          int,
+                          int         action,
                           int
                           )
 {
   if ( key == GLFW_KEY_ESCAPE )
   {
     glfwSetWindowShouldClose( pWindow, true );
+    return;
   }
-}
+
+  if ( action == GLFW_PRESS )
+  {
+    switch ( key )
+    {
+    case GLFW_KEY_LEFT_SHIFT:
+    case GLFW_KEY_RIGHT_SHIFT:
+      shiftDown_ = true;
+      break;
+
+    case GLFW_KEY_LEFT_CONTROL:
+    case GLFW_KEY_RIGHT_CONTROL:
+      ctrlDown_ = true;
+      break;
+
+    default:
+      break;
+    } // switch
+
+  }
+  else
+  if ( action == GLFW_RELEASE )
+  {
+    switch ( key )
+    {
+    case GLFW_KEY_LEFT_SHIFT:
+    case GLFW_KEY_RIGHT_SHIFT:
+      shiftDown_ = false;
+      break;
+
+    case GLFW_KEY_LEFT_CONTROL:
+    case GLFW_KEY_RIGHT_CONTROL:
+      ctrlDown_ = false;
+      break;
+
+    default:
+      break;
+    } // switch
+
+  }
+} // SharedCallback::handleKey
 
 
 

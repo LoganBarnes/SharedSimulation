@@ -4,6 +4,7 @@
 #include "shared/core/IOHandler.hpp"
 
 #include <iostream>
+#include <cstdlib>
 
 
 
@@ -50,47 +51,35 @@ ContinuousDriver::ContinuousDriver(
 int
 ContinuousDriver::exec(
                        int          argc, ///< number of arguments
-                       const char **argv ///< array of argument strings
+                       const char **argv  ///< array of argument strings
                        )
 {
-
   bool useGameLoop( true );
 
   for ( int i = 1; i < argc; ++i )
   {
-
     if ( std::string( argv[ i ] ) == "--loop=fast" )
     {
-
       useGameLoop = false;
-
     }
     else
     {
-
       std::cerr << "WARNING: Unknown argument given: " << argv[ i ] << std::endl;
-
     }
-
   }
 
   if ( useGameLoop )
   {
-
     _runNFTRLoop( );
-
   }
   else
   {
-
     _runAFAPLoop( );
-
   }
 
   ioHandler_.onLoopExit( );
 
-  return 0;
-
+  return EXIT_SUCCESS;
 } // ContinuousDriver::exec
 
 
@@ -105,28 +94,20 @@ ContinuousDriver::exec(
 void
 ContinuousDriver::_runAFAPLoop( )
 {
-
   while ( !ioHandler_.isExitRequested( ) )
   {
-
     // check for input
     ioHandler_.updateIO( );
 
     if ( !paused_ )
     {
-
       world_.update( worldTime_, timeStep_ );
       ++updateFrame_;
       worldTime_ = updateFrame_ * timeStep_ + startTime_;
-
     }
 
     ioHandler_.showWorld( 1.0 );
-
-    ///\todo print timing info
-
   }
-
 } // ContinuousDriver::_runAFAPLoop
 
 
@@ -145,7 +126,6 @@ ContinuousDriver::_runNFTRLoop( )
   // physics game loop:
   // http://gafferongames.com/game-physics/fix-your-timestep/
   //
-
   double currentTime = _getTimeSeconds( );
   double accumulator = 0.0;
 
@@ -158,21 +138,17 @@ ContinuousDriver::_runNFTRLoop( )
   //
   while ( !ioHandler_.isExitRequested( ) )
   {
-
     // check for input
     ioHandler_.updateIO( );
 
     if ( !paused_ )
     {
-
       newTime   = _getTimeSeconds( );
       frameTime = newTime - currentTime;
 
       if ( frameTime > MAX_TIMESTEP_NFTR_LOOP )
       {
-
         frameTime = MAX_TIMESTEP_NFTR_LOOP;
-
       }
 
       currentTime = newTime;
@@ -183,27 +159,21 @@ ContinuousDriver::_runNFTRLoop( )
 
       while ( accumulator >= deltaTime )
       {
-
         world_.update( worldTime_, deltaTime );
 
         worldTime_  += deltaTime;
         accumulator -= deltaTime;
-
       }
-
     }
     else
     {
-
       currentTime = _getTimeSeconds( );
-
     }
 
     alpha = accumulator / deltaTime;
 
     ioHandler_.showWorld( alpha );
   }
-
 } // ContinuousDriver::_runNFTRLoop
 
 
@@ -216,7 +186,6 @@ ContinuousDriver::_runNFTRLoop( )
 double
 ContinuousDriver::_getTimeSeconds( )
 {
-
   //
   // current time
   //
@@ -228,7 +197,6 @@ ContinuousDriver::_getTimeSeconds( )
   //
   std::chrono::duration< float > timeElapsedSecs = timeNow - initTime_;
   return timeElapsedSecs.count( );
-
 }
 
 
