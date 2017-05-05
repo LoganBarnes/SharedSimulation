@@ -49,8 +49,9 @@ OpenGLIOHandler::OpenGLIOHandler(
                                   aaSamples
                                   );
 
-  std::unique_ptr< shg::Callback > upCallback( new shs::SharedCallback( ) );
+  std::unique_ptr< shg::Callback > upCallback( new shs::SharedCallback( *this ) );
   upGlfwWrapper_->setCallback( std::move( upCallback ) );
+
   shg::OpenGLHelper::setDefaults( );
 
   upCamera_->setAspectRatio( windowWidth_ * 1.0f / windowHeight_ );

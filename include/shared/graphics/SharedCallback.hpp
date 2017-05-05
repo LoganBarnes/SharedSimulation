@@ -8,6 +8,8 @@
 namespace shs
 {
 
+class OpenGLIOHandler;
+
 
 class SharedCallback : public shg::Callback
 {
@@ -15,11 +17,23 @@ class SharedCallback : public shg::Callback
 public:
 
   explicit
-  SharedCallback( );
+  SharedCallback( OpenGLIOHandler &handler );
 
   virtual
   ~SharedCallback( );
 
+  ////////////////////////////////////////////////////////
+  /// \brief handleWindowSize
+  /// \param pWindow
+  /// \param width
+  /// \param height
+  ////////////////////////////////////////////////////////
+  virtual
+  void handleWindowSize (
+                         GLFWwindow *pWindow,
+                         int         width,
+                         int         height
+                         );
 
   ////////////////////////////////////////////////////////
   /// \brief handleKey
@@ -38,6 +52,10 @@ public:
                    int         mods
                    );
 
+
+private:
+
+  OpenGLIOHandler &handler_;
 
 };
 
