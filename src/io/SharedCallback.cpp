@@ -10,9 +10,9 @@ namespace shs
 
 
 
-SharedCallback::SharedCallback( OpenGLIOHandler &handler )
+SharedCallback::SharedCallback( OpenGLIOHandler *pHandler )
   : shg::Callback( )
-  , handler_( handler )
+  , pHandler_( pHandler )
 {}
 
 
@@ -35,7 +35,10 @@ SharedCallback::handleWindowSize(
                                  int height
                                  )
 {
-  handler_.resize( width, height );
+  if ( pHandler_ )
+  {
+    pHandler_->resize( width, height );
+  }
 }
 
 

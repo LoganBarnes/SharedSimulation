@@ -17,7 +17,7 @@ class SharedCallback : public shg::Callback
 public:
 
   explicit
-  SharedCallback( OpenGLIOHandler &handler );
+  SharedCallback( OpenGLIOHandler *pHandler = nullptr );
 
   virtual
   ~SharedCallback( );
@@ -55,7 +55,7 @@ public:
 
 private:
 
-  OpenGLIOHandler &handler_;
+  OpenGLIOHandler *pHandler_;
 
 };
 

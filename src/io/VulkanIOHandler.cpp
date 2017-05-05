@@ -25,12 +25,9 @@ VulkanIOHandler::VulkanIOHandler(
   : IOHandler( world, false )
   , upVulkanWrapper_( new shg::VulkanGlfwWrapper( ) )
 {
-
   if ( printInfo )
   {
-
     std::cout << "Press 'ESC' to exit" << std::endl;
-
   }
 
   std::unique_ptr< shs::SharedCallback  > upCallback_( new shs::SharedCallback( ) );
