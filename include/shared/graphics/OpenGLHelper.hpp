@@ -28,6 +28,10 @@ struct VAOElement
 };
 
 
+typedef std::vector< std::shared_ptr< GLuint > >              IdVec;
+typedef std::vector< std::pair< GLenum, const std::string > > ShaderVec;
+
+
 class OpenGLHelper
 {
 
@@ -36,12 +40,12 @@ public:
   static
   void setDefaults ( );
 
-
   static
-  std::shared_ptr< GLuint >  createProgram (
-                                            const std::string vertFilePath,
-                                            const std::string fragFilePath
-                                            );
+  std::shared_ptr< GLuint >  createProgram ( const ShaderVec shaders );
+
+  template< typename ...Shaders >
+  static
+  std::shared_ptr< GLuint >  createProgram ( Shaders... shaders );
 
   static
   std::shared_ptr< GLuint >  createTextureArray (
@@ -103,8 +107,7 @@ public:
   template< typename T >
   static
   StandardPipeline createStandardPipeline (
-                                           const std::string                vertFilePath,
-                                           const std::string                fragFilePath,
+                                           const ShaderVec                  shaders,
                                            const T                         *pData,
                                            const size_t                     numElements,
                                            const GLsizei                    totalStride,
@@ -187,13 +190,50 @@ private:
   std::string _readFile ( const std::string filePath );
 
   static
-  std::shared_ptr< GLuint > _loadShader (
-                                         const std::string vertex_path,
-                                         const std::string fragment_path
-                                         );
+  std::shared_ptr< GLuint > _createShader(
+                                          GLenum            shaderType,
+                                          const std::string filePath
+                                          );
 
+
+  static
+  std::shared_ptr< GLuint > _createShader( const std::string filePath );
+
+  static
+  void _createShader( 
+                     IdVec &ids, 
+                     GLenum shaderType, 
+                     const std::string filePath 
+                     );
+
+  template< typename ...Shaders >
+  static
+  void _createShader( IdVec &ids, GLenum shaderType, const std::string filePath, Shaders ...shaders );
+
+  static
+  std::shared_ptr< GLuint > _createProgram( const IdVec shaderIds );
 
 };
+
+
+
+template< typename ...Shaders >
+std::shared_ptr< GLuint >
+OpenGLHelper::createProgram( const Shaders... shaders )
+{
+  IdVec shaderIds;
+  OpenGLHelper::_createShader( shaderIds, shaders... );
+  return OpenGLHelper::_createProgram( shaderIds );
+}
+
+
+template< typename ...Shaders >
+void 
+OpenGLHelper::_createShader( IdVec &ids, GLenum shaderType, const std::string filePath, Shaders ...shaders )
+{
+  ids.emplace_back( OpenGLHelper::_createShader( shaderType, filePath ) );
+  OpenGLHelper::_createShader( ids, shaders... );
+}
 
 
 
@@ -310,22 +350,18 @@ OpenGLHelper::updateBuffer(
 template< typename T >
 StandardPipeline
 OpenGLHelper::createStandardPipeline(
-                                     const std::string                vertFilePath, ///<
-                                     const std::string                fragFilePath, ///<
-                                     const T                         *pData,        ///<
-                                     const size_t                     numElements,  ///<
-                                     const GLsizei                    totalStride,  ///<
-                                     const std::vector< VAOElement > &elements,     ///<
-                                     const GLenum                     type,         ///<
-                                     const GLenum                     usage         ///<
+                                     const ShaderVec                  shaders,     ///<
+                                     const T                         *pData,       ///<
+                                     const size_t                     numElements, ///<
+                                     const GLsizei                    totalStride, ///<
+                                     const std::vector< VAOElement > &elements,    ///<
+                                     const GLenum                     type,        ///<
+                                     const GLenum                     usage        ///<
                                      )
 {
   StandardPipeline glIds;
 
-  glIds.program = OpenGLHelper::createProgram(
-                                              vertFilePath,
-                                              fragFilePath
-                                              );
+  glIds.program = OpenGLHelper::createProgram( shaders );
 
   glIds.vbo = OpenGLHelper::createBuffer(
                                          pData,
