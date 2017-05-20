@@ -16,22 +16,13 @@ namespace shg
 namespace
 {
 
-// http://stackoverflow.com/questions/874134/find-if-string-ends-with-another-string-in-c
-bool ends_with( std::string const &fullString, std::string const &ending )
+const std::unordered_map< std::string, GLenum > shaderTypes =
 {
-  if( fullString.length( ) >= ending.length( ) )
-  {
-    return ( 0 == fullString.compare(
-                                     fullString.length( ) - ending.length( ),
-                                     ending.length( ), 
-                                     ending
-                                     ) );
-  }
-  else
-  {
-    return false;
-  }
-}
+  { ".comp", GL_COMPUTE_SHADER },
+  { ".vert", GL_VERTEX_SHADER },
+  { ".geom", GL_GEOMETRY_SHADER },
+  { ".frag", GL_FRAGMENT_SHADER }
+};
 
 }
 
@@ -67,30 +58,6 @@ OpenGLHelper::setDefaults( )
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/// \brief OpenGLHelper::createProgram
-/// \return
-///
-/// \author Logan Barnes
-////////////////////////////////////////////////////////////////////////////////
-std::shared_ptr< GLuint >
-OpenGLHelper::createProgram( const ShaderVec shaders )
-{
-  IdVec shaderIds;
-
-  for ( auto & shader : shaders )
-  {
-    shaderIds.emplace_back( OpenGLHelper::_createShader( 
-                                                        shader.first, 
-                                                        shader.second
-                                                        ) );
-  }
-
-  return OpenGLHelper::_createProgram( shaderIds );
-}
-
-
-
-////////////////////////////////////////////////////////////////////////////////
 /// \brief OpenGLHelper::addTextureArray
 /// \return
 ///
@@ -110,11 +77,11 @@ OpenGLHelper::createTextureArray(
 {
   std::shared_ptr< GLuint > spTexture(
                                       new GLuint,
-                                      [] ( auto pID )
-                                      {
-                                        glDeleteTextures( 1, pID );
-                                        delete pID;
-                                      }
+                                      [ ] ( auto pID )
+    {
+      glDeleteTextures( 1, pID );
+      delete pID;
+    }
                                       );
 
   glGenTextures( 1, spTexture.get( ) );
@@ -143,16 +110,16 @@ std::shared_ptr< GLuint >
 OpenGLHelper::createVao(
                         const std::shared_ptr< GLuint > &spProgram,  ///<
                         const std::shared_ptr< GLuint > &spVbo,      ///<
-                        const GLsizei                   totalStride, ///<
+                        const GLsizei                    totalStride, ///<
                         const std::vector< VAOElement > &elements    ///<
                         )
 {
   std::shared_ptr< GLuint > spVao( new GLuint,
-                                  [] ( auto pID )
-                                  {
-                                    glDeleteVertexArrays( 1, pID );
-                                    delete pID;
-                                  } );
+                                  [ ] ( auto pID )
+    {
+      glDeleteVertexArrays( 1, pID );
+      delete pID;
+    } );
 
   //
   // Initialize the vertex array object
@@ -228,20 +195,20 @@ OpenGLHelper::createFramebuffer(
   if ( !spDepthTex )
   {
     spRbo = std::shared_ptr< GLuint >( new GLuint,
-                                      []  ( auto pID )
-                                      {
-                                        glDeleteRenderbuffers( 1, pID );
-                                        delete pID;
-                                      }
+                                      [ ]  ( auto pID )
+      {
+        glDeleteRenderbuffers( 1, pID );
+        delete pID;
+      }
                                       );
   }
 
   spFbo = std::shared_ptr< GLuint >( new GLuint,
                                     [ spRbo ] ( auto pID )
-                                    {
-                                      glDeleteFramebuffers( 1, pID );
-                                      delete pID;
-                                    }
+    {
+      glDeleteFramebuffers( 1, pID );
+      delete pID;
+    }
                                     );
 
 
@@ -355,9 +322,9 @@ OpenGLHelper::clearFramebuffer( )
 void
 OpenGLHelper::setTextureUniform(
                                 const std::shared_ptr< GLuint > &spProgram, ///<
-                                const std::string               uniform,    ///<
+                                const std::string                uniform,   ///<
                                 const std::shared_ptr< GLuint > &spTexture, ///<
-                                int                             activeTex   ///<
+                                int                              activeTex  ///<
                                 )
 {
   glActiveTexture( static_cast< GLenum >( GL_TEXTURE0 + activeTex ) );
@@ -375,10 +342,10 @@ OpenGLHelper::setTextureUniform(
 void
 OpenGLHelper::setIntUniform(
                             const std::shared_ptr< GLuint > &spProgram, ///<
-                            const std::string               uniform,    ///<
-                            const int                      *pValue,     ///<
-                            const int                       size,       ///<
-                            const int                       count       ///<
+                            const std::string                uniform,   ///<
+                            const int                       *pValue,    ///<
+                            const int                        size,      ///<
+                            const int                        count      ///<
                             )
 {
   switch ( size )
@@ -420,10 +387,10 @@ OpenGLHelper::setIntUniform(
 void
 OpenGLHelper::setFloatUniform(
                               const std::shared_ptr< GLuint > &spProgram, ///<
-                              const std::string               uniform,    ///<
-                              const float                    *pValue,     ///<
-                              const int                       size,       ///<
-                              const int                       count       ///<
+                              const std::string                uniform,   ///<
+                              const float                     *pValue,    ///<
+                              const int                        size,      ///<
+                              const int                        count      ///<
                               )
 {
   switch ( size )
@@ -465,10 +432,10 @@ OpenGLHelper::setFloatUniform(
 void
 OpenGLHelper::setMatrixUniform(
                                const std::shared_ptr< GLuint > &spProgram, ///<
-                               const std::string               uniform,    ///<
-                               const float                    *pValue,     ///<
-                               const int                       size,       ///<
-                               const int                       count       ///<
+                               const std::string                uniform,   ///<
+                               const float                     *pValue,    ///<
+                               const int                        size,      ///<
+                               const int                        count      ///<
                                )
 {
   switch ( size )
@@ -520,12 +487,12 @@ OpenGLHelper::setMatrixUniform(
 void
 OpenGLHelper::renderBuffer(
                            const std::shared_ptr< GLuint > &spVao,
-                           const int                       start,
-                           const int                       verts,
-                           const GLenum                    mode,
+                           const int                        start,
+                           const int                        verts,
+                           const GLenum                     mode,
                            const std::shared_ptr< GLuint > &spIbo,
-                           const void                     *pOffset,
-                           const GLenum                    iboType
+                           const void                      *pOffset,
+                           const GLenum                     iboType
                            )
 {
   glBindVertexArray( *spVao );
@@ -617,15 +584,15 @@ OpenGLHelper::_readFile( const std::string filePath )
 
   // get full file size
   file.seekg( 0, std::ios::end );
-  size_t size = file.tellg( );
+  size_t size = static_cast< size_t >( file.tellg( ) );
 
   // allocate string of correct size
   std::string buffer( size, ' ' );
 
   // fill string with file contents
   // note: string memory is only guaranteed contiguous in C++11 and up
-  file.seekg(0);
-  file.read( &buffer[0], size );
+  file.seekg( 0 );
+  file.read( &buffer[ 0 ], static_cast< std::streamsize >( size ) );
 
   file.close( );
 
@@ -634,7 +601,7 @@ OpenGLHelper::_readFile( const std::string filePath )
 
 
 
-std::shared_ptr< GLuint > 
+std::shared_ptr< GLuint >
 OpenGLHelper::_createShader(
                             GLenum            shaderType,
                             const std::string filePath
@@ -652,7 +619,7 @@ OpenGLHelper::_createShader(
 
   // Load shader
   std::string shaderStr    = _readFile( filePath );
-  const char *shaderSource = shaderStr.c_str();
+  const char *shaderSource = shaderStr.c_str( );
 
   // Compile shader
   glShaderSource( shader, 1, &shaderSource, nullptr );
@@ -673,49 +640,40 @@ OpenGLHelper::_createShader(
 
     throw std::runtime_error( "(Shader) " + std::string( shaderError.data( ) ) );
   }
+
   return upShader;
-}
+} // OpenGLHelper::_createShader
 
 
-std::shared_ptr< GLuint > 
+
+std::shared_ptr< GLuint >
 OpenGLHelper::_createShader( const std::string filePath )
 {
   size_t dot = filePath.find_last_of( "." );
 
-  GLenum shaderType;
-  if( ends_with( filePath, ".vert" ) )
+  std::string ext = filePath.substr( dot );
+
+  if ( shaderTypes.find( ext ) == shaderTypes.end( ) )
   {
-    shaderType = GL_VERTEX_SHADER;
+    throw std::runtime_error( "Unknown shader extension: " + ext );
   }
-  else
-  {
-    throw std::runtime_error( "Unknown shader extension: " );
-  }
-  return OpenGLHelper::_createShader( shaderType, filePath );
-}
+
+  return OpenGLHelper::_createShader( shaderTypes.at( ext ), filePath );
+} // OpenGLHelper::_createShader
 
 
-void 
-OpenGLHelper::_createShader( 
-                            IdVec &ids, 
-                            GLenum shaderType, 
-                            const std::string filePath 
-                            )
-{
-  ids.emplace_back( OpenGLHelper::_createShader( shaderType, filePath ) );
-}
 
-
-std::shared_ptr< GLuint > 
+std::shared_ptr< GLuint >
 OpenGLHelper::_createProgram( const IdVec shaderIds )
 {
   std::shared_ptr< GLuint > upProgram( new GLuint,
-                                      [shaderIds] ( auto pID )
+                                      [ shaderIds ] ( auto pID )
     {
       for ( auto &upShader : shaderIds )
       {
         glDeleteShader( *upShader );
       }
+
       glDeleteProgram( *pID );
       delete pID;
     } );
@@ -753,6 +711,8 @@ OpenGLHelper::_createProgram( const IdVec shaderIds )
   }
 
   return upProgram;
-}
+} // OpenGLHelper::_createProgram
+
+
 
 } // namespace shg
