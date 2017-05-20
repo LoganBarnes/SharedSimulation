@@ -18,10 +18,12 @@ namespace
 
 const std::unordered_map< std::string, GLenum > shaderTypes =
 {
-  { ".comp", GL_COMPUTE_SHADER },
   { ".vert", GL_VERTEX_SHADER },
+  { ".tesc", GL_TESS_CONTROL_SHADER },
+  { ".tese", GL_TESS_EVALUATION_SHADER },
   { ".geom", GL_GEOMETRY_SHADER },
-  { ".frag", GL_FRAGMENT_SHADER }
+  { ".frag", GL_FRAGMENT_SHADER },
+  { ".comp", GL_COMPUTE_SHADER }
 };
 
 }
