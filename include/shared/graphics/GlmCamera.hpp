@@ -22,7 +22,7 @@ public:
   const glm::tmat4x4< T >&
   getPerspectiveProjectionMatrix( ) const { return perspectiveMatrix_; }
   const glm::tmat4x4< T >&
-  getOrthographicProjectionMatrix( ) const { return perspectiveMatrix_; }
+  getOrthographicProjectionMatrix( ) const { return orthographicMatrix_; }
   const glm::tmat4x4< T >&
   getPerspectiveProjectionViewMatrix( ) const { return perspectiveProjectionViewMatrix_; }
   const glm::tmat4x4< T >&

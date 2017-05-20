@@ -13,6 +13,28 @@ namespace shg
 {
 
 
+namespace
+{
+
+// http://stackoverflow.com/questions/874134/find-if-string-ends-with-another-string-in-c
+bool ends_with( std::string const &fullString, std::string const &ending )
+{
+  if( fullString.length( ) >= ending.length( ) )
+  {
+    return ( 0 == fullString.compare(
+                                     fullString.length( ) - ending.length( ),
+                                     ending.length( ), 
+                                     ending
+                                     ) );
+  }
+  else
+  {
+    return false;
+  }
+}
+
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief OpenGLHelper::setDefaults
@@ -45,19 +67,25 @@ OpenGLHelper::setDefaults( )
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/// \brief OpenGLHelper::addProgram
+/// \brief OpenGLHelper::createProgram
 /// \return
 ///
 /// \author Logan Barnes
 ////////////////////////////////////////////////////////////////////////////////
 std::shared_ptr< GLuint >
-OpenGLHelper::createProgram(
-                            const std::string vertFilePath, ///<
-                            const std::string fragFilePath ///<
-                            )
-
+OpenGLHelper::createProgram( const ShaderVec shaders )
 {
-  return OpenGLHelper::_loadShader( vertFilePath, fragFilePath );
+  IdVec shaderIds;
+
+  for ( auto & shader : shaders )
+  {
+    shaderIds.emplace_back( OpenGLHelper::_createShader( 
+                                                        shader.first, 
+                                                        shader.second
+                                                        ) );
+  }
+
+  return OpenGLHelper::_createProgram( shaderIds );
 }
 
 
@@ -569,6 +597,9 @@ OpenGLHelper::renderBuffer(
 
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief OpenGLHelper::_readFile
+///
+///        http://stackoverflow.com/questions/2602013/read-whole-ascii-file-into-c-stdstring
+///
 /// \param filePath
 /// \return
 ///
@@ -577,124 +608,151 @@ OpenGLHelper::renderBuffer(
 std::string
 OpenGLHelper::_readFile( const std::string filePath )
 {
-  std::string content;
-  std::ifstream fileStream( filePath, std::ios::in );
+  std::ifstream file( filePath, std::ios::in );
 
-  if ( !fileStream.is_open( ) )
+  if ( !file.is_open( ) || !file.good( ) )
   {
-    std::cerr << "Could not read file " << filePath << ". File does not exist." << std::endl;
-    return "";
+    throw std::runtime_error( "Could not read file: " + filePath );
   }
 
-  std::string line = "";
+  // get full file size
+  file.seekg( 0, std::ios::end );
+  size_t size = file.tellg( );
 
-  while ( !fileStream.eof( ) )
-  {
-    std::getline( fileStream, line );
-    content.append( line + "\n" );
-  }
+  // allocate string of correct size
+  std::string buffer( size, ' ' );
 
-  fileStream.close( );
-  return content;
+  // fill string with file contents
+  // note: string memory is only guaranteed contiguous in C++11 and up
+  file.seekg(0);
+  file.read( &buffer[0], size );
+
+  file.close( );
+
+  return buffer;
 } // OpenGLHelper::_readFile
 
 
 
-////////////////////////////////////////////////////////////////////////////////
-/// \brief OpenGLHelper::_loadShader
-/// \return
-///
-/// \author Logan Barnes
-////////////////////////////////////////////////////////////////////////////////
-std::shared_ptr< GLuint >
-OpenGLHelper::_loadShader(
-                          const std::string vertex_path,  ///<
-                          const std::string fragment_path ///<
-                          )
+std::shared_ptr< GLuint > 
+OpenGLHelper::_createShader(
+                            GLenum            shaderType,
+                            const std::string filePath
+                            )
 {
-  GLuint vertShader = glCreateShader( GL_VERTEX_SHADER );
-  GLuint fragShader = glCreateShader( GL_FRAGMENT_SHADER );
+  std::shared_ptr< GLuint > upShader( new GLuint,
+                                     [ ] ( auto pID )
+    {
+      glDeleteShader( *pID );
+      delete pID;
+    } );
 
-  // Read shaders
-  std::string vertShaderStr = _readFile( vertex_path );
-  std::string fragShaderStr = _readFile( fragment_path );
-  const char *vertShaderSrc = vertShaderStr.c_str( );
-  const char *fragShaderSrc = fragShaderStr.c_str( );
+  GLuint shader = glCreateShader( shaderType );
+  *upShader = shader;
 
+  // Load shader
+  std::string shaderStr    = _readFile( filePath );
+  const char *shaderSource = shaderStr.c_str();
+
+  // Compile shader
+  glShaderSource( shader, 1, &shaderSource, nullptr );
+  glCompileShader( shader );
+
+  // Check shader
   GLint result = GL_FALSE;
-  int logLength;
+  glGetShaderiv( shader, GL_COMPILE_STATUS, &result );
 
-  // Compile vertex shader
-//  std::cout << "Compiling vertex shader." << std::endl;
-  glShaderSource( vertShader, 1, &vertShaderSrc, NULL );
-  glCompileShader( vertShader );
-
-  // Check vertex shader
-  glGetShaderiv( vertShader,  GL_COMPILE_STATUS, &result );
-  glGetShaderiv( vertShader, GL_INFO_LOG_LENGTH, &logLength );
-  std::vector< char > vertShaderError(
-                                      ( logLength > 1 ) ?
-                                      static_cast< unsigned long >( logLength ) : 1
-                                      );
-  glGetShaderInfoLog( vertShader, logLength, NULL, &vertShaderError[ 0 ] );
-
-  if ( vertShaderError[ 0 ] != '\0' )
+  if ( result == GL_FALSE )
   {
-    std::cout << "(Vertex Shader) " << &vertShaderError[ 0 ];
-    std::cout << vertex_path << std::endl;
+    int logLength = 0;
+    glGetShaderiv( shader, GL_INFO_LOG_LENGTH, &logLength );
+    std::vector< char > shaderError( static_cast< size_t >( logLength ) );
+    glGetShaderInfoLog( shader, logLength, nullptr, shaderError.data( ) );
+
+    // shader will get deleted when shared_ptr goes out of scope
+
+    throw std::runtime_error( "(Shader) " + std::string( shaderError.data( ) ) );
   }
+  return upShader;
+}
 
-  // Compile fragment shader
-//  std::cout << "Compiling fragment shader." << std::endl;
-  glShaderSource( fragShader, 1, &fragShaderSrc, NULL );
-  glCompileShader( fragShader );
 
-  // Check fragment shader
-  glGetShaderiv( fragShader,  GL_COMPILE_STATUS, &result );
-  glGetShaderiv( fragShader, GL_INFO_LOG_LENGTH, &logLength );
-  std::vector< char > fragShaderError(
-                                      ( logLength > 1 ) ?
-                                      static_cast< unsigned long >( logLength ) : 1
-                                      );
-  glGetShaderInfoLog( fragShader, logLength, NULL, &fragShaderError[ 0 ] );
+std::shared_ptr< GLuint > 
+OpenGLHelper::_createShader( const std::string filePath )
+{
+  size_t dot = filePath.find_last_of( "." );
 
-  if ( fragShaderError[ 0 ] != '\0' )
+  GLenum shaderType;
+  if( ends_with( filePath, ".vert" ) )
   {
-    std::cout << "(Fragment Shader) " << &fragShaderError[ 0 ];
-    std::cout << fragment_path << std::endl;
+    shaderType = GL_VERTEX_SHADER;
   }
+  else
+  {
+    throw std::runtime_error( "Unknown shader extension: " );
+  }
+  return OpenGLHelper::_createShader( shaderType, filePath );
+}
 
-//  std::cout << "Linking program" << std::endl;
+
+void 
+OpenGLHelper::_createShader( 
+                            IdVec &ids, 
+                            GLenum shaderType, 
+                            const std::string filePath 
+                            )
+{
+  ids.emplace_back( OpenGLHelper::_createShader( shaderType, filePath ) );
+}
+
+
+std::shared_ptr< GLuint > 
+OpenGLHelper::_createProgram( const IdVec shaderIds )
+{
+  std::shared_ptr< GLuint > upProgram( new GLuint,
+                                      [shaderIds] ( auto pID )
+    {
+      for ( auto &upShader : shaderIds )
+      {
+        glDeleteShader( *upShader );
+      }
+      glDeleteProgram( *pID );
+      delete pID;
+    } );
+
+  // Create and link program
   GLuint program = glCreateProgram( );
-  glAttachShader( program, vertShader );
-  glAttachShader( program, fragShader );
+  *upProgram = program;
+
+  for ( auto &upShader : shaderIds )
+  {
+    glAttachShader( program, *upShader );
+  }
+
   glLinkProgram( program );
 
-  glGetProgramiv( program,     GL_LINK_STATUS, &result );
-  glGetProgramiv( program, GL_INFO_LOG_LENGTH, &logLength );
-  std::vector< char > programError(
-                                   ( logLength > 1 ) ?
-                                   static_cast< unsigned long >( logLength ) : 1
-                                   );
-  glGetProgramInfoLog( program, logLength, NULL, &programError[ 0 ] );
+  // Check program
+  GLint result = GL_FALSE;
+  glGetProgramiv( program, GL_LINK_STATUS, &result );
 
-  if ( programError[ 0 ] != '\0' )
+  if ( result == GL_FALSE )
   {
-    std::cout << "(Shader Program) " << &programError[ 0 ];
-    std::cout << vertex_path << "\n" << fragment_path << std::endl;
+    int logLength = 0;
+    glGetProgramiv( program, GL_INFO_LOG_LENGTH, &logLength );
+    std::vector< char > programError( static_cast< size_t >( logLength ) );
+    glGetProgramInfoLog( program, logLength, NULL, programError.data( ) );
+
+    // shaders and programs get deleted with shared_ptr goes out of scope
+
+    throw std::runtime_error( "(Program) " + std::string( programError.data( ) ) );
   }
 
-  glDeleteShader( vertShader );
-  glDeleteShader( fragShader );
+  for ( auto &upShader : shaderIds )
+  {
+    glDetachShader( program, *upShader );
+  }
 
-  return std::shared_ptr< GLuint >( new GLuint( program ),
-                                   [] ( auto pID )
-                                   {
-                                     glDeleteProgram( *pID );
-                                     delete pID;
-                                   } );
-} // OpenGLHelper::_loadShader
-
-
+  return upProgram;
+}
 
 } // namespace shg
