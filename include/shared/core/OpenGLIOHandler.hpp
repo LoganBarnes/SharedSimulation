@@ -5,6 +5,7 @@
 #include "shared/graphics/GraphicsForwardDeclarations.hpp"
 
 #include <memory>
+#include <string>
 
 
 namespace shs
@@ -28,12 +29,13 @@ public:
   /// \brief OpenGLIOHandler
   ///////////////////////////////////////////////////////////////
   OpenGLIOHandler(
-                  World &world,
-                  bool   printInfo = true,
-                  int    width     = 640,
-                  int    height    = 480,
-                  bool   resizable = true,
-                  int    aaSamples = 8
+                  World      &world,
+                  bool        printInfo = true,
+                  std::string title     = "OpenGL Window",
+                  int         width     = 0,
+                  int         height    = 0,
+                  bool        resizable = true,
+                  int         aaSamples = 8
                   );
 
 
@@ -93,9 +95,7 @@ protected:
 
   std::unique_ptr< shg::GlfwWrapper > upGlfwWrapper_;
   std::unique_ptr< shg::Camera >      upCamera_;
-
-  int windowWidth_;
-  int windowHeight_;
+  std::unique_ptr< shg::CameraMover > upCameraMover_;
 
 
 private:

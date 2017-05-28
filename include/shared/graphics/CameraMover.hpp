@@ -23,6 +23,10 @@ public:
   void setOffsetDist  ( T offsetDist );
   void setOrbitPoint  ( glm::tvec3< T > orbitPoint );
 
+  void addYawDegrees  ( T yawDegrees );
+  void addPitchDegrees( T pitchDegrees );
+  void addOffsetDist  ( T offsetDist );
+
   void setMoveAmount   ( T moveAmount );
   void addMoveDirection( glm::ivec3 forwardRightUp );
 

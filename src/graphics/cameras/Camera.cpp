@@ -1,4 +1,4 @@
-#include "shared/graphics/TCamera.hpp"
+#include "shared/graphics/Camera.hpp"
 
 #define GLM_FORCE_RADIANS
 #include "glm/gtc/matrix_transform.hpp"
@@ -15,8 +15,8 @@ template< typename T >
 TCamera< T >::TCamera( )
 {
   lookAt(
-         glm::tvec3< T >( 0.0, 2.0, 5.0 ),
-         glm::tvec3< T >( 0.0, 0.0, 0.0 )
+         glm::tvec3< T >( 0.0, 0.0,  0.0 ),
+         glm::tvec3< T >( 0.0, 0.0, -1.0 )
          );
   perspective( 60.0, 1.0, 1.0, 1000.0 );
   ortho( -1.0, 1.0, -1.0, 1.0 );

@@ -53,12 +53,13 @@ public:
   /// \brief ImguiOpenGLIOHandler
   ///////////////////////////////////////////////////////////////
   ImguiOpenGLIOHandler(
-                       World &world,
-                       bool   printInfo = true,
-                       int    width     = 640,
-                       int    height    = 480,
-                       bool   resizable = true,
-                       int    aaSamples = 8
+                       World      &world,
+                       bool        printInfo = true,
+                       std::string title     = "Imgui OpenGL Window",
+                       int         width     = 0,
+                       int         height    = 0,
+                       bool        resizable = true,
+                       int         aaSamples = 8
                        );
 
 

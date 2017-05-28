@@ -10,38 +10,58 @@ namespace shs
 
 
 
-SharedCallback::SharedCallback( OpenGLIOHandler *pHandler )
-  : shg::Callback( )
-  , pHandler_( pHandler )
-  , shiftDown_( false )
-  , ctrlDown_ ( false )
-{}
-
-
-
-SharedCallback::~SharedCallback( )
+SharedCallback::SharedCallback( )
+  : shg::Callback    ( )
+  , shiftDown_     ( false )
+  , ctrlDown_      ( false )
+  , leftMouseDown_ ( false )
+  , rightMouseDown_( false )
 {}
 
 
 
 ////////////////////////////////////////////////////////
-/// \brief HeightsCallback::handleWindowSize
+/// \brief CameraCallback<T>::handleMouseButton
 /// \param pWindow
-/// \param width
-/// \param height
+/// \param button
+/// \param action
+/// \param button
+/// \param mods
 ////////////////////////////////////////////////////////
 void
-SharedCallback::handleWindowSize(
-                                 GLFWwindow*,
-                                 int width,
-                                 int height
-                                 )
+SharedCallback::handleMouseButton(
+                                  GLFWwindow *pWindow,
+                                  int         button,
+                                  int         action,
+                                  int
+                                  )
 {
-  if ( pHandler_ )
+  if ( button == GLFW_MOUSE_BUTTON_1 )
   {
-    pHandler_->resize( width, height );
+    if ( action == GLFW_PRESS )
+    {
+      leftMouseDown_ = true;
+      glfwGetCursorPos( pWindow, &prevX_, &prevY_ );
+    }
+    else
+    {
+      leftMouseDown_ = false;
+    }
   }
-}
+  else
+  if ( button == GLFW_MOUSE_BUTTON_2 )
+  {
+    if ( action == GLFW_PRESS )
+    {
+      rightMouseDown_ = true;
+      glfwGetCursorPos( pWindow, &prevX_, &prevY_ );
+    }
+    else
+    {
+      rightMouseDown_ = false;
+    }
+  }
+} // handleMouseButton
 
 
 

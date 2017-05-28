@@ -20,7 +20,7 @@ class Callback
 public:
 
   virtual
-  ~Callback( ) {}
+  ~Callback( ) = default;
 
 
   ////////////////////////////////////////////////////////

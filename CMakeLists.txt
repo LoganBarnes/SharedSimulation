@@ -41,11 +41,11 @@ if ( USE_GLM )
   list(
        APPEND ADDITIONAL_SOURCE
 
-       ${INC_DIR}/shared/graphics/TCamera.hpp
-       ${INC_DIR}/shared/graphics/TCameraMover.hpp
+       ${INC_DIR}/shared/graphics/Camera.hpp
+       ${INC_DIR}/shared/graphics/CameraMover.hpp
 
-       ${SRC_DIR}/graphics/cameras/TCamera.cpp
-       ${SRC_DIR}/graphics/cameras/TCameraMover.cpp
+       ${SRC_DIR}/graphics/cameras/Camera.cpp
+       ${SRC_DIR}/graphics/cameras/CameraMover.cpp
        )
 
   list(
@@ -68,11 +68,13 @@ if ( USE_GLFW )
       ${INC_DIR}/shared/graphics/Callback.hpp
       ${INC_DIR}/shared/graphics/GlfwWrapper.hpp
       ${INC_DIR}/shared/graphics/SharedCallback.hpp
+      ${INC_DIR}/shared/graphics/CameraCallback.hpp
 
       ${SRC_DIR}/graphics/glfw/CallbackSingleton.hpp
       ${SRC_DIR}/graphics/glfw/CallbackSingleton.cpp
       ${SRC_DIR}/graphics/glfw/GlfwWrapper.cpp
       ${SRC_DIR}/io/SharedCallback.cpp
+      ${SRC_DIR}/io/CameraCallback.cpp
       )
 
 

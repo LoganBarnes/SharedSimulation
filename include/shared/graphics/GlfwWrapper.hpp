@@ -52,11 +52,11 @@ public:
   ///
   void createNewWindow (
                         const std::string &title,
-                        const int         width,
-                        const int         height,
-                        const bool        resizable  = true,
-                        const bool        initOpengl = true,
-                        const int         sampleCount = 0  // no anti-aliasing
+                        int                width       = 0,
+                        int                height      = 0,
+                        const bool         resizable   = true,
+                        const bool         initOpengl  = true,
+                        const int          sampleCount = 0 // no anti-aliasing
                         );
 
 
@@ -127,6 +127,7 @@ public:
   //////////////////////////////////////////////////
   void setCallback ( std::unique_ptr< Callback > upCallback );
 
+  void getWindowSize( int *pWidth, int *pHeight );
 
 private:
 

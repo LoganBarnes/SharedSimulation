@@ -9,9 +9,13 @@ namespace shg
 
 template< typename T >
 class TCamera;
+template< typename T >
+class TCameraMover;
 
-using Camera  = TCamera< float >;
-using CameraD = TCamera< double >;
+using Camera       = TCamera< float >;
+using CameraD      = TCamera< double >;
+using CameraMover  = TCameraMover< float >;
+using CameraMoverD = TCameraMover< double >;
 
 struct VAOElement;
 

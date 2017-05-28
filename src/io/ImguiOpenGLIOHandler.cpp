@@ -4,7 +4,8 @@
 #include "shared/graphics/GlfwWrapper.hpp"
 #include "shared/graphics/OpenGLHelper.hpp"
 #include "shared/graphics/ImguiCallback.hpp"
-#include "shared/graphics/SharedCallback.hpp"
+#include "shared/graphics/CameraCallback.hpp"
+#include "shared/graphics/CameraMover.hpp"
 #include <imgui.h>
 #include <imgui_impl_glfw_gl3.h>
 #include <glad/glad.h>
@@ -24,14 +25,15 @@ namespace shs
 /// \author Logan Barnes
 ///////////////////////////////////////////////////////////////
 ImguiOpenGLIOHandler::ImguiOpenGLIOHandler(
-                                           World &world,
-                                           bool  printInfo,
-                                           int   width,
-                                           int   height,
-                                           bool  resizable,
-                                           int   aaSamples
+                                           World      &world,
+                                           bool        printInfo,
+                                           std::string title,
+                                           int         width,
+                                           int         height,
+                                           bool        resizable,
+                                           int         aaSamples
                                            )
-  : OpenGLIOHandler( world, printInfo, width, height, resizable, aaSamples )
+  : OpenGLIOHandler( world, printInfo, title, width, height, resizable, aaSamples )
 {
   imguiCallback_ = new shs::ImguiCallback( );
 
@@ -40,8 +42,8 @@ ImguiOpenGLIOHandler::ImguiOpenGLIOHandler(
   upGlfwWrapper_->setCallback( std::move( upCallback ) );
 
   // default callback
-  std::unique_ptr< shs::SharedCallback > upSharedCallback( new shs::SharedCallback( this ) );
-  imguiCallback_->setCallback ( std::move( upSharedCallback ) );
+  auto upCameraCallback = std::make_unique< shs::CameraCallback >( *upCameraMover_ );
+  imguiCallback_->setCallback ( std::move( upCameraCallback ) );
 
   ImGui_ImplGlfwGL3_Init( upGlfwWrapper_->getWindow( ), false ); // false for no callbacks
 }
@@ -69,7 +71,11 @@ ImguiOpenGLIOHandler::~ImguiOpenGLIOHandler( )
 void
 ImguiOpenGLIOHandler::showWorld( const double alpha )
 {
-  glViewport( 0, 0, windowWidth_, windowHeight_ );
+  int w, h;
+
+  upGlfwWrapper_->getWindowSize( &w, &h );
+  glViewport( 0, 0, w, h );
+
   //
   // ImGui handles automatic resizing and event changes in the
   // frame following the one where the event took place.

@@ -1,5 +1,5 @@
-#include <shared/graphics/TCameraMover.hpp>
-#include <shared/graphics/TCamera.hpp>
+#include <shared/graphics/CameraMover.hpp>
+#include <shared/graphics/Camera.hpp>
 #define GLM_FORCE_RADIANS
 #include <glm/gtc/matrix_transform.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
@@ -26,11 +26,11 @@ TCameraMover< T >::TCameraMover( TCamera< T > &camera )
 
 template< typename T >
 void
-TCameraMover< T >::update()
+TCameraMover< T >::update( )
 {
   glm::tvec3< T > look ( 0, 0, -1 );
-  look  = glm::rotate( look,  glm::radians( pitchDegrees_ ), glm::tvec3< T >( -1,  0, 0 ) );
-  look  = glm::rotate( look,  glm::radians( yawDegrees_ ),   glm::tvec3< T >(  0, -1, 0 ) );
+  look = glm::rotate( look,  glm::radians( pitchDegrees_ ), glm::tvec3< T >( 1,  0, 0 ) );
+  look = glm::rotate( look,  glm::radians( yawDegrees_ ),   glm::tvec3< T >( 0, -1, 0 ) );
 
   //
   // orbit point update
@@ -52,13 +52,17 @@ TCameraMover< T >::update()
   glm::tvec3< T > eye   = orbitPoint_ - look * offsetDist_;
 
   camera_.lookAt( eye, point );
-}
+} // >::update
+
+
 
 template< typename T >
-void TCameraMover< T >::setYawDegrees( T yawDegrees )
+void
+TCameraMover< T >::setYawDegrees( T yawDegrees )
 {
   yawDegrees_ = yawDegrees;
 }
+
 
 
 template< typename T >
@@ -69,33 +73,68 @@ TCameraMover< T >::setPitchDegrees( T pitchDegrees )
 }
 
 
+
 template< typename T >
-void TCameraMover< T >::setOffsetDist( T offsetDist )
+void
+TCameraMover< T >::setOffsetDist( T offsetDist )
 {
-  offsetDist_   = offsetDist;
+  offsetDist_ = glm::max( T( 0 ), offsetDist );
 }
 
 
+
 template< typename T >
-void TCameraMover< T >::setOrbitPoint( glm::tvec3< T > orbitPoint )
+void
+TCameraMover< T >::setOrbitPoint( glm::tvec3< T > orbitPoint )
 {
-  orbitPoint_   = orbitPoint;
+  orbitPoint_ = orbitPoint;
 }
 
 
+
 template< typename T >
-void TCameraMover< T >::setMoveAmount( T moveAmt )
+void
+TCameraMover< T >::addYawDegrees( T yawDegrees )
+{
+  setYawDegrees( yawDegrees_ + yawDegrees );
+}
+
+
+
+template< typename T >
+void
+TCameraMover< T >::addPitchDegrees( T pitchDegrees )
+{
+  setPitchDegrees( pitchDegrees_ + pitchDegrees );
+}
+
+
+
+template< typename T >
+void
+TCameraMover< T >::addOffsetDist( T offsetDist )
+{
+  setOffsetDist( offsetDist_ + offsetDist );
+}
+
+
+
+template< typename T >
+void
+TCameraMover< T >::setMoveAmount( T moveAmt )
 {
   moveAmt_ = moveAmt;
 }
+
 
 
 template< typename T >
 void
 TCameraMover< T >::addMoveDirection( glm::ivec3 forwardRightUp )
 {
-  moveDir_ = glm::clamp( moveDir_ + forwardRightUp, 0, 1 );
+  moveDir_ = glm::clamp( moveDir_ + forwardRightUp, -1, 1 );
 }
+
 
 
 template class TCameraMover< float >;

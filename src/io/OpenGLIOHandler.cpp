@@ -3,8 +3,9 @@
 // shared
 #include "shared/graphics/GlfwWrapper.hpp"
 #include "shared/graphics/OpenGLHelper.hpp"
-#include "shared/graphics/TCamera.hpp"
-#include "shared/graphics/SharedCallback.hpp"
+#include "shared/graphics/Camera.hpp"
+#include "shared/graphics/CameraMover.hpp"
+#include "shared/graphics/CameraCallback.hpp"
 #include <glad/glad.h>
 
 // system
@@ -22,18 +23,18 @@ namespace shs
 /// \author Logan Barnes
 ///////////////////////////////////////////////////////////////
 OpenGLIOHandler::OpenGLIOHandler(
-                                 World &world,
-                                 bool   printInfo,
-                                 int    width,
-                                 int    height,
-                                 bool   resizable,
-                                 int    aaSamples
+                                 World      &world,
+                                 bool        printInfo,
+                                 std::string title,
+                                 int         width,
+                                 int         height,
+                                 bool        resizable,
+                                 int         aaSamples
                                  )
   : IOHandler     ( world, false )
   , upGlfwWrapper_( new shg::GlfwWrapper )
   , upCamera_     ( new shg::Camera )
-  , windowWidth_  ( width )
-  , windowHeight_ ( height )
+  , upCameraMover_( new shg::CameraMover( *upCamera_ ) )
 {
   if ( printInfo )
   {
@@ -41,20 +42,21 @@ OpenGLIOHandler::OpenGLIOHandler(
   }
 
   upGlfwWrapper_->createNewWindow(
-                                  "OpenGL Window",
-                                  windowWidth_,
-                                  windowHeight_,
+                                  title,
+                                  width,
+                                  height,
                                   resizable,
                                   true,
                                   aaSamples
                                   );
 
-  std::unique_ptr< shg::Callback > upCallback( new shs::SharedCallback( this ) );
-  upGlfwWrapper_->setCallback( std::move( upCallback ) );
+  auto upCameraCallback = std::make_unique< shs::CameraCallback >( *upCameraMover_ );
+  upGlfwWrapper_->setCallback( std::move( upCameraCallback ) );
 
   shg::OpenGLHelper::setDefaults( );
 
-  upCamera_->setAspectRatio( windowWidth_ * 1.0f / windowHeight_ );
+  upGlfwWrapper_->getWindowSize( &width, &height );
+  upCamera_->setAspectRatio( width * 1.0f / height );
 }
 
 
@@ -78,7 +80,10 @@ OpenGLIOHandler::~OpenGLIOHandler( )
 void
 OpenGLIOHandler::showWorld( const double alpha )
 {
-  glViewport( 0, 0, windowWidth_, windowHeight_ );
+  int w, h;
+
+  upGlfwWrapper_->getWindowSize( &w, &h );
+  glViewport( 0, 0, w, h );
   _onRender( alpha );
   upGlfwWrapper_->swapBuffers( );
 } // OpenGLIOHandler::showWorld
@@ -94,6 +99,7 @@ void
 OpenGLIOHandler::updateIO( )
 {
   upGlfwWrapper_->pollEvents( );
+  upCameraMover_->update( );
   exitRequested_ |= ( upGlfwWrapper_->windowShouldClose( ) != 0 );
 }
 
@@ -108,6 +114,7 @@ void
 OpenGLIOHandler::waitForIO( )
 {
   upGlfwWrapper_->waitEvents( );
+  upCameraMover_->update( );
   exitRequested_ |= ( upGlfwWrapper_->windowShouldClose( ) != 0 );
 }
 
@@ -124,9 +131,7 @@ OpenGLIOHandler::resize(
                         const int height ///< new window height
                         )
 {
-  windowWidth_  = width;
-  windowHeight_ = height;
-  upCamera_->setAspectRatio( windowWidth_ * 1.0f / windowHeight_ );
+  upCamera_->setAspectRatio( width * 1.0f / height );
 }
 
 

@@ -17,23 +17,26 @@ class SharedCallback : public shg::Callback
 public:
 
   explicit
-  SharedCallback( OpenGLIOHandler *pHandler = nullptr );
+  SharedCallback( );
 
   virtual
-  ~SharedCallback( );
+  ~SharedCallback( ) = default;
+
 
   ////////////////////////////////////////////////////////
-  /// \brief handleWindowSize
+  /// \brief handleMouseButton
   /// \param pWindow
-  /// \param width
-  /// \param height
+  /// \param button
+  /// \param action
+  /// \param mods
   ////////////////////////////////////////////////////////
   virtual
-  void handleWindowSize (
-                         GLFWwindow *pWindow,
-                         int         width,
-                         int         height
-                         );
+  void handleMouseButton (
+                          GLFWwindow *pWindow,
+                          int         button,
+                          int         action,
+                          int         mods
+                          );
 
   ////////////////////////////////////////////////////////
   /// \brief handleKey
@@ -53,12 +56,16 @@ public:
                    );
 
 
-private:
-
-  OpenGLIOHandler *pHandler_;
+protected:
 
   bool shiftDown_;
   bool ctrlDown_;
+
+  bool leftMouseDown_;
+  bool rightMouseDown_;
+
+  double prevX_;
+  double prevY_;
 
 };
 

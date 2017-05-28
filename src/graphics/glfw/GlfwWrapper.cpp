@@ -117,11 +117,11 @@ GlfwWrapper::createWindowSurface(
 void
 GlfwWrapper::createNewWindow(
                              const std::string &title,
-                             const int         width,
-                             const int         height,
-                             const bool        resizable,
-                             const bool        initOpengl,
-                             const int         sampleCount
+                             int                width,
+                             int                height,
+                             const bool         resizable,
+                             const bool         initOpengl,
+                             const int          sampleCount
                              )
 {
   //
@@ -147,13 +147,30 @@ GlfwWrapper::createNewWindow(
   }
 
 
-    glfwWindowHint( GLFW_SAMPLES, sampleCount );
+  glfwWindowHint( GLFW_SAMPLES, sampleCount );
+
+  GLFWmonitor *monitor = nullptr;
+
+  if ( width == 0 || height == 0 )
+  {
+    monitor = glfwGetPrimaryMonitor( );
+
+    const GLFWvidmode *mode = glfwGetVideoMode( monitor );
+
+    glfwWindowHint( GLFW_RED_BITS,     mode->redBits );
+    glfwWindowHint( GLFW_GREEN_BITS,   mode->greenBits );
+    glfwWindowHint( GLFW_BLUE_BITS,    mode->blueBits );
+    glfwWindowHint( GLFW_REFRESH_RATE, mode->refreshRate );
+
+    width  = mode->width;
+    height = mode->height;
+  }
 
   pWindow_ = glfwCreateWindow(
                               width,
                               height,
                               title.c_str( ),
-                              nullptr,
+                              monitor,
                               nullptr
                               );
 
@@ -251,6 +268,12 @@ GlfwWrapper::setCallback( std::unique_ptr< Callback > upCallback )
   CallbackSingleton::getInstance( ).setDefaultCallback( std::move( upCallback ) );
 }
 
+
+void
+GlfwWrapper::getWindowSize( int *pWidth, int *pHeight )
+{
+  glfwGetWindowSize( pWindow_, pWidth, pHeight );
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////////
