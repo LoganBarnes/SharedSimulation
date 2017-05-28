@@ -1,6 +1,6 @@
 #include "shared/graphics/GlmCamera.hpp"
 
-#define GLFORCE_RADIANS_
+#define GLM_FORCE_RADIANS
 #include "glm/gtc/matrix_transform.hpp"
 
 

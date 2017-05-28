@@ -41,7 +41,7 @@ if ( USE_GLM )
        APPEND ADDITIONAL_SOURCE
 
        ${INC_DIR}/shared/graphics/GlmCamera.hpp
-       ${SRC_DIR}/graphics/GlmCamera.cpp
+       ${SRC_DIR}/graphics/cameras/GlmCamera.cpp
        )
 
   list(

@@ -1,13 +1,11 @@
 // GlmCamera.hpp
 #pragma once
 
-
 #include <glm/glm.hpp>
 
 
 namespace shg
 {
-
 
 template< typename T >
 class GlmCamera
@@ -16,6 +14,9 @@ public:
 
   explicit
   GlmCamera( );
+
+  virtual
+  ~GlmCamera() = default;
 
   const glm::tmat4x4< T >&
   getViewMatrix( ) const { return viewMatrix_; }
@@ -85,7 +86,7 @@ public:
   void setOrthoTop ( T top );
 
 
-private:
+protected:
 
   // view matrix variables
   glm::tvec3< T > eye_, lookVector_, upVector_, rightVector_;
