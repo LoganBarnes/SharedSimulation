@@ -8,10 +8,10 @@ namespace shg
 {
 
 template< typename T >
-class Camera;
+class TCamera;
 
-template< typename T >
-class GlmCamera;
+using Camera  = TCamera< float >;
+using CameraD = TCamera< double >;
 
 struct VAOElement;
 

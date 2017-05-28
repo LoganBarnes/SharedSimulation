@@ -40,13 +40,16 @@ if ( USE_GLM )
   list(
        APPEND ADDITIONAL_SOURCE
 
-       ${INC_DIR}/shared/graphics/GlmCamera.hpp
-       ${SRC_DIR}/graphics/cameras/GlmCamera.cpp
+       ${INC_DIR}/shared/graphics/TCamera.hpp
+       ${INC_DIR}/shared/graphics/TCameraMover.hpp
+
+       ${SRC_DIR}/graphics/cameras/TCamera.cpp
+       ${SRC_DIR}/graphics/cameras/TCameraMover.cpp
        )
 
   list(
        APPEND SHARED_TEST_SOURCE
-       ${SRC_DIR}/graphics/testing/GlmCameraUnitTests.cpp
+       ${SRC_DIR}/graphics/testing/TCameraUnitTests.cpp
        )
 
 endif( USE_GLM )

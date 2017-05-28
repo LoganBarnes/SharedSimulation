@@ -3,7 +3,7 @@
 // shared
 #include "shared/graphics/GlfwWrapper.hpp"
 #include "shared/graphics/OpenGLHelper.hpp"
-#include "shared/graphics/GlmCamera.hpp"
+#include "shared/graphics/TCamera.hpp"
 #include "shared/graphics/SharedCallback.hpp"
 #include <glad/glad.h>
 
@@ -31,7 +31,7 @@ OpenGLIOHandler::OpenGLIOHandler(
                                  )
   : IOHandler     ( world, false )
   , upGlfwWrapper_( new shg::GlfwWrapper )
-  , upCamera_     ( new shg::GlmCamera< float >)
+  , upCamera_     ( new shg::Camera )
   , windowWidth_  ( width )
   , windowHeight_ ( height )
 {

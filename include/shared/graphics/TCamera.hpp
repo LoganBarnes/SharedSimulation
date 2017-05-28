@@ -1,4 +1,4 @@
-// GlmCamera.hpp
+// TCamera.hpp
 #pragma once
 
 #include <glm/glm.hpp>
@@ -8,22 +8,22 @@ namespace shg
 {
 
 template< typename T >
-class GlmCamera
+class TCamera
 {
 public:
 
   explicit
-  GlmCamera( );
+  TCamera( );
 
   virtual
-  ~GlmCamera() = default;
+  ~TCamera() = default;
 
   const glm::tmat4x4< T >&
   getViewMatrix( ) const { return viewMatrix_; }
   const glm::tmat4x4< T >&
   getPerspectiveProjectionMatrix( ) const { return perspectiveMatrix_; }
   const glm::tmat4x4< T >&
-  getOrthographicProjectionMatrix( ) const { return perspectiveMatrix_; }
+  getOrthographicProjectionMatrix( ) const { return orthographicMatrix_; }
   const glm::tmat4x4< T >&
   getPerspectiveProjectionViewMatrix( ) const { return perspectiveProjectionViewMatrix_; }
   const glm::tmat4x4< T >&
@@ -105,5 +105,8 @@ protected:
 
 };
 
+
+using Camera  = TCamera< float >;
+using CameraD = TCamera< double >;
 
 } // namespace shg

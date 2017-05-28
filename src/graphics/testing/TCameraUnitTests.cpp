@@ -1,5 +1,5 @@
-// GlmCameraUnitTests.cpp
-#include "shared/graphics/GlmCamera.hpp"
+// TCameraUnitTests.cpp
+#include "shared/graphics/TCamera.hpp"
 
 #include "gmock/gmock.h"
 
@@ -9,25 +9,25 @@ namespace
 
 
 ///
-/// \brief The GlmCameraUnitTests class
+/// \brief The TCameraUnitTests class
 ///
-class GlmCameraUnitTests : public ::testing::Test
+class TCameraUnitTests : public ::testing::Test
 {
 
 protected:
 
   /////////////////////////////////////////////////////////////////
-  /// \brief GlmCameraUnitTests
+  /// \brief TCameraUnitTests
   /////////////////////////////////////////////////////////////////
-  GlmCameraUnitTests( )
+  TCameraUnitTests( )
   {}
 
 
   /////////////////////////////////////////////////////////////////
-  /// \brief ~GlmCameraUnitTests
+  /// \brief ~TCameraUnitTests
   /////////////////////////////////////////////////////////////////
   virtual
-  ~GlmCameraUnitTests( )
+  ~TCameraUnitTests( )
   {}
 
 };
@@ -36,7 +36,7 @@ protected:
 /////////////////////////////////////////////////////////////////
 /// \brief UnimplementedTest
 /////////////////////////////////////////////////////////////////
-TEST_F( GlmCameraUnitTests, UnimplementedTest )
+TEST_F( TCameraUnitTests, UnimplementedTest )
 {}
 
 

@@ -1,4 +1,4 @@
-#include "shared/graphics/GlmCamera.hpp"
+#include "shared/graphics/TCamera.hpp"
 
 #define GLM_FORCE_RADIANS
 #include "glm/gtc/matrix_transform.hpp"
@@ -9,10 +9,10 @@ namespace shg
 {
 
 ///
-/// \brief GlmCamera<T>::GlmCamera
+/// \brief TCamera<T>::TCamera
 ///
 template< typename T >
-GlmCamera< T >::GlmCamera( )
+TCamera< T >::TCamera( )
 {
   lookAt(
          glm::tvec3< T >( 0.0, 2.0, 5.0 ),
@@ -25,14 +25,14 @@ GlmCamera< T >::GlmCamera( )
 
 
 ///
-/// \brief GlmCamera<T>::lookAt
+/// \brief TCamera<T>::lookAt
 /// \param eye
 /// \param point
 /// \param up
 ///
 template< typename T >
 void
-GlmCamera< T >::lookAt(
+TCamera< T >::lookAt(
                        const glm::tvec3< T > &eye,
                        const glm::tvec3< T > &point,
                        const glm::tvec3< T > &up
@@ -50,7 +50,7 @@ GlmCamera< T >::lookAt(
 
 
 ///
-/// \brief GlmCamera<T>::perspective
+/// \brief TCamera<T>::perspective
 /// \param fovyDegrees
 /// \param aspect
 /// \param zNear
@@ -58,7 +58,7 @@ GlmCamera< T >::lookAt(
 ///
 template< typename T >
 void
-GlmCamera< T >::perspective(
+TCamera< T >::perspective(
                             T fovyDegrees,
                             T aspect,
                             T zNear,
@@ -78,7 +78,7 @@ GlmCamera< T >::perspective(
 
 
 ///
-/// \brief GlmCamera<T>::ortho
+/// \brief TCamera<T>::ortho
 /// \param left
 /// \param right
 /// \param bottom
@@ -86,7 +86,7 @@ GlmCamera< T >::perspective(
 ///
 template< typename T >
 void
-GlmCamera< T >::ortho(
+TCamera< T >::ortho(
                       T left,
                       T right,
                       T bottom,
@@ -105,12 +105,12 @@ GlmCamera< T >::ortho(
 
 
 ///
-/// \brief GlmCamera<T>::setEye
+/// \brief TCamera<T>::setEye
 /// \param eye
 ///
 template< typename T >
 void
-GlmCamera< T >::setEye( const glm::tvec3< T > &eye )
+TCamera< T >::setEye( const glm::tvec3< T > &eye )
 {
   lookAt( eye, eye + lookVector_, upVector_ );
 }
@@ -118,12 +118,12 @@ GlmCamera< T >::setEye( const glm::tvec3< T > &eye )
 
 
 ///
-/// \brief GlmCamera<T>::setLook
+/// \brief TCamera<T>::setLook
 /// \param look
 ///
 template< typename T >
 void
-GlmCamera< T >::setLook( const glm::tvec3< T > &look )
+TCamera< T >::setLook( const glm::tvec3< T > &look )
 {
   lookAt( eye_, eye_ + look, upVector_ );
 }
@@ -131,12 +131,12 @@ GlmCamera< T >::setLook( const glm::tvec3< T > &look )
 
 
 ///
-/// \brief GlmCamera<T>::setUp
+/// \brief TCamera<T>::setUp
 /// \param up
 ///
 template< typename T >
 void
-GlmCamera< T >::setUp( const glm::tvec3< T > &up )
+TCamera< T >::setUp( const glm::tvec3< T > &up )
 {
   lookAt( eye_, eye_ + lookVector_, up );
 }
@@ -144,12 +144,12 @@ GlmCamera< T >::setUp( const glm::tvec3< T > &up )
 
 
 ///
-/// \brief GlmCamera<T>::setFovYDegrees
+/// \brief TCamera<T>::setFovYDegrees
 /// \param fovYDegrees
 ///
 template< typename T >
 void
-GlmCamera< T >::setFovYDegrees( T fovYDegrees )
+TCamera< T >::setFovYDegrees( T fovYDegrees )
 {
   perspective( fovYDegrees, aspectRatio_, nearPlane_, farPlane_ );
 }
@@ -157,12 +157,12 @@ GlmCamera< T >::setFovYDegrees( T fovYDegrees )
 
 
 ///
-/// \brief GlmCamera<T>::setAspectRatio
+/// \brief TCamera<T>::setAspectRatio
 /// \param aspectRatio
 ///
 template< typename T >
 void
-GlmCamera< T >::setAspectRatio( T aspectRatio )
+TCamera< T >::setAspectRatio( T aspectRatio )
 {
   perspective( fovYDegrees_, aspectRatio, nearPlane_, farPlane_ );
 }
@@ -170,12 +170,12 @@ GlmCamera< T >::setAspectRatio( T aspectRatio )
 
 
 ///
-/// \brief GlmCamera<T>::setNearPlaneDistance
+/// \brief TCamera<T>::setNearPlaneDistance
 /// \param near
 ///
 template< typename T >
 void
-GlmCamera< T >::setNearPlaneDistance( T near )
+TCamera< T >::setNearPlaneDistance( T near )
 {
   perspective( fovYDegrees_, aspectRatio_, near, farPlane_ );
 }
@@ -183,12 +183,12 @@ GlmCamera< T >::setNearPlaneDistance( T near )
 
 
 ///
-/// \brief GlmCamera<T>::setFarPlaneDistance
+/// \brief TCamera<T>::setFarPlaneDistance
 /// \param far
 ///
 template< typename T >
 void
-GlmCamera< T >::setFarPlaneDistance( T far )
+TCamera< T >::setFarPlaneDistance( T far )
 {
   perspective( fovYDegrees_, aspectRatio_, nearPlane_, far );
 }
@@ -196,12 +196,12 @@ GlmCamera< T >::setFarPlaneDistance( T far )
 
 
 ///
-/// \brief GlmCamera<T>::setOrthoLeft
+/// \brief TCamera<T>::setOrthoLeft
 /// \param left
 ///
 template< typename T >
 void
-GlmCamera< T >::setOrthoLeft( T left )
+TCamera< T >::setOrthoLeft( T left )
 {
   ortho( left, orthoRight_, orthoBottom_, orthoTop_ );
 }
@@ -209,12 +209,12 @@ GlmCamera< T >::setOrthoLeft( T left )
 
 
 ///
-/// \brief GlmCamera<T>::setOrthoRight
+/// \brief TCamera<T>::setOrthoRight
 /// \param right
 ///
 template< typename T >
 void
-GlmCamera< T >::setOrthoRight( T right )
+TCamera< T >::setOrthoRight( T right )
 {
   ortho( orthoLeft_, right, orthoBottom_, orthoTop_ );
 }
@@ -222,12 +222,12 @@ GlmCamera< T >::setOrthoRight( T right )
 
 
 ///
-/// \brief GlmCamera<T>::setOrthoBottom
+/// \brief TCamera<T>::setOrthoBottom
 /// \param bottom
 ///
 template< typename T >
 void
-GlmCamera< T >::setOrthoBottom( T bottom )
+TCamera< T >::setOrthoBottom( T bottom )
 {
   ortho( orthoLeft_, orthoRight_, bottom, orthoTop_ );
 }
@@ -235,20 +235,20 @@ GlmCamera< T >::setOrthoBottom( T bottom )
 
 
 ///
-/// \brief GlmCamera<T>::setOrthoTop
+/// \brief TCamera<T>::setOrthoTop
 /// \param top
 ///
 template< typename T >
 void
-GlmCamera< T >::setOrthoTop( T top )
+TCamera< T >::setOrthoTop( T top )
 {
   ortho( orthoLeft_, orthoRight_, orthoBottom_, top );
 }
 
 
 
-template class GlmCamera< float >;
-template class GlmCamera< double >;
+template class TCamera< float >;
+template class TCamera< double >;
 
 
 } // namespace shg
