@@ -18,9 +18,10 @@ endif( )
 
 
 # common directory paths
-set( SRC_DIR    ${CMAKE_CURRENT_SOURCE_DIR}/src        )
-set( INC_DIR    ${CMAKE_CURRENT_SOURCE_DIR}/include    )
-set( THIRDPARTY ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty )
+set( SRC_DIR     ${CMAKE_CURRENT_SOURCE_DIR}/src        )
+set( INC_DIR     ${CMAKE_CURRENT_SOURCE_DIR}/include    )
+set( THIRDPARTY  ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty )
+set( SHADER_PATH ${CMAKE_CURRENT_SOURCE_DIR}/shaders    )
 
 # configure and build necessary thirdparty libs
 add_subdirectory( ${THIRDPARTY} )

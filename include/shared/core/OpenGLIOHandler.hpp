@@ -29,11 +29,11 @@ public:
   ///////////////////////////////////////////////////////////////
   OpenGLIOHandler(
                   World &world,
-                  bool  printInfo = true,
-                  int   width     = 640,
-                  int   height    = 480,
-                  bool  resizable = true,
-                  int   aaSamples = 8
+                  bool   printInfo = true,
+                  int    width     = 640,
+                  int    height    = 480,
+                  bool   resizable = true,
+                  int    aaSamples = 8
                   );
 
 

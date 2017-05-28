@@ -40,7 +40,7 @@ readFile( const std::string &filename )
   if ( !file.is_open( ) )
   {
 
-    throw std::runtime_error( "Failed to open file" );
+    throw std::runtime_error( "Failed to open file: " + filename );
 
   }
 
