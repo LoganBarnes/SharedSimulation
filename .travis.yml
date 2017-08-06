@@ -10,15 +10,15 @@ addons_shortcuts:
   addons_clang38: &clang38
     apt:
       sources: [ 'llvm-toolchain-trusty-3.8' ]
-      packages: [ 'clang-3.8', 'libc++-dev', 'xorg-dev', 'libglu1-mesa-dev' ]
+      packages: [ 'clang-3.8', 'libc++-dev', 'xorg-dev', 'libglu1-mesa-dev', 'libc++abi-dev' ]
   addons_clang39: &clang39
     apt:
       sources: [ 'llvm-toolchain-trusty-3.9' ]
-      packages: [ 'clang-3.9', 'libc++-dev', 'xorg-dev', 'libglu1-mesa-dev' ]
+      packages: [ 'clang-3.9', 'libc++-dev', 'xorg-dev', 'libglu1-mesa-dev', 'libc++abi-dev' ]
   addons_clang35: &clang40
     apt:
       sources: [ 'llvm-toolchain-trusty-4.0' ]
-      packages: [ 'clang-4.0', 'libc++-dev', 'xorg-dev', 'libglu1-mesa-dev' ]
+      packages: [ 'clang-4.0', 'libc++-dev', 'xorg-dev', 'libglu1-mesa-dev', 'libc++abi-dev' ]
   addons_gcc49: &gcc49
     apt:
       sources: [ 'ubuntu-toolchain-r-test' ]
